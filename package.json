@@ -13,6 +13,7 @@
     "format:check": "prettier --check .",
     "stylelint": "stylelint \"src/**/*.scss\"",
     "stylelint:fix": "stylelint --fix \"src/**/*.scss\"",
+    "typecheck": "tsc -b --noEmit",
     "prepare": "husky"
   },
   "private": true,
@@ -49,8 +50,16 @@
     "vitest": "^4.0.8"
   },
   "lint-staged": {
-    "*.{ts,html}": ["eslint --fix", "prettier --write"],
-    "*.scss": ["stylelint --fix", "prettier --write"],
-    "*.{js,json,md,yml,yaml}": ["prettier --write"]
+    "*.{ts,html}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.scss": [
+      "stylelint --fix",
+      "prettier --write"
+    ],
+    "*.{js,json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }
