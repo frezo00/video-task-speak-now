@@ -399,4 +399,174 @@ Scope for v1 (per [CLAUDE.md](../CLAUDE.md)): services + NGXS reducers only. Com
 
 ## 8. SCSS
 
-_SCSS conventions land in a follow-up commit._
+Most of these rules are enforced by Stylelint (`.stylelintrc.json`). Some — tokens vs literals, `:host` discipline — are code review.
+
+### 8.1 File organization
+
+- **Global styles live in `src/styles/`:**
+  - `_tokens.scss` — design tokens. **Defines CSS custom properties** under `:root` (plus theme variants like `:root.dark`) **and** the SCSS variables that point at them. Token values are the source of truth from [`docs/design-notes.md`](design-notes.md).
+  - `_mixins.scss` — breakpoint mixins, focus-ring mixin, motion-guarded transition mixin.
+  - `_reset.scss` — minimal reset (box-sizing, `:focus-visible` baseline, `prefers-reduced-motion` override).
+- `src/styles.scss` imports each partial **once** via `@use`.
+- **Component styles stay colocated** with the component (`video-tile.component.scss` beside `video-tile.component.ts`).
+
+### 8.2 `@use` only, never `@import`
+
+`@import` is deprecated in Sass. Use `@use` with a namespace so identifiers don't leak into the global scope.
+
+```scss
+// good
+@use 'styles/tokens' as tokens;
+@use 'styles/mixins' as mx;
+
+.video-tile {
+  padding: tokens.$space-3;
+  @include mx.focus-ring;
+}
+```
+
+### 8.3 Tokens — CSS custom property under `:root`, SCSS variable points at it
+
+No hex, rem, px, or magic numbers in component styles. Every design value is **a CSS custom property declared once on `:root`** (with theme variants on `:root.light` / `:root.dark`), and **a SCSS variable that is literally `var(--name)`**. Components use the SCSS variable. This gives you:
+
+- **Runtime theming** — toggle a class on `<html>` and every component re-theres with no JS restyle and no SCSS recompile.
+- **Stable, namespaced SCSS identifiers** — `tokens.$color-text-primary` is the name every component uses. You can move the underlying value without rewriting callers.
+
+```scss
+// src/styles/_tokens.scss
+
+// 1. Declare the CSS custom properties on :root (light is the default).
+:root,
+:root.light {
+  --color-text-primary: #2a2b2d;
+  --color-surface: #ffffff;
+  --color-accent: #1d70ff;
+
+  --radius-md: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+}
+
+:root.dark {
+  --color-text-primary: #f2f2f2;
+  --color-surface: #111113;
+  --color-accent: #4a8dff;
+}
+
+// 2. SCSS variables are pointers — one line each, deliberately boring.
+$color-text-primary: var(--color-text-primary);
+$color-surface: var(--color-surface);
+$color-accent: var(--color-accent);
+$radius-md: var(--radius-md);
+$space-3: var(--space-3);
+$space-4: var(--space-4);
+```
+
+```scss
+// any component uses the SCSS variable
+@use 'styles/tokens' as tokens;
+
+.video-tile {
+  padding: tokens.$space-3;
+  color: tokens.$color-text-primary;
+  border-radius: tokens.$radius-md;
+}
+```
+
+**Exception — tokens that feed compile-time math.** Breakpoint widths, grid column counts, and anything you do SCSS arithmetic on (`calc()` is fine in CSS but `tokens.$breakpoint-tablet * 1.5` isn't) must live as plain SCSS values, not `var(--x)`. Keep those in `_mixins.scss` or a separate `_breakpoints.scss` partial; they aren't themable at runtime anyway.
+
+### 8.4 Selectors — BEM-lite, max 3 levels of nesting
+
+`.block__element--modifier`. Enforced by Stylelint `selector-class-pattern` + `max-nesting-depth: 3`.
+
+```scss
+.video-list {
+  display: grid;
+
+  &__tile {
+    aspect-ratio: 16 / 9;
+  }
+
+  &__tile--selected {
+    outline: 2px solid tokens.$color-accent;
+  }
+}
+```
+
+### 8.5 `:host` for scoping, never `::ng-deep`
+
+Component styles target the host (not a wrapper element — see Angular rule 2.10). If you need to reach a child component's internals, expose a CSS custom property on it instead of piercing encapsulation.
+
+```scss
+// component.scss
+:host {
+  display: block;
+  padding: tokens.$space-4;
+}
+
+// no ::ng-deep, no :host-context hacks
+```
+
+### 8.6 Logical properties
+
+Prefer logical properties over physical ones — they work with any writing mode, and layout-ready for i18n:
+
+- `padding-inline` / `padding-block` over `padding-left` / `padding-top`
+- `margin-inline` / `margin-block`
+- `inset-inline` / `inset-block`
+- `inline-size` / `block-size` over `width` / `height` (when the axis is semantic, not a pixel target)
+
+### 8.7 Responsive — breakpoint mixins, `clamp()` for fluid
+
+Breakpoints from [`docs/design-notes.md`](design-notes.md) live as mixins in `_mixins.scss`:
+
+```scss
+// _mixins.scss
+@mixin for-tablet {
+  @media (min-width: 48rem) {
+    @content;
+  }
+}
+@mixin for-desktop {
+  @media (min-width: 72rem) {
+    @content;
+  }
+}
+
+// component.scss
+.hero {
+  font-size: clamp(1.25rem, 2vw + 1rem, 2rem);
+
+  @include mx.for-desktop {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+```
+
+### 8.8 Motion respects `prefers-reduced-motion`
+
+Every transition / animation is wrapped in a motion-guard mixin so reduced-motion users aren't punished:
+
+```scss
+// _mixins.scss
+@mixin motion($props) {
+  @media (prefers-reduced-motion: no-preference) {
+    transition: $props;
+  }
+}
+
+// component.scss
+.pill {
+  @include mx.motion(background-color 160ms ease);
+}
+```
+
+### 8.9 A11y — contrast + `:focus-visible`
+
+- Minimum WCAG AA (4.5:1 for text, 3:1 for large text / UI) — achieved by pairing tokens from `_tokens.scss`, never ad-hoc hexes.
+- Every interactive element ships a `:focus-visible` style. Use the `focus-ring` mixin so it's consistent.
+- Never `outline: none` without a replacement focus style.
+
+### 8.10 No `!important`
+
+Enforced by Stylelint (`declaration-no-important`). If a rule is being overridden unexpectedly, fix the specificity, not the symptom.
