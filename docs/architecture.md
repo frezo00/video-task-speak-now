@@ -96,6 +96,7 @@ src/app/
 │       ├── confirm-delete-dialog.component.ts
 │       └── videos.state.ts
 └── shared/                    # leaf UI atoms — no business logic
+    ├── icons/                 # [appIcon] directive + icomoon font
     ├── error-banner.component.ts
     ├── spinner.component.ts
     ├── icon-button.component.ts
