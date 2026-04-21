@@ -1,12 +1,14 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { IconDirective } from './shared/icons';
 
 @Component({
   selector: 'app-root',
-  imports: [],
+  imports: [IconDirective],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'app-shell',
+  },
 })
-export class AppComponent {
-  protected readonly $title = signal<string>('video-task-speak-now');
-}
+export class AppComponent {}

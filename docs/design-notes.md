@@ -146,9 +146,9 @@ $text-danger: #e11d48; // delete dialog heading + button
 
 ### Typography
 
-- Sans-serif stack (system default fine): `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`.
+- Primary family: **Lato** (loaded from Google Fonts; weights 400 + 700). Fallback stack: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`.
 - Scale: 12 (caption / timer), 14 (body / list rows), 16 (dialog body), 18 (dialog headings).
-- Weights: 400 default, 500 for labels, 600 for dialog headings and dangerous action buttons.
+- Weights: 400 (normal) and 700 (bold). Bold is used for dialog headings and dangerous action buttons; everything else is normal. Expand the Google Fonts URL and the weight tokens together if a richer scale becomes needed.
 
 ### Spacing
 

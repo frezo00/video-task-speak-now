@@ -2,7 +2,7 @@
 
 Angular responsive web app that measures the user's bandwidth, adapts webcam recording quality accordingly, records short clips (≤ 10 s), and persists them in the browser across refresh.
 
-> **Status:** Phase 1 tooling baseline in place — Angular 21 scaffold, Prettier + ESLint, Stylelint, Husky + lint-staged + commitlint, strict TypeScript, written conventions. Feature work starts at the app shell — see [`docs/task-breakdown.md`](docs/task-breakdown.md) for the roadmap.
+> **Status:** Phase 1 tooling baseline in place — Angular 21 scaffold, Prettier + ESLint, Stylelint, Husky + lint-staged + commitlint, strict TypeScript, written conventions. Feature work starts with the shared icon module — see [`docs/task-breakdown.md`](docs/task-breakdown.md) for the roadmap.
 
 ---
 
