@@ -21,10 +21,10 @@ Dexie.js is the chosen wrapper because:
 
 Alternatives considered:
 
-| Library | Reason not chosen |
-|---|---|
-| Raw IndexedDB | Verbose request/event API, higher risk of version-upgrade bugs for a 5-day project. |
-| `idb-keyval` | Only key-value; awkward for listing + deleting by criteria. |
+| Library       | Reason not chosen                                                                                              |
+| ------------- | -------------------------------------------------------------------------------------------------------------- |
+| Raw IndexedDB | Verbose request/event API, higher risk of version-upgrade bugs for a 5-day project.                            |
+| `idb-keyval`  | Only key-value; awkward for listing + deleting by criteria.                                                    |
 | `localForage` | Multi-backend abstraction adds layers we don't need — IndexedDB is always available in our supported browsers. |
 
 ---
@@ -35,11 +35,11 @@ A single `videos` table:
 
 ```ts
 interface SavedVideo {
-  id: string;            // UUID, client-generated with crypto.randomUUID()
-  blob: Blob;            // the raw MediaRecorder output
-  mimeType: string;      // e.g. 'video/webm;codecs=vp9' (platform-dependent)
-  duration: number;      // seconds (float, 1-decimal precision)
-  recordedAt: Date;      // ISO-serialized by Dexie as epoch ms
+  id: string; // UUID, client-generated with crypto.randomUUID()
+  blob: Blob; // the raw MediaRecorder output
+  mimeType: string; // e.g. 'video/webm;codecs=vp9' (platform-dependent)
+  duration: number; // seconds (float, 1-decimal precision)
+  recordedAt: Date; // ISO-serialized by Dexie as epoch ms
   resolution: '360p' | '720p' | '1080p';
 }
 ```

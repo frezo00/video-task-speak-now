@@ -49,15 +49,15 @@
 
 ## 2. Decision log
 
-| # | Decision | Chosen | Alternatives considered | Reason |
-|---|---|---|---|---|
-| 1 | Framework + change detection | Angular 21.2.x, zoneless | Angular 16/17, Angular with Zone.js | Latest; matches brief's "Angular" requirement; zoneless + signals give predictable change detection around MediaRecorder events. |
-| 2 | State management | NGXS 21 | NgRx, Akita, plain signals | Brief mandates NGXS. NGXS also has small boilerplate vs NgRx. |
-| 3 | UI / component library | Plain SCSS + Angular CDK | Angular Material, Tailwind, PrimeNG | Figma is custom — Material would need heavy overrides. CDK gives a11y primitives (Overlay, Dialog, FocusTrap, Portal) without imposing a look. |
-| 4 | Persistence | Dexie.js (IndexedDB) | Raw IndexedDB, idb-keyval, localForage, localStorage | localStorage cannot hold blobs at any realistic size. Dexie has the best DX and TypeScript types; documents well in the README "persistence" section. |
-| 5 | Bandwidth detection | Hybrid — Network Info API, timed-download fallback | Network Info API only, timed-download only, manual picker only | `navigator.connection.downlink` is missing/unreliable on Safari/iOS. Fallback guarantees a number cross-browser. |
-| 6 | Testing | Vitest, unit-only for services + NGXS | Jasmine/Karma, Jest, + component tests, + Playwright E2E | Vitest is Angular 21 default. Component tests and E2E mock `getUserMedia` painfully — skipping for v1. |
-| 7 | Deployment | Local run only (v1) | Vercel, Netlify, GitHub Pages | Webcam permissions need HTTPS; all three work. Deferred to maximize core-feature budget. |
+| #   | Decision                     | Chosen                                             | Alternatives considered                                        | Reason                                                                                                                                                |
+| --- | ---------------------------- | -------------------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Framework + change detection | Angular 21.2.x, zoneless                           | Angular 16/17, Angular with Zone.js                            | Latest; matches brief's "Angular" requirement; zoneless + signals give predictable change detection around MediaRecorder events.                      |
+| 2   | State management             | NGXS 21                                            | NgRx, Akita, plain signals                                     | Brief mandates NGXS. NGXS also has small boilerplate vs NgRx.                                                                                         |
+| 3   | UI / component library       | Plain SCSS + Angular CDK                           | Angular Material, Tailwind, PrimeNG                            | Figma is custom — Material would need heavy overrides. CDK gives a11y primitives (Overlay, Dialog, FocusTrap, Portal) without imposing a look.        |
+| 4   | Persistence                  | Dexie.js (IndexedDB)                               | Raw IndexedDB, idb-keyval, localForage, localStorage           | localStorage cannot hold blobs at any realistic size. Dexie has the best DX and TypeScript types; documents well in the README "persistence" section. |
+| 5   | Bandwidth detection          | Hybrid — Network Info API, timed-download fallback | Network Info API only, timed-download only, manual picker only | `navigator.connection.downlink` is missing/unreliable on Safari/iOS. Fallback guarantees a number cross-browser.                                      |
+| 6   | Testing                      | Vitest, unit-only for services + NGXS              | Jasmine/Karma, Jest, + component tests, + Playwright E2E       | Vitest is Angular 21 default. Component tests and E2E mock `getUserMedia` painfully — skipping for v1.                                                |
+| 7   | Deployment                   | Local run only (v1)                                | Vercel, Netlify, GitHub Pages                                  | Webcam permissions need HTTPS; all three work. Deferred to maximize core-feature budget.                                                              |
 
 ---
 
@@ -103,6 +103,7 @@ src/app/
 ```
 
 **Rules:**
+
 - `features/*` may depend on `core/*` and `shared/*`, never on each other.
 - `core/*` may depend on `shared/*` and other `core/*` siblings.
 - `shared/*` has no app-specific dependencies — pure presentation.
@@ -114,14 +115,14 @@ src/app/
 
 Single `ErrorBannerService` collects user-facing errors and drives a persistent toast/banner component. Behavior per scenario:
 
-| Scenario | Handling |
-|---|---|
-| Bandwidth API throws / times out | Fallback to timed download. If both fail, default to **Medium** quality, push banner: _"Couldn't measure bandwidth — defaulting to Medium. You can change it from settings."_ |
-| Webcam permission denied | CDK Dialog with explanation + link to browser's permission settings. Recorder controls hidden. |
-| Webcam enumeration returns no device | CDK Dialog: _"No webcam detected. Connect one and refresh."_ |
-| MediaRecorder error during capture | Banner: _"Recording failed. Try again."_ Recording state rolls back to `idle`. |
-| Dexie quota exceeded on save | Banner: _"Storage is full. Delete some saved videos and try again."_ Failed Blob is discarded, not persisted. |
-| Corrupt Dexie row on hydrate | Skip the row, log to console, banner: _"N saved videos couldn't be loaded and were skipped."_ |
+| Scenario                             | Handling                                                                                                                                                                      |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bandwidth API throws / times out     | Fallback to timed download. If both fail, default to **Medium** quality, push banner: _"Couldn't measure bandwidth — defaulting to Medium. You can change it from settings."_ |
+| Webcam permission denied             | CDK Dialog with explanation + link to browser's permission settings. Recorder controls hidden.                                                                                |
+| Webcam enumeration returns no device | CDK Dialog: _"No webcam detected. Connect one and refresh."_                                                                                                                  |
+| MediaRecorder error during capture   | Banner: _"Recording failed. Try again."_ Recording state rolls back to `idle`.                                                                                                |
+| Dexie quota exceeded on save         | Banner: _"Storage is full. Delete some saved videos and try again."_ Failed Blob is discarded, not persisted.                                                                 |
+| Corrupt Dexie row on hydrate         | Skip the row, log to console, banner: _"N saved videos couldn't be loaded and were skipped."_                                                                                 |
 
 **Never** use `alert()` / `confirm()` for production UI — CDK Dialog + banner only. The brief says "alerts to the user"; we interpret that as in-app notifications, not the native `alert()` function.
 
