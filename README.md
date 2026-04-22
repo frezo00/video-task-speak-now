@@ -67,7 +67,7 @@ From the [assignment brief](docs/assignment.md):
 - [`docs/assignment.md`](docs/assignment.md) — clean transcription of the brief
 - [`docs/architecture.md`](docs/architecture.md) — layers, decision log, module boundaries, a11y posture
 - [`docs/conventions.md`](docs/conventions.md) — TypeScript, Angular, NGXS, SCSS coding conventions
-- [`docs/task-breakdown.md`](docs/task-breakdown.md) — phase-based commit roadmap
+- [`docs/task-breakdown.md`](docs/task-breakdown.md) — phase-based PR roadmap
 - [`docs/design-notes.md`](docs/design-notes.md) — per-Figma-screen descriptions + UI tokens
 - [`docs/persistence.md`](docs/persistence.md) — Dexie schema, IndexedDB strategy, edge cases
 
