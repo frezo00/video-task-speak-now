@@ -46,48 +46,11 @@
     backdrop-filter: blur(12px);
   }
 
-  &__pill {
+  &__controls {
     position: absolute;
     inset-block-end: tokens.$space-4;
     inset-inline-start: 50%;
     transform: translateX(-50%);
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    inline-size: 20rem;
-    block-size: 5rem;
-    border-radius: tokens.$radius-full;
-
-    background-color: tokens.$color-bg-translucent;
-    backdrop-filter: blur(12px);
-  }
-
-  &__record {
-    cursor: pointer;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    inline-size: 3.75rem;
-    block-size: 3.75rem;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-
-    background-color: tokens.$color-bg-surface;
-
-    &-dot {
-      display: block;
-
-      inline-size: 1.75rem;
-      block-size: 1.75rem;
-      border-radius: 50%;
-
-      background-color: tokens.$color-accent-red;
-    }
   }
 }
 
