@@ -7,7 +7,7 @@ import {
 import { withNgxsReduxDevtoolsPlugin } from '@ngxs/devtools-plugin';
 import { provideStore } from '@ngxs/store';
 import { BandwidthState } from '@core/bandwidth';
-import { QualityState } from '@features/recorder';
+import { QualityState, RecorderState } from '@features/recorder';
 import { VideosState } from '@features/videos';
 
 export const appConfig: ApplicationConfig = {
@@ -15,7 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideStore(
-      [BandwidthState, QualityState, VideosState],
+      [BandwidthState, QualityState, RecorderState, VideosState],
       withNgxsReduxDevtoolsPlugin({ disabled: !isDevMode() }),
     ),
   ],
