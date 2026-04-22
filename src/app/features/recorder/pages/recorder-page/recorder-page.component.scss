@@ -16,7 +16,6 @@
   align-items: center;
   justify-content: center;
 
-  max-inline-size: 1500px;
   padding: tokens.$space-4;
   border-radius: tokens.$radius-md;
 
@@ -99,6 +98,7 @@
   align-items: center;
   justify-content: center;
 
+  min-inline-size: 300px;
   max-inline-size: 300px;
   padding: tokens.$space-4;
   border-radius: tokens.$radius-md;
