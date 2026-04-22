@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideStore, Store } from '@ngxs/store';
 import { firstValueFrom } from 'rxjs';
 import { Bandwidth, BandwidthError, BandwidthErrorKind } from '@core/bandwidth';
+import { Quality } from './quality.actions';
 import { QualityState } from './quality.state';
 
 function configure(): Store {
@@ -58,5 +59,47 @@ describe('QualityState', () => {
       width: 640,
       height: 360,
     });
+  });
+
+  it('Quality.ManuallyOverridden patches tier and flips source to manual', async () => {
+    const store = configure();
+
+    await firstValueFrom(store.dispatch(new Quality.ManuallyOverridden('high')));
+
+    expect(store.selectSnapshot(QualityState.tier)).toBe('high');
+    expect(store.selectSnapshot(QualityState.source)).toBe('manual');
+  });
+
+  it('after a manual override, Bandwidth.MeasurementCompleted is ignored', async () => {
+    const store = configure();
+    await firstValueFrom(store.dispatch(new Quality.ManuallyOverridden('high')));
+
+    await firstValueFrom(store.dispatch(new Bandwidth.MeasurementCompleted(0.5, 'low')));
+
+    expect(store.selectSnapshot(QualityState.tier)).toBe('high');
+    expect(store.selectSnapshot(QualityState.source)).toBe('manual');
+  });
+
+  it('after a manual override, Bandwidth.MeasurementFailed is ignored', async () => {
+    const store = configure();
+    await firstValueFrom(store.dispatch(new Quality.ManuallyOverridden('high')));
+
+    const err = new BandwidthError(BandwidthErrorKind.ProbeFailed, 'nope');
+    await firstValueFrom(store.dispatch(new Bandwidth.MeasurementFailed(err)));
+
+    expect(store.selectSnapshot(QualityState.tier)).toBe('high');
+    expect(store.selectSnapshot(QualityState.source)).toBe('manual');
+  });
+
+  it('Quality.OverrideRolledBack patches to the rollback tier with manual source', async () => {
+    const store = configure();
+    await firstValueFrom(store.dispatch(new Quality.ManuallyOverridden('high')));
+
+    await firstValueFrom(
+      store.dispatch(new Quality.OverrideRolledBack('medium', 'overconstrained')),
+    );
+
+    expect(store.selectSnapshot(QualityState.tier)).toBe('medium');
+    expect(store.selectSnapshot(QualityState.source)).toBe('manual');
   });
 });

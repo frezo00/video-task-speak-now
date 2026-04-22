@@ -1,17 +1,28 @@
 import { Dialog, type DialogRef } from '@angular/cdk/dialog';
+import { Overlay, type ConnectedPosition, type OverlayRef } from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
 import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
   effect,
+  type ElementRef,
   inject,
   type OnInit,
   signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Store } from '@ngxs/store';
-import { Bandwidth, BandwidthState, constraintsFor, type QualityTier } from '@core/bandwidth';
+import {
+  Bandwidth,
+  BandwidthState,
+  constraintsFor,
+  QUALITY_PROFILES,
+  type QualityTier,
+} from '@core/bandwidth';
 import { CameraError, CameraErrorKind, CameraService } from '@core/camera';
+import { ErrorBannerService } from '@core/error';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -19,7 +30,8 @@ import {
 } from '@shared/confirm-dialog';
 import { IconDirective } from '@shared/icons';
 import { SpinnerComponent, SPINNER_DEBOUNCE_MS } from '@shared/spinner';
-import { QualityState } from '../../state';
+import { QualityMenuComponent } from '../../components/quality-menu/quality-menu.component';
+import { OverrideRollbackReason, Quality, QualityState } from '../../state';
 import { VideoPreviewComponent } from '../../components/video-preview/video-preview.component';
 
 const CAMERA_ERROR_DIALOGS: Record<CameraErrorKind, ConfirmDialogData> = {
@@ -64,6 +76,14 @@ const CAMERA_ERROR_DIALOGS: Record<CameraErrorKind, ConfirmDialogData> = {
   },
 };
 
+const QUALITY_MENU_POSITION: ConnectedPosition = {
+  originX: 'start',
+  originY: 'top',
+  overlayX: 'start',
+  overlayY: 'bottom',
+  offsetY: -8,
+};
+
 @Component({
   selector: 'app-recorder-page',
   imports: [IconDirective, SpinnerComponent, VideoPreviewComponent],
@@ -79,6 +99,8 @@ export class RecorderPageComponent implements OnInit {
   readonly #dialog = inject(Dialog);
   readonly #destroyRef = inject(DestroyRef);
   readonly #store = inject(Store);
+  readonly #overlay = inject(Overlay);
+  readonly #banner = inject(ErrorBannerService);
 
   readonly $stream = this.#camera.$stream;
   readonly $bandwidthStatus = this.#store.selectSignal(BandwidthState.status);
@@ -87,9 +109,16 @@ export class RecorderPageComponent implements OnInit {
   readonly #$showSpinner = signal<boolean>(false);
   readonly $showSpinner = this.#$showSpinner.asReadonly();
 
+  readonly #$qualityMenuOpen = signal<boolean>(false);
+  readonly $qualityMenuOpen = this.#$qualityMenuOpen.asReadonly();
+
+  readonly $gearEl = viewChild<ElementRef<HTMLButtonElement>>('gearBtn');
+
   #activeDialog: DialogRef<DialogResult> | null = null;
   #spinnerTimer: ReturnType<typeof setTimeout> | null = null;
   #lastBootedTier: QualityTier | null = null;
+  #qualityMenuRef: OverlayRef | null = null;
+  #previousTierBeforeOverride: QualityTier | null = null;
 
   constructor() {
     effect(() => {
@@ -112,8 +141,46 @@ export class RecorderPageComponent implements OnInit {
     this.#store.dispatch(new Bandwidth.MeasurementRequested());
     this.#destroyRef.onDestroy(() => {
       this.#stopSpinner();
+      this.#qualityMenuRef?.dispose();
+      this.#qualityMenuRef = null;
       this.#camera.closeStream();
     });
+  }
+
+  openQualityMenu(): void {
+    if (this.#qualityMenuRef) {
+      return;
+    }
+    const gear = this.$gearEl();
+    if (!gear) {
+      return;
+    }
+    const positionStrategy = this.#overlay
+      .position()
+      .flexibleConnectedTo(gear.nativeElement)
+      .withPositions([QUALITY_MENU_POSITION])
+      .withPush(true);
+    const ref = this.#overlay.create({
+      positionStrategy,
+      scrollStrategy: this.#overlay.scrollStrategies.reposition(),
+      hasBackdrop: false,
+      panelClass: 'quality-menu-panel',
+    });
+    this.#qualityMenuRef = ref;
+    const portal = new ComponentPortal(QualityMenuComponent);
+    const componentRef = ref.attach(portal);
+    componentRef.setInput('selected', this.$qualityTier());
+    // OutputEmitterRef subscriptions are cleaned up when the attached component
+    // is destroyed (overlay dispose); no manual takeUntilDestroyed needed.
+    componentRef.instance.$qualitySelected.subscribe((tier) => {
+      void this.#applyOverride(tier);
+    });
+    componentRef.instance.$closed.subscribe(() => this.#closeQualityMenu());
+    ref
+      .outsidePointerEvents()
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe(() => this.#closeQualityMenu());
+    this.#$qualityMenuOpen.set(true);
   }
 
   async #bootCamera(tier: QualityTier): Promise<void> {
@@ -122,6 +189,53 @@ export class RecorderPageComponent implements OnInit {
     } catch (err) {
       this.#handleError(err);
     }
+  }
+
+  async #applyOverride(tier: QualityTier): Promise<void> {
+    this.#closeQualityMenu();
+    if (tier === this.$qualityTier()) {
+      return;
+    }
+    this.#previousTierBeforeOverride = this.$qualityTier();
+    this.#store.dispatch(new Quality.ManuallyOverridden(tier));
+    this.#lastBootedTier = tier;
+    try {
+      await this.#camera.openStream(constraintsFor(tier));
+    } catch (err) {
+      this.#handleOverrideError(err);
+    }
+  }
+
+  #handleOverrideError(err: unknown): void {
+    if (
+      err instanceof CameraError &&
+      err.kind === CameraErrorKind.Overconstrained &&
+      this.#previousTierBeforeOverride
+    ) {
+      const fallback = this.#previousTierBeforeOverride;
+      this.#previousTierBeforeOverride = null;
+      this.#store.dispatch(
+        new Quality.OverrideRolledBack(fallback, OverrideRollbackReason.Overconstrained),
+      );
+      this.#banner.push({
+        level: 'warning',
+        message: `Your camera doesn't support that resolution. Reverted to ${QUALITY_PROFILES[fallback].label}.`,
+      });
+      this.#lastBootedTier = fallback;
+      void this.#camera.openStream(constraintsFor(fallback));
+      return;
+    }
+    this.#handleError(err);
+  }
+
+  #closeQualityMenu(): void {
+    if (!this.#qualityMenuRef) {
+      return;
+    }
+    this.#qualityMenuRef.dispose();
+    this.#qualityMenuRef = null;
+    this.#$qualityMenuOpen.set(false);
+    this.$gearEl()?.nativeElement.focus();
   }
 
   #handleError(err: unknown): void {
@@ -154,8 +268,6 @@ export class RecorderPageComponent implements OnInit {
       clearTimeout(this.#spinnerTimer);
       this.#spinnerTimer = null;
     }
-    if (this.#$showSpinner()) {
-      this.#$showSpinner.set(false);
-    }
+    this.#$showSpinner.set(false);
   }
 }

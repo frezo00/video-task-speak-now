@@ -4,7 +4,15 @@
   } @else {
     <app-video-preview [stream]="$stream()" />
 
-    <button type="button" class="stage__settings" aria-label="Quality settings">
+    <button
+      #gearBtn
+      type="button"
+      class="stage__settings"
+      aria-label="Quality settings"
+      aria-haspopup="menu"
+      [attr.aria-expanded]="$qualityMenuOpen()"
+      (click)="openQualityMenu()"
+    >
       <i
         appIcon="settings"
         appIconSize="xlarge"

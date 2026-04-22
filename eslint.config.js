@@ -42,10 +42,11 @@ module.exports = defineConfig([
       '@angular-eslint/use-lifecycle-interface': 'error',
       '@angular-eslint/component-class-suffix': 'error',
       '@angular-eslint/directive-class-suffix': 'error',
-      // Our `$name` → alias `name` pattern deliberately renames inputs so templates
-      // bind the clean name (see docs/conventions.md §2.5). Disable the rule that
-      // would otherwise flag every aliased `input()`.
+      // Our `$name` → alias `name` pattern deliberately renames inputs and outputs
+      // so templates bind the clean name (see docs/conventions.md §2.5). Disable
+      // the rules that would otherwise flag every aliased `input()` / `output()`.
       '@angular-eslint/no-input-rename': 'off',
+      '@angular-eslint/no-output-rename': 'off',
 
       // --- Restricted syntax:
       //     1. No TS enums — use `as const satisfies ...` (see docs/conventions.md §1.1)

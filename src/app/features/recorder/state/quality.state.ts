@@ -7,6 +7,7 @@ import {
   type QualityProfile,
   type QualityTier,
 } from '@core/bandwidth';
+import { Quality } from './quality.actions';
 
 export const QUALITY_SOURCES = ['auto', 'manual'] as const satisfies readonly string[];
 export type QualitySource = (typeof QUALITY_SOURCES)[number];
@@ -51,5 +52,15 @@ export class QualityState {
       return;
     }
     ctx.patchState({ tier: BANDWIDTH_FALLBACK_TIER, source: 'auto' });
+  }
+
+  @Action(Quality.ManuallyOverridden)
+  override(ctx: StateContext<QualityStateModel>, action: Quality.ManuallyOverridden): void {
+    ctx.patchState({ tier: action.tier, source: 'manual' });
+  }
+
+  @Action(Quality.OverrideRolledBack)
+  rollBack(ctx: StateContext<QualityStateModel>, action: Quality.OverrideRolledBack): void {
+    ctx.patchState({ tier: action.toTier, source: 'manual' });
   }
 }
