@@ -22,7 +22,7 @@
 
   color: tokens.$color-text-primary;
 
-  background-color: rgb(255 255 255 / 6%);
+  background-color: tokens.$color-bg-translucent;
 
   &__settings {
     cursor: pointer;
@@ -43,7 +43,7 @@
 
     color: tokens.$color-text-primary;
 
-    background-color: rgb(255 255 255 / 6%);
+    background-color: tokens.$color-bg-translucent;
     backdrop-filter: blur(12px);
   }
 
@@ -61,7 +61,7 @@
     block-size: 5rem;
     border-radius: tokens.$radius-full;
 
-    background-color: rgb(255 255 255 / 6%);
+    background-color: tokens.$color-bg-translucent;
     backdrop-filter: blur(12px);
   }
 
@@ -103,7 +103,7 @@
   padding: tokens.$space-4;
   border-radius: tokens.$radius-md;
 
-  background-color: rgb(255 255 255 / 6%);
+  background-color: tokens.$color-bg-translucent;
 
   &__empty {
     display: flex;

@@ -2,6 +2,7 @@
   --color-bg-main: #2b2b2b;
   --color-bg-sidebar: #1f2022;
   --color-bg-surface: #fff;
+  --color-bg-translucent: rgb(255 255 255 / 6%);
   --color-bg-pill: #3a3b3d;
   --color-accent-red: #e53935;
   --color-accent-blue: #2563eb;
@@ -35,6 +36,7 @@
 $color-bg-main: var(--color-bg-main);
 $color-bg-sidebar: var(--color-bg-sidebar);
 $color-bg-surface: var(--color-bg-surface);
+$color-bg-translucent: var(--color-bg-translucent);
 $color-bg-pill: var(--color-bg-pill);
 $color-accent-red: var(--color-accent-red);
 $color-accent-blue: var(--color-accent-blue);
