@@ -1,0 +1,13 @@
+:host {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: block;
+}
+
+video {
+  transform: scaleX(-1);
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}

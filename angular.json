@@ -42,7 +42,14 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss", "src/app/shared/icons/icomoon.css"]
+            "styles": [
+              "src/styles.scss",
+              "src/app/shared/icons/icomoon.css",
+              "node_modules/@angular/cdk/overlay-prebuilt.css"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/styles"]
+            }
           },
           "configurations": {
             "production": {

@@ -64,52 +64,76 @@
 
 ## 3. Module boundaries
 
-The app uses standalone components, but the folder layout mirrors logical modules:
+The app uses standalone components. Every `core/<domain>/` and `features/<name>/` folder is structured as a self-contained "library" (Nx-style): stable public surface via `index.ts`, internals organised by role (`models/`, `services/`, `utils/`, `pages/`, `components/`, `state/`). Each component lives in its own folder so `.ts` + `.html` + `.scss` (and a future `.spec.ts`) stay colocated.
 
 ```
 src/app/
 ├── app.config.ts              # provideStore, APP_INITIALIZER, CDK providers
-├── app.routes.ts              # single route → RecorderPageComponent
-├── core/                      # cross-cutting singletons
+├── app.routes.ts              # single route → RecorderPageComponent (if/when routing is introduced)
+├── core/                      # cross-cutting domain libraries
 │   ├── bandwidth/
-│   │   ├── bandwidth.service.ts
-│   │   └── bandwidth.state.ts
+│   │   ├── models/
+│   │   ├── services/
+│   │   │   └── bandwidth.service.ts
+│   │   ├── state/
+│   │   │   └── bandwidth.state.ts
+│   │   └── index.ts           # public barrel
 │   ├── camera/
-│   │   └── camera.service.ts
+│   │   ├── models/            # CameraError, CameraStatus, DEFAULT_CAMERA_CONSTRAINTS
+│   │   ├── services/
+│   │   │   └── camera.service.ts
+│   │   ├── utils/             # e.g. classify-camera-error.ts
+│   │   └── index.ts
 │   ├── storage/
-│   │   ├── video-storage.service.ts
-│   │   └── dexie-schema.ts
+│   │   ├── models/            # dexie schema, SavedVideo type
+│   │   ├── services/
+│   │   │   └── video-storage.service.ts
+│   │   └── index.ts
 │   ├── error/
-│   │   └── error-banner.service.ts
+│   │   ├── services/
+│   │   │   └── error-banner.service.ts
+│   │   └── index.ts
 │   └── initializers.ts        # APP_INITIALIZER orchestration
-├── features/
+├── features/                  # user-facing feature libraries
 │   ├── recorder/
-│   │   ├── recorder-page.component.ts      # composes the main layout
-│   │   ├── video-preview.component.ts
-│   │   ├── recorder-controls.component.ts
-│   │   ├── quality-menu.component.ts
-│   │   ├── recorder.service.ts
-│   │   ├── recorder.state.ts
-│   │   └── quality.state.ts
+│   │   ├── pages/
+│   │   │   └── recorder-page/
+│   │   │       ├── recorder-page.component.{ts,html,scss}
+│   │   ├── components/
+│   │   │   ├── video-preview/
+│   │   │   ├── recorder-controls/
+│   │   │   ├── quality-menu/
+│   │   │   ├── permission-denied-dialog/
+│   │   │   └── no-device-dialog/
+│   │   ├── state/
+│   │   │   ├── recorder.state.ts
+│   │   │   └── quality.state.ts
+│   │   └── index.ts           # exports RecorderPageComponent only
 │   └── videos/
-│       ├── videos-list.component.ts
-│       ├── playback-dialog.component.ts
-│       ├── confirm-delete-dialog.component.ts
-│       └── videos.state.ts
+│       ├── components/
+│       │   ├── videos-list/
+│       │   ├── playback-dialog/
+│       │   └── confirm-delete-dialog/
+│       ├── state/
+│       │   └── videos.state.ts
+│       └── index.ts
 └── shared/                    # leaf UI atoms — no business logic
     ├── icons/                 # [appIcon] directive + icomoon font
-    ├── error-banner.component.ts
-    ├── spinner.component.ts
-    ├── icon-button.component.ts
-    └── pill.component.ts
+    ├── error-banner/
+    ├── spinner/
+    ├── icon-button/
+    └── pill/
 ```
+
+Global styles that express design-system patterns (tokens, reset, icon base, dialog panel) live in `src/styles/*.scss` and are pulled into `src/styles.scss`. Components use global BEM classes like `.dialog-panel` on their `host` rather than duplicating the SCSS per component.
 
 **Rules:**
 
 - `features/*` may depend on `core/*` and `shared/*`, never on each other.
 - `core/*` may depend on `shared/*` and other `core/*` siblings.
 - `shared/*` has no app-specific dependencies — pure presentation.
-- State files live next to the feature that owns them; cross-cutting state (`BandwidthState`) lives in `core/`.
+- Each library's `index.ts` is the public surface. Cross-library imports go through it via the `@core/*` / `@features/*` / `@shared/*` / `@app/*` path aliases declared in `tsconfig.json`; intra-library imports use relative paths. Full rule in [`conventions.md` §1.9](conventions.md#19-import-paths--aliases-for-cross-library-relative-for-intra-library).
+- State files live in the `state/` folder of the feature that owns them; cross-cutting state (`BandwidthState`) lives in `core/bandwidth/state/`.
 
 ---
 
