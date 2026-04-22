@@ -1,18 +1,25 @@
 import { Dialog, type DialogRef } from '@angular/cdk/dialog';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, type OnInit } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  CameraError,
-  CameraErrorKind,
-  CameraService,
-  DEFAULT_CAMERA_CONSTRAINTS,
-} from '@core/camera';
-import { IconDirective } from '@shared/icons';
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  type OnInit,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Store } from '@ngxs/store';
+import { Bandwidth, BandwidthState, constraintsFor, type QualityTier } from '@core/bandwidth';
+import { CameraError, CameraErrorKind, CameraService } from '@core/camera';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
   type DialogResult,
 } from '@shared/confirm-dialog';
+import { IconDirective } from '@shared/icons';
+import { SpinnerComponent, SPINNER_DEBOUNCE_MS } from '@shared/spinner';
+import { QualityState } from '../../state';
 import { VideoPreviewComponent } from '../../components/video-preview/video-preview.component';
 
 const CAMERA_ERROR_DIALOGS: Record<CameraErrorKind, ConfirmDialogData> = {
@@ -59,7 +66,7 @@ const CAMERA_ERROR_DIALOGS: Record<CameraErrorKind, ConfirmDialogData> = {
 
 @Component({
   selector: 'app-recorder-page',
-  imports: [IconDirective, VideoPreviewComponent],
+  imports: [IconDirective, SpinnerComponent, VideoPreviewComponent],
   templateUrl: './recorder-page.component.html',
   styleUrl: './recorder-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,19 +78,47 @@ export class RecorderPageComponent implements OnInit {
   readonly #camera = inject(CameraService);
   readonly #dialog = inject(Dialog);
   readonly #destroyRef = inject(DestroyRef);
+  readonly #store = inject(Store);
 
   readonly $stream = this.#camera.$stream;
+  readonly $bandwidthStatus = this.#store.selectSignal(BandwidthState.status);
+  readonly $qualityTier = this.#store.selectSignal(QualityState.tier);
+
+  readonly #$showSpinner = signal<boolean>(false);
+  readonly $showSpinner = this.#$showSpinner.asReadonly();
 
   #activeDialog: DialogRef<DialogResult> | null = null;
+  #spinnerTimer: ReturnType<typeof setTimeout> | null = null;
+  #lastBootedTier: QualityTier | null = null;
 
-  ngOnInit(): void {
-    void this.#bootCamera();
-    this.#destroyRef.onDestroy(() => this.#camera.closeStream());
+  constructor() {
+    effect(() => {
+      const status = this.$bandwidthStatus();
+      if (status !== 'ready' && status !== 'failed') {
+        return;
+      }
+      this.#stopSpinner();
+      const tier = this.$qualityTier();
+      if (tier === this.#lastBootedTier) {
+        return;
+      }
+      this.#lastBootedTier = tier;
+      void this.#bootCamera(tier);
+    });
   }
 
-  async #bootCamera(): Promise<void> {
+  ngOnInit(): void {
+    this.#spinnerTimer = setTimeout(() => this.#$showSpinner.set(true), SPINNER_DEBOUNCE_MS);
+    this.#store.dispatch(new Bandwidth.MeasurementRequested());
+    this.#destroyRef.onDestroy(() => {
+      this.#stopSpinner();
+      this.#camera.closeStream();
+    });
+  }
+
+  async #bootCamera(tier: QualityTier): Promise<void> {
     try {
-      await this.#camera.openStream(DEFAULT_CAMERA_CONSTRAINTS);
+      await this.#camera.openStream(constraintsFor(tier));
     } catch (err) {
       this.#handleError(err);
     }
@@ -109,8 +144,18 @@ export class RecorderPageComponent implements OnInit {
     ref.closed.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((result) => {
       this.#activeDialog = null;
       if (result === 'confirm') {
-        void this.#bootCamera();
+        void this.#bootCamera(this.$qualityTier());
       }
     });
+  }
+
+  #stopSpinner(): void {
+    if (this.#spinnerTimer) {
+      clearTimeout(this.#spinnerTimer);
+      this.#spinnerTimer = null;
+    }
+    if (this.#$showSpinner()) {
+      this.#$showSpinner.set(false);
+    }
   }
 }
