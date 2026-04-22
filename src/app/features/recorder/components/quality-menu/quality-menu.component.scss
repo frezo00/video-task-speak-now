@@ -3,10 +3,12 @@
 :host {
   position: relative;
 
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-1;
 
   min-inline-size: 16rem;
-  padding: tokens.$space-2 tokens.$space-2 tokens.$space-8;
+  padding: tokens.$space-2;
   border-radius: tokens.$radius-sm;
 
   color: tokens.$color-text-primary;
@@ -15,81 +17,50 @@
   box-shadow: tokens.$shadow-dialog;
 }
 
-.quality-menu__list {
-  display: flex;
-  flex-direction: column;
-  gap: tokens.$space-1;
+.quality-menu {
+  &__row {
+    cursor: pointer;
 
-  margin: 0;
-  padding: 0;
+    display: flex;
+    gap: tokens.$space-3;
+    align-items: center;
+    justify-content: space-between;
 
-  list-style: none;
-}
+    inline-size: 100%;
+    padding: tokens.$space-2 tokens.$space-3;
+    border: none;
+    border-radius: tokens.$radius-sm;
 
-.quality-menu__row {
-  cursor: pointer;
+    font-family: inherit;
+    font-size: tokens.$font-size-sm;
+    color: tokens.$color-text-secondary;
+    text-align: start;
 
-  display: flex;
-  gap: tokens.$space-3;
-  align-items: center;
-  justify-content: space-between;
+    background-color: transparent;
 
-  inline-size: 100%;
-  padding: tokens.$space-2 tokens.$space-3;
-  border: none;
-  border-radius: tokens.$radius-sm;
+    &:hover {
+      background-color: rgb(255 255 255 / 6%);
+    }
 
-  font-family: inherit;
-  font-size: tokens.$font-size-sm;
-  color: tokens.$color-text-secondary;
-  text-align: start;
+    &--selected {
+      color: tokens.$color-text-primary;
+    }
 
-  background-color: transparent;
-
-  &:hover {
-    background-color: rgb(255 255 255 / 6%);
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        background-color 160ms ease,
+        color 160ms ease;
+    }
   }
 
-  &--selected {
-    color: tokens.$color-text-primary;
+  &__label {
+    flex: 1 1 auto;
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    transition:
-      background-color 160ms ease,
-      color 160ms ease;
+  &__check {
+    flex: 0 0 auto;
+    inline-size: 1rem;
+    block-size: 1rem;
+    color: tokens.$color-accent-green;
   }
-}
-
-.quality-menu__label {
-  flex: 1 1 auto;
-}
-
-.quality-menu__check {
-  flex: 0 0 auto;
-  inline-size: 1rem;
-  block-size: 1rem;
-  color: tokens.$color-accent-green;
-}
-
-.quality-menu__close {
-  cursor: pointer;
-
-  position: absolute;
-  inset-block-end: tokens.$space-2;
-  inset-inline-start: tokens.$space-2;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  inline-size: 2rem;
-  block-size: 2rem;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-
-  color: tokens.$color-text-primary;
-
-  background-color: rgb(255 255 255 / 6%);
 }

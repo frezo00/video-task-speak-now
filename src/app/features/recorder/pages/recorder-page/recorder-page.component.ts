@@ -77,11 +77,11 @@ const CAMERA_ERROR_DIALOGS: Record<CameraErrorKind, ConfirmDialogData> = {
 };
 
 const QUALITY_MENU_POSITION: ConnectedPosition = {
-  originX: 'start',
-  originY: 'top',
+  originX: 'end',
+  originY: 'bottom',
   overlayX: 'start',
   overlayY: 'bottom',
-  offsetY: -8,
+  offsetX: 8,
 };
 
 @Component({
@@ -147,10 +147,15 @@ export class RecorderPageComponent implements OnInit {
     });
   }
 
-  openQualityMenu(): void {
+  toggleQualityMenu(): void {
     if (this.#qualityMenuRef) {
+      this.#closeQualityMenu();
       return;
     }
+    this.#openQualityMenu();
+  }
+
+  #openQualityMenu(): void {
     const gear = this.$gearEl();
     if (!gear) {
       return;
@@ -179,7 +184,16 @@ export class RecorderPageComponent implements OnInit {
     ref
       .outsidePointerEvents()
       .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe(() => this.#closeQualityMenu());
+      .subscribe((event) => {
+        // Ignore pointerdowns on the gear: the button's own click toggles the
+        // menu. Without this, outsidePointerEvents would close it and the click
+        // handler would immediately reopen it.
+        const gearEl = this.$gearEl()?.nativeElement;
+        if (gearEl && event.target instanceof Node && gearEl.contains(event.target)) {
+          return;
+        }
+        this.#closeQualityMenu();
+      });
     this.#$qualityMenuOpen.set(true);
   }
 

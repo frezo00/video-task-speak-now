@@ -8,13 +8,13 @@
       #gearBtn
       type="button"
       class="stage__settings"
-      aria-label="Quality settings"
+      [attr.aria-label]="$qualityMenuOpen() ? 'Close quality menu' : 'Quality settings'"
       aria-haspopup="menu"
       [attr.aria-expanded]="$qualityMenuOpen()"
-      (click)="openQualityMenu()"
+      (click)="toggleQualityMenu()"
     >
       <i
-        appIcon="settings"
+        [appIcon]="$qualityMenuOpen() ? 'close' : 'settings'"
         appIconSize="xlarge"
         class="stage__settings-icon"
         aria-hidden="true"

@@ -29,10 +29,176 @@
           }
         ]
       }
-    },
-    { "order": 1, "mOpen": false, "item": { "tag": "ItemSvg", "args": [{}] } }
+    }
   ],
   "glyphs": [
+    {
+      "extras": { "name": "check", "codePoint": 61446 },
+      "node": {
+        "tag": "Element",
+        "args": [
+          {
+            "tagName": "svg",
+            "attributes": {
+              "fill": {
+                "tag": "Value",
+                "args": [{ "tag": "Paint", "args": [{ "tag": "NoPaint", "args": [] }] }]
+              },
+              "height": {
+                "tag": "Value",
+                "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [24] }] }]
+              },
+              "viewBox": {
+                "tag": "Value",
+                "args": [
+                  {
+                    "tag": "ViewBox",
+                    "args": [{ "minX": 0, "minY": 0, "width": 24, "height": 24 }]
+                  }
+                ]
+              },
+              "width": {
+                "tag": "Value",
+                "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [24] }] }]
+              },
+              "xmlns": { "tag": "StringValue", "args": ["http://www.w3.org/2000/svg"] }
+            },
+            "children": [
+              { "tag": "Text", "args": ["\n"] },
+              {
+                "tag": "Element",
+                "args": [
+                  {
+                    "tagName": "path",
+                    "attributes": {
+                      "d": {
+                        "tag": "Value",
+                        "args": [
+                          {
+                            "tag": "Paths",
+                            "args": [
+                              [
+                                {
+                                  "start": [9.09961, 18.166],
+                                  "endings": { "tag": "Connected", "args": [] },
+                                  "cmds": [
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [9.45117, 18.5176],
+                                              "c2": [10.0488, 18.5176],
+                                              "end": [10.4004, 18.166]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [20.7363, 7.83008] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [21.0879, 7.47852],
+                                              "c2": [21.0879, 6.88086],
+                                              "end": [20.7363, 6.5293]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [19.4707, 5.26367] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [19.1191, 4.91211],
+                                              "c2": [18.5566, 4.91211],
+                                              "end": [18.2051, 5.26367]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [9.76758, 13.7012] }] },
+                                    { "tag": "LineTo", "args": [{ "point": [5.79492, 9.76367] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [5.44336, 9.41211],
+                                              "c2": [4.88086, 9.41211],
+                                              "end": [4.5293, 9.76367]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [3.26367, 11.0293] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [2.91211, 11.3809],
+                                              "c2": [2.91211, 11.9785],
+                                              "end": [3.26367, 12.3301]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [9.09961, 18.166] }] }
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      },
+                      "fill": {
+                        "tag": "Value",
+                        "args": [
+                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
+                        ]
+                      }
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              { "tag": "Text", "args": ["\n"] }
+            ]
+          }
+        ]
+      },
+      "palettes": {
+        "index": 0,
+        "table": [
+          [
+            {
+              "background": { "tag": "AutomaticColor", "args": [] },
+              "foreground": { "tag": "AutomaticColor", "args": [] }
+            },
+            [{ "tag": "CurrentColor", "args": [] }]
+          ]
+        ]
+      }
+    },
     {
       "extras": { "name": "video", "codePoint": 61445 },
       "node": {
@@ -250,7 +416,9 @@
                       },
                       "fill": {
                         "tag": "Value",
-                        "args": [{ "tag": "ColorReference", "args": [0] }]
+                        "args": [
+                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
+                        ]
                       },
                       "fill-opacity": {
                         "tag": "Value",
@@ -274,7 +442,7 @@
               "background": { "tag": "AutomaticColor", "args": [] },
               "foreground": { "tag": "AutomaticColor", "args": [] }
             },
-            [{ "tag": "Color", "args": [{ "r": 1, "g": 1, "b": 1, "a": 1 }] }]
+            [{ "tag": "CurrentColor", "args": [] }]
           ]
         ]
       }
@@ -493,7 +661,9 @@
                       },
                       "stroke": {
                         "tag": "Value",
-                        "args": [{ "tag": "ColorReference", "args": [0] }]
+                        "args": [
+                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
+                        ]
                       },
                       "stroke-linecap": {
                         "tag": "Value",
@@ -529,7 +699,7 @@
               "background": { "tag": "AutomaticColor", "args": [] },
               "foreground": { "tag": "AutomaticColor", "args": [] }
             },
-            [{ "tag": "Color", "args": [{ "r": 1, "g": 1, "b": 1, "a": 1 }] }]
+            [{ "tag": "CurrentColor", "args": [] }]
           ]
         ]
       }
@@ -1347,7 +1517,9 @@
                       },
                       "fill": {
                         "tag": "Value",
-                        "args": [{ "tag": "ColorReference", "args": [0] }]
+                        "args": [
+                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
+                        ]
                       },
                       "fill-rule": {
                         "tag": "Value",
@@ -1371,7 +1543,7 @@
               "background": { "tag": "AutomaticColor", "args": [] },
               "foreground": { "tag": "AutomaticColor", "args": [] }
             },
-            [{ "tag": "Color", "args": [{ "r": 1, "g": 1, "b": 1, "a": 1 }] }]
+            [{ "tag": "CurrentColor", "args": [] }]
           ]
         ]
       }
@@ -1616,7 +1788,12 @@
                           }
                         ]
                       },
-                      "fill": { "tag": "Value", "args": [{ "tag": "ColorReference", "args": [0] }] }
+                      "fill": {
+                        "tag": "Value",
+                        "args": [
+                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
+                        ]
+                      }
                     },
                     "children": []
                   }
@@ -1635,7 +1812,7 @@
               "background": { "tag": "AutomaticColor", "args": [] },
               "foreground": { "tag": "AutomaticColor", "args": [] }
             },
-            [{ "tag": "Color", "args": [{ "r": 1, "g": 1, "b": 1, "a": 1 }] }]
+            [{ "tag": "CurrentColor", "args": [] }]
           ]
         ]
       }
@@ -1953,11 +2130,15 @@
                       },
                       "fill": {
                         "tag": "Value",
-                        "args": [{ "tag": "ColorReference", "args": [0] }]
+                        "args": [
+                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
+                        ]
                       },
                       "stroke": {
                         "tag": "Value",
-                        "args": [{ "tag": "ColorReference", "args": [0] }]
+                        "args": [
+                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
+                        ]
                       },
                       "stroke-width": {
                         "tag": "Value",
@@ -1981,7 +2162,7 @@
               "background": { "tag": "AutomaticColor", "args": [] },
               "foreground": { "tag": "AutomaticColor", "args": [] }
             },
-            [{ "tag": "Color", "args": [{ "r": 1, "g": 1, "b": 1, "a": 1 }] }]
+            [{ "tag": "CurrentColor", "args": [] }]
           ]
         ]
       }
@@ -2049,7 +2230,9 @@
                       },
                       "stroke": {
                         "tag": "Value",
-                        "args": [{ "tag": "ColorReference", "args": [0] }]
+                        "args": [
+                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
+                        ]
                       },
                       "stroke-linecap": {
                         "tag": "Value",
@@ -2085,7 +2268,7 @@
               "background": { "tag": "AutomaticColor", "args": [] },
               "foreground": { "tag": "AutomaticColor", "args": [] }
             },
-            [{ "tag": "Color", "args": [{ "r": 1, "g": 1, "b": 1, "a": 1 }] }]
+            [{ "tag": "CurrentColor", "args": [] }]
           ]
         ]
       }
