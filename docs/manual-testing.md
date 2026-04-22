@@ -61,3 +61,38 @@ Does not require the `navigator.connection` override.
 ### A11y smoke
 
 - VoiceOver / NVDA announces the spinner as _"Loading"_, the menu as _"Recording quality, menu, 3 items"_, and each row as e.g. _"720p Medium Quality, checked"_.
+
+---
+
+## Phase 4 — Recording
+
+The recorder pill in [`RecorderControlsComponent`](../src/app/features/recorder/components/recorder-controls/recorder-controls.component.ts) morphs between two visual modes based on `RecorderState.status`. `RecorderService.start(stream)` at [`core/recorder/`](../src/app/core/recorder/services/recorder.service.ts) wraps `MediaRecorder` with a 10 s `setTimeout` hard cap (constant [`RECORDING_HARD_CAP_MS`](../src/app/core/recorder/models/recorder.constants.ts)). Recordings are held in memory only — persistence lands in Phase 5.
+
+### Test matrix
+
+Run `npm start`, allow camera access, wait for preview at the auto-detected quality.
+
+| #   | Action                                                                               | Expected result                                                                                                                                                                                                          |
+| --- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Click the red record button                                                          | Pill morphs: blue stop button on left, progress bar advancing, timer advancing `0.0 s → 0.1 s → …`. Gear button becomes disabled. `RecorderState.status` is `'recording'`.                                               |
+| 2   | Wait 10 seconds (do not click stop)                                                  | Hard cap fires at ~`10.0 s`: progress reaches 100 %, pill reverts to idle (red circle). New entry appears in `VideosState.items` (inspect via Redux DevTools: `store.snapshot().videos.items`). Timer resets to `0.0 s`. |
+| 3   | Start a recording, click the blue stop button at ~`3 s`                              | Pill reverts immediately to idle. `VideosState.items` has one entry with `duration ≈ 3.0`. No banner.                                                                                                                    |
+| 4   | Record twice in a row                                                                | `VideosState.items.length === 2`, newest first (ordered by prepend; `recordedAt` desc).                                                                                                                                  |
+| 5   | Hide the tab during a recording, show it again after ~`5 s`                          | Progress visual jumps forward (RAF pauses while hidden). Real recording continues — wall-clock is authoritative, hard cap still fires at true 10 s.                                                                      |
+| 6   | Keyboard: Tab to the record button, press Space                                      | Recording starts. Space on the morphed stop button stops the recording. Focus stays on the button through the visual morph.                                                                                              |
+| 7   | Refresh the page mid-recording                                                       | State resets to idle; list is empty. Expected — no persistence until Phase 5.                                                                                                                                            |
+| 8   | Click the gear icon while recording                                                  | Button is disabled and does not open the menu. Prevents stream restart mid-record.                                                                                                                                       |
+| 9   | Block `MediaRecorder` globally (DevTools console: `delete MediaRecorder`) and reload | On clicking record, the promise rejects (`unsupported-mime-type` or `ReferenceError`); `RecorderState` resets to idle and an error banner shows _"Recording failed. Try again."_ (Recovery via reload.)                  |
+
+### Verifying the sidebar list
+
+The sidebar UI that consumes `VideosState.items` lands in Phase 6. For Phase 4, verify the state directly via Redux DevTools (install the extension, reload, check the `videos` slice) or temporarily add `{{ store.selectSnapshot('videos') | json }}` to a component template during local testing.
+
+### Codec / MIME type selection
+
+On Chromium the service picks `video/webm;codecs=vp9` (first in [`PREFERRED_MIME_TYPES`](../src/app/core/recorder/models/recorder.constants.ts)). Safari, which doesn't support VP9 in `MediaRecorder`, falls back to `video/webm` or `video/mp4`. The chosen type is stored on `SavedVideo.mimeType` for Phase 5 to feed `<source type>` at playback.
+
+### A11y smoke
+
+- The progress bar has `role="progressbar"` with `aria-valuemin/max/now`; the timer span is `aria-live="polite"`. Screen readers announce each timer tick — acceptable since it's a short-running event.
+- Focus traversal reaches the record button; the morphed stop button retains focus when the pill changes so Space continues to work.
