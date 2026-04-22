@@ -1,0 +1,29 @@
+@if ($status() === 'idle') {
+  <button
+    type="button"
+    class="controls__btn controls__btn--record"
+    aria-label="Start recording"
+    (click)="onStartClick()"
+  >
+    <span class="controls__btn-dot" aria-hidden="true"></span>
+  </button>
+} @else {
+  <button
+    type="button"
+    class="controls__btn controls__btn--stop"
+    aria-label="Stop recording"
+    (click)="onStopClick()"
+  >
+    <span class="controls__btn-square" aria-hidden="true"></span>
+  </button>
+  <div
+    class="controls__progress"
+    role="progressbar"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    [attr.aria-valuenow]="$progressPct()"
+  >
+    <div class="controls__progress-fill" [style.inline-size.%]="$progressPct()"></div>
+  </div>
+  <span class="controls__timer" aria-live="polite">{{ $timerText() }}</span>
+}
