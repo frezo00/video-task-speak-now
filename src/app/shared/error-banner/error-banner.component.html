@@ -1,0 +1,13 @@
+@for (item of $items(); track item.id) {
+  <div [class]="'error-banner__item error-banner__item--' + item.level">
+    <p class="error-banner__message">{{ item.message }}</p>
+    <button
+      type="button"
+      class="error-banner__close"
+      aria-label="Dismiss notification"
+      (click)="dismiss(item.id)"
+    >
+      <i appIcon="close" appIconSize="small" aria-hidden="true"></i>
+    </button>
+  </div>
+}

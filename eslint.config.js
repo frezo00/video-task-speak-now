@@ -42,10 +42,11 @@ module.exports = defineConfig([
       '@angular-eslint/use-lifecycle-interface': 'error',
       '@angular-eslint/component-class-suffix': 'error',
       '@angular-eslint/directive-class-suffix': 'error',
-      // Our `$name` → alias `name` pattern deliberately renames inputs so templates
-      // bind the clean name (see docs/conventions.md §2.5). Disable the rule that
-      // would otherwise flag every aliased `input()`.
+      // Our `$name` → alias `name` pattern deliberately renames inputs and outputs
+      // so templates bind the clean name (see docs/conventions.md §2.5). Disable
+      // the rules that would otherwise flag every aliased `input()` / `output()`.
       '@angular-eslint/no-input-rename': 'off',
+      '@angular-eslint/no-output-rename': 'off',
 
       // --- Restricted syntax:
       //     1. No TS enums — use `as const satisfies ...` (see docs/conventions.md §1.1)
@@ -91,6 +92,10 @@ module.exports = defineConfig([
           format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
         },
         { selector: 'import', format: ['camelCase', 'PascalCase'] },
+        // Allow `_` prefix on intentionally-unused parameters and locals (matches the
+        // `argsIgnorePattern: '^_'` exemption in `no-unused-vars`).
+        { selector: 'parameter', format: ['camelCase'], leadingUnderscore: 'allow' },
+        { selector: ['variable', 'parameter'], modifiers: ['unused'], format: null },
         // Allow `$prefix` (signals) and `suffix$` (observables) per docs/conventions.md.
         // Cannot *require* the prefix/suffix here because naming-convention's `types` filter
         // is limited to string/number/boolean/array/function — enforcement is code review.
@@ -111,6 +116,15 @@ module.exports = defineConfig([
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+
+      // --- NGXS interop
+      // NGXS groups action classes under a TS `namespace` (see docs/conventions.md §3),
+      // and exposes selectors as `static` methods on state classes that get passed by
+      // reference to `Store.selectSignal` / `Store.selectSnapshot`. Both patterns are
+      // safe (no `this`-binding, namespaces collapse to a single object) but trip the
+      // typescript-eslint defaults — relax both.
+      '@typescript-eslint/no-namespace': 'off',
+      '@typescript-eslint/unbound-method': ['error', { ignoreStatic: true }],
     },
   },
   {

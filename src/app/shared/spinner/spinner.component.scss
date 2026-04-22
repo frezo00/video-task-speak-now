@@ -1,0 +1,30 @@
+@use 'tokens' as tokens;
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  inline-size: tokens.$space-8;
+  block-size: tokens.$space-8;
+}
+
+.spinner__circle {
+  display: block;
+
+  inline-size: 100%;
+  block-size: 100%;
+  border: 3px solid rgb(255 255 255 / 20%);
+  border-block-start-color: tokens.$color-text-primary;
+  border-radius: 50%;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: spinner-rotate 900ms linear infinite;
+  }
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,4 +1,5 @@
 export const ICONS = [
+  'check',
   'close',
   'pause',
   'play',

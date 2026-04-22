@@ -1,0 +1,66 @@
+@use 'tokens' as tokens;
+
+:host {
+  pointer-events: none;
+
+  position: fixed;
+  z-index: 1000;
+  inset-block-start: tokens.$space-4;
+  inset-inline-end: tokens.$space-4;
+
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-2;
+
+  max-inline-size: 24rem;
+}
+
+.error-banner__item {
+  pointer-events: auto;
+
+  display: flex;
+  gap: tokens.$space-3;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  padding: tokens.$space-3 tokens.$space-4;
+  border-inline-start: 4px solid tokens.$color-accent-blue;
+  border-radius: tokens.$radius-sm;
+
+  color: tokens.$color-text-primary;
+
+  background-color: tokens.$color-bg-pill;
+  box-shadow: tokens.$shadow-dialog;
+
+  &--warning {
+    border-inline-start-color: tokens.$color-accent-red;
+  }
+
+  &--error {
+    border-inline-start-color: tokens.$color-text-danger;
+  }
+}
+
+.error-banner__message {
+  margin: 0;
+  font-size: tokens.$font-size-sm;
+  line-height: 1.4;
+}
+
+.error-banner__close {
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+
+  color: tokens.$color-text-primary;
+
+  background-color: transparent;
+}

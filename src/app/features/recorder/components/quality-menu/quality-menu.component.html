@@ -1,0 +1,15 @@
+@for (profile of tiers; track profile.tier) {
+  <button
+    type="button"
+    role="menuitemradio"
+    class="quality-menu__row"
+    [class.quality-menu__row--selected]="profile.tier === $selected()"
+    [attr.aria-checked]="profile.tier === $selected()"
+    (click)="select(profile.tier)"
+  >
+    <span class="quality-menu__label">{{ profile.label }}</span>
+    @if (profile.tier === $selected()) {
+      <i appIcon="check" appIconSize="small" class="quality-menu__check" aria-hidden="true"></i>
+    }
+  </button>
+}
