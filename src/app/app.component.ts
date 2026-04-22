@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { IconDirective } from './shared/icons';
+import { RecorderPageComponent } from '@features/recorder';
 
 @Component({
   selector: 'app-root',
-  imports: [IconDirective],
+  imports: [RecorderPageComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'app-shell',

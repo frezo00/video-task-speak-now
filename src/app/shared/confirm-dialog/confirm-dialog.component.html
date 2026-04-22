@@ -1,0 +1,22 @@
+<h2 id="confirm-dialog-title" class="dialog-panel__title">{{ data.title }}</h2>
+
+@for (line of data.body; track $index) {
+  <p class="dialog-panel__body">{{ line }}</p>
+}
+
+<div class="dialog-panel__actions">
+  <button
+    type="button"
+    class="dialog-panel__button dialog-panel__button--ghost"
+    (click)="dismiss()"
+  >
+    {{ data.dismissLabel }}
+  </button>
+  <button
+    type="button"
+    class="dialog-panel__button dialog-panel__button--primary"
+    (click)="confirm()"
+  >
+    {{ data.confirmLabel }}
+  </button>
+</div>

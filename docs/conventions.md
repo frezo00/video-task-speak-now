@@ -127,6 +127,47 @@ The only meaningful drawback to `#` is test ergonomics — you can't reach a `#`
 
 Enforced by `no-restricted-syntax` — any `private` modifier on a `PropertyDefinition`, `MethodDefinition`, or `TSParameterProperty` is a lint error.
 
+### 1.9 Import paths — aliases for cross-library, relative for intra-library
+
+`tsconfig.json` declares four path aliases that resolve against the `src/app/` tree:
+
+```jsonc
+"paths": {
+  "@app/*":       ["src/app/*"],
+  "@core/*":      ["src/app/core/*"],
+  "@features/*":  ["src/app/features/*"],
+  "@shared/*":    ["src/app/shared/*"],
+}
+```
+
+**Rule:**
+
+- **Cross-library imports → alias.** When one library reaches into another, import through the target's `index.ts` barrel using an alias. This keeps boundaries visible at the call site and avoids `../../../../` noise as the tree deepens.
+- **Intra-library imports → relative.** Inside a single `core/<domain>/` or `features/<name>/` library, use relative paths. Aliases for sibling files in the same library obscure the fact that the import stays inside the module boundary.
+
+```ts
+// good — cross-library through the barrel
+import { CameraService, DEFAULT_CAMERA_CONSTRAINTS } from '@core/camera';
+import { IconDirective } from '@shared/icons';
+import { RecorderPageComponent } from '@features/recorder';
+
+// good — intra-library stays relative
+// file: src/app/core/camera/services/camera.service.ts
+import { CameraError } from '../models/camera-error';
+import { classifyCameraError } from '../utils/classify-camera-error';
+
+// bad — reaching across libraries without the alias
+import { CameraService } from '../../../../core/camera';
+
+// bad — using the alias to import a sibling file inside the same library
+// (the import now looks cross-boundary when it isn't)
+import { VideoPreviewComponent } from '@features/recorder/components/video-preview/video-preview.component';
+```
+
+The `@app/*` alias is the escape hatch for imports that don't fit the `core`/`features`/`shared` split — prefer one of the narrower aliases when either fits.
+
+Not lint-enforced — code review.
+
 ---
 
 ## 2. Angular
