@@ -1,0 +1,125 @@
+@use '../styles/tokens' as tokens;
+
+:host {
+  display: flex;
+  gap: tokens.$space-10;
+  min-block-size: 100dvh;
+  padding: tokens.$space-10;
+}
+
+.stage {
+  position: relative;
+
+  overflow: hidden;
+  display: flex;
+  flex: 4 1 0;
+  align-items: center;
+  justify-content: center;
+
+  max-inline-size: 1500px;
+  padding: tokens.$space-4;
+  border-radius: tokens.$radius-md;
+
+  color: tokens.$color-text-primary;
+
+  background-color: tokens.$color-bg-translucent;
+
+  &__settings {
+    cursor: pointer;
+
+    position: absolute;
+    inset-block-end: tokens.$space-4;
+    inset-inline-start: tokens.$space-4;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: 5rem;
+    block-size: 5rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+
+    color: tokens.$color-text-primary;
+
+    background-color: tokens.$color-bg-translucent;
+    backdrop-filter: blur(12px);
+  }
+
+  &__pill {
+    position: absolute;
+    inset-block-end: tokens.$space-4;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: 20rem;
+    block-size: 5rem;
+    border-radius: tokens.$radius-full;
+
+    background-color: tokens.$color-bg-translucent;
+    backdrop-filter: blur(12px);
+  }
+
+  &__record {
+    cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: 3.75rem;
+    block-size: 3.75rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+
+    background-color: tokens.$color-bg-surface;
+
+    &-dot {
+      display: block;
+
+      inline-size: 1.75rem;
+      block-size: 1.75rem;
+      border-radius: 50%;
+
+      background-color: tokens.$color-accent-red;
+    }
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  max-inline-size: 300px;
+  padding: tokens.$space-4;
+  border-radius: tokens.$radius-md;
+
+  background-color: tokens.$color-bg-translucent;
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-1;
+    align-items: center;
+
+    text-align: center;
+
+    &-icon {
+      opacity: 0.8;
+    }
+
+    &-caption {
+      margin: 0;
+      opacity: 0.6;
+    }
+  }
+}

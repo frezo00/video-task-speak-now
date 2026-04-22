@@ -1,0 +1,10 @@
+dist
+.angular
+coverage
+package-lock.json
+public
+node_modules
+
+# Vendor-exported icomoon assets — re-exports shouldn't fight Prettier
+src/app/shared/icons/icomoon.css
+src/app/shared/icons/icomoon-selection.json

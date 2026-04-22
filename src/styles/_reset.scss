@@ -1,0 +1,43 @@
+@use './tokens' as tokens;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  block-size: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: tokens.$font-family-base;
+  font-size: tokens.$font-size-md;
+  line-height: 1.5;
+  color: tokens.$color-text-primary;
+
+  background: linear-gradient(180deg, #{tokens.$color-bg-main} 0%, black 100%);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:focus-visible {
+  outline: 2px solid tokens.$color-accent-blue;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* stylelint-disable declaration-no-important -- deliberate reduced-motion escape hatch */
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  /* stylelint-enable declaration-no-important */
+}

@@ -11,11 +11,15 @@ pnpm-debug.log*
 /out-tsc/
 /bazel-out/
 .angular/cache/
+.sass-cache/
 
 # IDE / OS
 .idea/
 .vscode/*
 !.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/mcp.json
 .DS_Store
 Thumbs.db
 
@@ -27,6 +31,7 @@ Thumbs.db
 # Test / coverage
 /coverage/
 *.lcov
+__screenshots__/
 
 # Misc
 *.log

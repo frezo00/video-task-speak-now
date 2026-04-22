@@ -1,6 +1,5 @@
 # Assignment — Bandwidth Check and Web Camera Quality Selector
 
-
 ## Overview
 
 Create a simple, responsive web application in Angular that evaluates the user's bandwidth, dynamically adjusts the quality of web camera recordings (low, medium, or high), and allows users to record short video snippets. All recordings must persist and remain accessible after refreshing or reopening the browser tab.

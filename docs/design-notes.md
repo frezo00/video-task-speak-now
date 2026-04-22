@@ -102,18 +102,18 @@ On load the top-left shows a tiny breadcrumb-style label ("start video recorder"
 
 The Figma file ships a UI-kit frame with the following atoms. Treat this as the authoritative inventory:
 
-| Atom | Variants | Notes |
-|---|---|---|
-| **Recorded video card** | default, hover (trash icon appears) | Thumbnail + date overlay + duration overlay. |
-| **Record button** | idle (small red circle in white disc), active ("pressed") | Both variants shown — same size, slightly darker red on active. |
-| **Stop button** | default (blue square in white disc), active | Mirrors record button. |
-| **Trash icon** | default, hover | Small stroke icon, darkens on hover. |
-| **Settings cog** | default, active | Dark circular button with gear. |
-| **Close (X) button** | default | Dark circular button with X. |
-| **Quality list row** | `360p (Low)`, `720p (Medium)`, `1080p (High)`; each: default / selected (checkmark) | All three shown; selected has a small green check on the right. |
-| **Recorder pill — idle** | — | Dark rounded bar with red record button centered. |
-| **Recorder pill — recording** | — | Stop button on left + progress bar + timer `3.1 s` on right. |
-| **Play / Pause buttons** | play, pause | Indigo filled circles with white icon. |
+| Atom                          | Variants                                                                            | Notes                                                           |
+| ----------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **Recorded video card**       | default, hover (trash icon appears)                                                 | Thumbnail + date overlay + duration overlay.                    |
+| **Record button**             | idle (small red circle in white disc), active ("pressed")                           | Both variants shown — same size, slightly darker red on active. |
+| **Stop button**               | default (blue square in white disc), active                                         | Mirrors record button.                                          |
+| **Trash icon**                | default, hover                                                                      | Small stroke icon, darkens on hover.                            |
+| **Settings cog**              | default, active                                                                     | Dark circular button with gear.                                 |
+| **Close (X) button**          | default                                                                             | Dark circular button with X.                                    |
+| **Quality list row**          | `360p (Low)`, `720p (Medium)`, `1080p (High)`; each: default / selected (checkmark) | All three shown; selected has a small green check on the right. |
+| **Recorder pill — idle**      | —                                                                                   | Dark rounded bar with red record button centered.               |
+| **Recorder pill — recording** | —                                                                                   | Stop button on left + progress bar + timer `3.1 s` on right.    |
+| **Play / Pause buttons**      | play, pause                                                                         | Indigo filled circles with white icon.                          |
 
 ---
 
@@ -125,30 +125,30 @@ Extracted from UI-kit observation (values approximate — calibrate in Phase 1 f
 
 ```scss
 // Backgrounds
-$bg-outer:     #EDEDED;       // light grey outside the main frame
-$bg-main:      #2A2B2D;       // dark main panel
-$bg-sidebar:   #1F2022;       // slightly deeper sidebar
-$bg-surface:   #FFFFFF;       // dialogs / playback modal
-$bg-pill:      #3A3B3D;       // recorder pill background
+$bg-outer: #ededed; // light grey outside the main frame
+$bg-main: #2a2b2d; // dark main panel
+$bg-sidebar: #1f2022; // slightly deeper sidebar
+$bg-surface: #ffffff; // dialogs / playback modal
+$bg-pill: #3a3b3d; // recorder pill background
 
 // Accents
-$accent-red:     #E53935;     // record button
-$accent-blue:    #2563EB;     // stop button (matches indigo family)
-$accent-indigo:  #4F46E5;     // play/pause circles
-$accent-green:   #22C55E;     // selected-quality checkmark
+$accent-red: #e53935; // record button
+$accent-blue: #2563eb; // stop button (matches indigo family)
+$accent-indigo: #4f46e5; // play/pause circles
+$accent-green: #22c55e; // selected-quality checkmark
 
 // Text
-$text-primary:   #FFFFFF;     // on dark surfaces
-$text-secondary: #B7B8BA;     // muted text, date/duration overlays
-$text-dark:      #1F1F20;     // on light surfaces
-$text-danger:    #E11D48;     // delete dialog heading + button
+$text-primary: #ffffff; // on dark surfaces
+$text-secondary: #b7b8ba; // muted text, date/duration overlays
+$text-dark: #1f1f20; // on light surfaces
+$text-danger: #e11d48; // delete dialog heading + button
 ```
 
 ### Typography
 
-- Sans-serif stack (system default fine): `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`.
+- Primary family: **Lato** (loaded from Google Fonts; weights 400 + 700). Fallback stack: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`.
 - Scale: 12 (caption / timer), 14 (body / list rows), 16 (dialog body), 18 (dialog headings).
-- Weights: 400 default, 500 for labels, 600 for dialog headings and dangerous action buttons.
+- Weights: 400 (normal) and 700 (bold). Bold is used for dialog headings and dangerous action buttons; everything else is normal. Expand the Google Fonts URL and the weight tokens together if a richer scale becomes needed.
 
 ### Spacing
 
