@@ -23,6 +23,7 @@ import {
 } from '@core/bandwidth';
 import { CameraError, CameraErrorKind, CameraService } from '@core/camera';
 import { ErrorBannerService } from '@core/error';
+import { Recording } from '@core/recorder';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -31,7 +32,8 @@ import {
 import { IconDirective } from '@shared/icons';
 import { SpinnerComponent, SPINNER_DEBOUNCE_MS } from '@shared/spinner';
 import { QualityMenuComponent } from '../../components/quality-menu/quality-menu.component';
-import { OverrideRollbackReason, Quality, QualityState } from '../../state';
+import { RecorderControlsComponent } from '../../components/recorder-controls/recorder-controls.component';
+import { OverrideRollbackReason, Quality, QualityState, RecorderState } from '../../state';
 import { VideoPreviewComponent } from '../../components/video-preview/video-preview.component';
 
 const CAMERA_ERROR_DIALOGS: Record<CameraErrorKind, ConfirmDialogData> = {
@@ -86,7 +88,7 @@ const QUALITY_MENU_POSITION: ConnectedPosition = {
 
 @Component({
   selector: 'app-recorder-page',
-  imports: [IconDirective, SpinnerComponent, VideoPreviewComponent],
+  imports: [IconDirective, RecorderControlsComponent, SpinnerComponent, VideoPreviewComponent],
   templateUrl: './recorder-page.component.html',
   styleUrl: './recorder-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -105,6 +107,8 @@ export class RecorderPageComponent implements OnInit {
   readonly $stream = this.#camera.$stream;
   readonly $bandwidthStatus = this.#store.selectSignal(BandwidthState.status);
   readonly $qualityTier = this.#store.selectSignal(QualityState.tier);
+  readonly $recorderStatus = this.#store.selectSignal(RecorderState.status);
+  readonly $recorderStartedAt = this.#store.selectSignal(RecorderState.startedAt);
 
   readonly #$showSpinner = signal<boolean>(false);
   readonly $showSpinner = this.#$showSpinner.asReadonly();
@@ -153,6 +157,14 @@ export class RecorderPageComponent implements OnInit {
       return;
     }
     this.#openQualityMenu();
+  }
+
+  onStartRecording(): void {
+    this.#store.dispatch(new Recording.Started());
+  }
+
+  onStopRecording(): void {
+    this.#store.dispatch(new Recording.StopRequested());
   }
 
   #openQualityMenu(): void {

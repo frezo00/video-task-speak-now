@@ -1,0 +1,86 @@
+@use 'tokens' as tokens;
+
+:host {
+  display: inline-flex;
+  gap: tokens.$space-3;
+  align-items: center;
+  justify-content: center;
+
+  min-inline-size: 20rem;
+  block-size: 5rem;
+  padding-inline: tokens.$space-4;
+  border-radius: tokens.$radius-full;
+
+  background-color: tokens.$color-bg-translucent;
+  backdrop-filter: blur(12px);
+}
+
+.controls {
+  &__btn {
+    cursor: pointer;
+
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: 3.75rem;
+    block-size: 3.75rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+
+    background-color: tokens.$color-bg-surface;
+  }
+
+  &__btn-dot {
+    display: block;
+
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border-radius: 50%;
+
+    background-color: tokens.$color-accent-red;
+  }
+
+  &__btn-square {
+    display: block;
+
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    border-radius: tokens.$radius-sm;
+
+    background-color: tokens.$color-accent-blue;
+  }
+
+  &__progress {
+    overflow: hidden;
+    flex: 1 1 auto;
+
+    block-size: 0.25rem;
+    border-radius: tokens.$radius-full;
+
+    background-color: rgb(255 255 255 / 20%);
+  }
+
+  &__progress-fill {
+    block-size: 100%;
+    border-radius: inherit;
+    background-color: tokens.$color-accent-blue;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: inline-size 80ms linear;
+    }
+  }
+
+  &__timer {
+    flex: 0 0 auto;
+
+    min-inline-size: 3rem;
+
+    font-size: tokens.$font-size-sm;
+    font-variant-numeric: tabular-nums;
+    color: tokens.$color-text-primary;
+    text-align: end;
+  }
+}

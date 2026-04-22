@@ -11,6 +11,7 @@
       [attr.aria-label]="$qualityMenuOpen() ? 'Close quality menu' : 'Quality settings'"
       aria-haspopup="menu"
       [attr.aria-expanded]="$qualityMenuOpen()"
+      [disabled]="$recorderStatus() !== 'idle'"
       (click)="toggleQualityMenu()"
     >
       <i
@@ -21,11 +22,13 @@
       ></i>
     </button>
 
-    <div class="stage__pill" role="toolbar" aria-label="Recording controls">
-      <button type="button" class="stage__record" aria-label="Start recording">
-        <span class="stage__record-dot" aria-hidden="true"></span>
-      </button>
-    </div>
+    <app-recorder-controls
+      class="stage__controls"
+      [status]="$recorderStatus()"
+      [startedAt]="$recorderStartedAt()"
+      (startRequested)="onStartRecording()"
+      (stopRequested)="onStopRecording()"
+    />
   }
 </main>
 
