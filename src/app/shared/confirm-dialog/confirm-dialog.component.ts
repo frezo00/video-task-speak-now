@@ -34,11 +34,12 @@ export interface ConfirmDialogData {
     class: 'dialog-panel',
     role: 'dialog',
     'aria-modal': 'true',
-    'aria-labelledby': 'confirm-dialog-title',
+    '[attr.aria-labelledby]': 'titleId',
   },
 })
 export class ConfirmDialogComponent {
   readonly data: ConfirmDialogData = inject<ConfirmDialogData>(DIALOG_DATA);
+  readonly titleId = `confirm-dialog-title-${crypto.randomUUID()}`;
   readonly #dialogRef = inject<DialogRef<DialogResult>>(DialogRef);
 
   confirm(): void {

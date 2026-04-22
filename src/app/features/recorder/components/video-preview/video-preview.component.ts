@@ -14,7 +14,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'video-preview',
-    '[class.video-preview--empty]': '!$stream()',
     'aria-label': 'Live camera preview',
   },
 })

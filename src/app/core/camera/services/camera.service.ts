@@ -22,6 +22,17 @@ export class CameraService {
 
   #openPromise: Promise<MediaStream> | null = null;
 
+  /**
+   * Opens a `MediaStream` for the given constraints and transitions the service
+   * from `idle`/`error` → `opening` → `live`. Rejects with a typed `CameraError`
+   * on failure; callers can branch on `CameraError.kind` without inspecting the
+   * underlying `DOMException`.
+   *
+   * Concurrent calls share a single in-flight request — while a call is pending,
+   * subsequent invocations return the same promise and **ignore the constraints
+   * they were passed**. Callers that need to switch constraints should `await`
+   * the current open (or call `closeStream()`) before issuing a new one.
+   */
   async openStream(constraints: MediaStreamConstraints): Promise<MediaStream> {
     if (this.#openPromise) {
       return this.#openPromise;
@@ -47,11 +58,7 @@ export class CameraService {
     const stream = this.#$stream();
     if (stream) {
       for (const track of stream.getTracks()) {
-        try {
-          track.stop();
-        } catch (err) {
-          console.warn('[camera] track.stop() failed', err);
-        }
+        track.stop();
       }
       this.#$stream.set(null);
     }

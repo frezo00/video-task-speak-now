@@ -1,4 +1,4 @@
-<h2 id="confirm-dialog-title" class="dialog-panel__title">{{ data.title }}</h2>
+<h2 [id]="titleId" class="dialog-panel__title">{{ data.title }}</h2>
 
 @for (line of data.body; track $index) {
   <p class="dialog-panel__body">{{ line }}</p>
