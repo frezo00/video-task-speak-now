@@ -70,6 +70,7 @@ From the [assignment brief](docs/assignment.md):
 - [`docs/task-breakdown.md`](docs/task-breakdown.md) — phase-based PR roadmap
 - [`docs/design-notes.md`](docs/design-notes.md) — per-Figma-screen descriptions + UI tokens
 - [`docs/persistence.md`](docs/persistence.md) — Dexie schema, IndexedDB strategy, edge cases
+- [`docs/manual-testing.md`](docs/manual-testing.md) — browser-only QA procedures (bandwidth throttling / URL blocking)
 
 ---
 

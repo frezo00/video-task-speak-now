@@ -61,6 +61,8 @@ Largest phase by scope — shipped as one PR with two commits.
 
 **End state:** On load the app measures bandwidth, applies the right resolution, user can override; failures fall back to Medium with a visible notice.
 
+Reproducing the bandwidth test matrix in a browser (DevTools throttling + URL blocking) requires a temporary override because `navigator.connection.downlink` is unaffected by DevTools throttling on Chromium. Procedure documented in [`manual-testing.md`](manual-testing.md#phase-3--bandwidth-detection--quality-selection).
+
 ---
 
 ## Phase 4 — Recording
