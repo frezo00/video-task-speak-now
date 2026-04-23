@@ -55,6 +55,8 @@
   class="sidebar"
   aria-label="Saved videos"
   tabindex="-1"
+  [attr.role]="$isMobile() ? 'dialog' : null"
+  [attr.aria-modal]="$drawerActive() ? 'true' : null"
   [class.sidebar--drawer]="$isMobile()"
   [class.sidebar--drawer-open]="$drawerActive()"
   [attr.inert]="$isMobile() && !$drawerOpen() ? '' : null"
