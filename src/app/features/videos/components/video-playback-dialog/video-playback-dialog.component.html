@@ -1,0 +1,43 @@
+<button type="button" class="video-playback-dialog__close" aria-label="Close" (click)="close()">
+  <i appIcon="close" appIconSize="medium" aria-hidden="true"></i>
+</button>
+
+<h2 [id]="titleId" class="dialog-panel__title video-playback-dialog__title">
+  {{ $titleLabel() }}
+</h2>
+
+@if ($src(); as src) {
+  <video
+    #player
+    class="video-playback-dialog__video"
+    autoplay
+    playsinline
+    [src]="src"
+    [attr.data-mime]="data.video.mimeType"
+    (loadedmetadata)="onLoadedMetadata($event)"
+    (timeupdate)="onTimeUpdate($event)"
+    (play)="onPlay()"
+    (pause)="onPause()"
+  ></video>
+}
+
+<div class="video-playback-dialog__controls">
+  <button
+    type="button"
+    class="video-playback-dialog__toggle"
+    [attr.aria-label]="$isPlaying() ? 'Pause' : 'Play'"
+    (click)="togglePlayback()"
+  >
+    <i [appIcon]="$isPlaying() ? 'pause' : 'play'" appIconSize="medium" aria-hidden="true"></i>
+  </button>
+  <input
+    type="range"
+    class="video-playback-dialog__scrubber"
+    min="0"
+    max="100"
+    step="0.1"
+    aria-label="Seek"
+    [value]="$progress()"
+    (input)="onScrub($event)"
+  />
+</div>

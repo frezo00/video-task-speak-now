@@ -1,0 +1,90 @@
+@use 'tokens' as tokens;
+@use 'mixins' as mx;
+
+:host.dialog-panel--playback {
+  position: relative;
+  inline-size: min(40rem, 100%);
+  padding: tokens.$space-6;
+}
+
+.video-playback-dialog {
+  &__close {
+    cursor: pointer;
+
+    position: absolute;
+    inset-block-start: tokens.$space-3;
+    inset-inline-end: tokens.$space-3;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+
+    color: tokens.$color-text-primary;
+
+    background-color: tokens.$color-bg-pill;
+
+    &:focus-visible {
+      @include mx.focus-ring;
+    }
+  }
+
+  &__title {
+    margin-inline-end: tokens.$space-10;
+  }
+
+  &__video {
+    display: block;
+
+    aspect-ratio: 16 / 9;
+    inline-size: 100%;
+    margin-block-end: tokens.$space-4;
+    border-radius: tokens.$radius-sm;
+
+    background-color: #000;
+  }
+
+  &__controls {
+    display: flex;
+    gap: tokens.$space-3;
+    align-items: center;
+  }
+
+  &__toggle {
+    cursor: pointer;
+
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+
+    color: tokens.$color-text-primary;
+
+    background-color: tokens.$color-accent-indigo;
+
+    &:focus-visible {
+      @include mx.focus-ring;
+    }
+  }
+
+  &__scrubber {
+    flex: 1 1 auto;
+    accent-color: tokens.$color-accent-indigo;
+
+    &:focus-visible {
+      outline: 2px solid tokens.$color-accent-indigo;
+      outline-offset: 4px;
+    }
+  }
+}
