@@ -6,6 +6,7 @@ export interface FirstFrame {
 
 const JPEG_QUALITY = 0.75;
 const MAX_THUMBNAIL_WIDTH = 320;
+const DECODE_TIMEOUT_MS = 5000;
 
 export function extractFirstFrame(blob: Blob, signal?: AbortSignal): Promise<FirstFrame> {
   return new Promise<FirstFrame>((resolve, reject) => {
@@ -32,6 +33,7 @@ export function extractFirstFrame(blob: Blob, signal?: AbortSignal): Promise<Fir
 
     let settled = false;
     const cleanup = (): void => {
+      clearTimeout(timeoutId);
       video.removeEventListener('loadeddata', onLoadedData);
       video.removeEventListener('seeked', onSeeked);
       video.removeEventListener('error', onError);
@@ -55,6 +57,14 @@ export function extractFirstFrame(blob: Blob, signal?: AbortSignal): Promise<Fir
       cleanup();
       reject(toError(err));
     };
+
+    // Some browsers never emit `loadeddata`/`seeked` for pathological blobs.
+    // Cap the wait so the thumbnail falls back to the video icon instead of
+    // hanging the card in `loading` forever.
+    const timeoutId = setTimeout(
+      () => fail(new Error('Thumbnail decode timed out')),
+      DECODE_TIMEOUT_MS,
+    );
 
     const onAbort = (): void => {
       fail(abortError());
