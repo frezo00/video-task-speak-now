@@ -18,4 +18,22 @@ export namespace Videos {
     static readonly type = '[Videos] Save Failed';
     constructor(readonly error: unknown) {}
   }
+
+  export class DeleteRequested {
+    static readonly type = '[Videos] Delete Requested';
+    constructor(readonly id: string) {}
+  }
+
+  export class Deleted {
+    static readonly type = '[Videos] Deleted';
+    constructor(readonly id: string) {}
+  }
+
+  export class DeleteFailed {
+    static readonly type = '[Videos] Delete Failed';
+    constructor(
+      readonly id: string,
+      readonly error: unknown,
+    ) {}
+  }
 }

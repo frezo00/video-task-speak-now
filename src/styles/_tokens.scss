@@ -3,6 +3,7 @@
   --color-bg-sidebar: #1f2022;
   --color-bg-surface: #fff;
   --color-bg-translucent: rgb(255 255 255 / 6%);
+  --color-bg-scrim: rgb(0 0 0 / 60%);
   --color-bg-pill: #3a3b3d;
   --color-progress-track: rgb(255 255 255 / 20%);
   --color-accent-red: #e53935;
@@ -38,6 +39,7 @@ $color-bg-main: var(--color-bg-main);
 $color-bg-sidebar: var(--color-bg-sidebar);
 $color-bg-surface: var(--color-bg-surface);
 $color-bg-translucent: var(--color-bg-translucent);
+$color-bg-scrim: var(--color-bg-scrim);
 $color-bg-pill: var(--color-bg-pill);
 $color-progress-track: var(--color-progress-track);
 $color-accent-red: var(--color-accent-red);

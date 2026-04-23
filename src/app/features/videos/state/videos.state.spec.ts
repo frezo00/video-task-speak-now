@@ -186,4 +186,87 @@ describe('VideosState', () => {
       expect(banner.$items()).toHaveLength(0);
     });
   });
+
+  describe('on Videos.DeleteRequested', () => {
+    async function seed(store: Store, ...ids: readonly string[]): Promise<readonly SavedVideo[]> {
+      const records: readonly SavedVideo[] = ids.map((id, index) => ({
+        id,
+        blob: makeBlob(id),
+        mimeType: 'video/webm',
+        duration: 1000,
+        recordedAt: new Date(Date.UTC(2026, 3, index + 1)),
+        resolution: '720p',
+      }));
+      await firstValueFrom(store.dispatch(new Videos.Hydrated(records, 0)));
+      return records;
+    }
+
+    it('calls storage.deleteById with the id and removes the item on success', async () => {
+      const { store, storage } = setup();
+      await seed(store, 'keep-1', 'drop-me', 'keep-2');
+
+      await firstValueFrom(store.dispatch(new Videos.DeleteRequested('drop-me')));
+
+      expect(storage.deleteById).toHaveBeenCalledTimes(1);
+      expect(storage.deleteById).toHaveBeenCalledWith('drop-me');
+      const items = store.selectSnapshot(VideosState.items);
+      expect(items.map((i) => i.id)).toEqual(['keep-1', 'keep-2']);
+    });
+
+    it('dispatches Videos.Deleted with the id after a successful delete', async () => {
+      const { store, actions$ } = setup();
+      await seed(store, 'only');
+      const deleted$ = firstValueFrom(actions$.pipe(ofActionDispatched(Videos.Deleted), take(1)));
+
+      await firstValueFrom(store.dispatch(new Videos.DeleteRequested('only')));
+
+      const action = await deleted$;
+      expect(action.id).toBe('only');
+    });
+
+    it('dispatches Videos.DeleteFailed and leaves state untouched when deleteById rejects', async () => {
+      const err = new StorageError(StorageErrorKind.Unknown, 'boom');
+      const { store, actions$, storage } = setup();
+      storage.deleteById.mockRejectedValueOnce(err);
+      const records = await seed(store, 'keep', 'drop');
+      const failed$ = firstValueFrom(
+        actions$.pipe(ofActionDispatched(Videos.DeleteFailed), take(1)),
+      );
+
+      await firstValueFrom(store.dispatch(new Videos.DeleteRequested('drop')));
+
+      const action = await failed$;
+      expect(action.id).toBe('drop');
+      expect(action.error).toBe(err);
+      const items = store.selectSnapshot(VideosState.items);
+      expect(items.map((i) => i.id)).toEqual(records.map((r) => r.id));
+    });
+
+    it('Videos.DeleteFailed pushes an error banner with the delete-context fallback copy', async () => {
+      const err = new StorageError(StorageErrorKind.Unknown, 'boom');
+      const { store, banner, storage } = setup();
+      storage.deleteById.mockRejectedValueOnce(err);
+      await seed(store, 'drop');
+
+      await firstValueFrom(store.dispatch(new Videos.DeleteRequested('drop')));
+
+      const items = banner.$items();
+      expect(items).toHaveLength(1);
+      expect(items[0]?.level).toBe('error');
+      expect(items[0]?.message).toBe(storageErrorMessage(err, "Couldn't delete the video."));
+      // Sanity: delete-context copy differs from the default save-context copy.
+      expect(items[0]?.message).not.toBe(storageErrorMessage(err));
+    });
+
+    it('uses the fixed quota-exceeded copy regardless of context', async () => {
+      const err = new StorageError(StorageErrorKind.QuotaExceeded, 'full');
+      const { store, banner, storage } = setup();
+      storage.deleteById.mockRejectedValueOnce(err);
+      await seed(store, 'drop');
+
+      await firstValueFrom(store.dispatch(new Videos.DeleteRequested('drop')));
+
+      expect(banner.$items()[0]?.message).toBe(storageErrorMessage(err));
+    });
+  });
 });

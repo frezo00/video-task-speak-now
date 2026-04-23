@@ -1,0 +1,60 @@
+@use 'tokens' as tokens;
+
+:host {
+  position: relative;
+
+  overflow: hidden;
+  display: block;
+
+  aspect-ratio: 16 / 9;
+  inline-size: 100%;
+  border-radius: tokens.$radius-sm;
+
+  background-color: tokens.$color-bg-pill;
+}
+
+// Overlay sits above the <img> but below sibling list-item overlays (date,
+// duration, trash). Default state is a bottom gradient so the date/duration
+// labels stay readable against any frame. The parent list item swaps it for a
+// solid scrim on hover/focus via `--thumbnail-overlay` — this keeps the swap
+// logic in the component that owns hover state.
+:host::after {
+  pointer-events: none;
+  content: '';
+
+  position: absolute;
+  inset: 0;
+
+  background: var(
+    --thumbnail-overlay,
+    linear-gradient(180deg, rgb(0 0 0 / 0%) 50%, rgb(0 0 0 / 70%) 100%)
+  );
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background 120ms ease;
+  }
+}
+
+.video-thumbnail {
+  &__img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  &__placeholder {
+    inline-size: 100%;
+    block-size: 100%;
+    background-color: tokens.$color-bg-pill;
+  }
+
+  &__fallback {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    translate: -50% -50%;
+
+    color: tokens.$color-text-secondary;
+  }
+}

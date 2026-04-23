@@ -126,3 +126,34 @@ Run `npm start`, allow camera access, wait for preview.
 
 - Banners from `ErrorBannerService` inherit the Phase 1–3 a11y posture (live region on the banner container; each push is announced once).
 - Nothing new is focusable in Phase 5 — list / playback / delete UI lands in Phase 6.
+
+---
+
+## Phase 6 — Saved videos UI (list, playback, delete)
+
+[`VideosListComponent`](../src/app/features/videos/components/videos-list/videos-list.component.ts) reads `VideosState.items` and owns the empty/populated split. Thumbnails are generated on demand by [`extractFirstFrame`](../src/app/features/videos/utils/extract-first-frame.ts) from the stored `Blob` — no data URL is cached to Dexie. Playback lives in a CDK Dialog that creates a blob URL in its constructor and revokes it via `DestroyRef`. Delete uses a dedicated `alertdialog`-role confirmation with Cancel focused first.
+
+### Test matrix
+
+Run `npm start`, allow camera access, wait for preview.
+
+| #   | Action                                                                   | Expected result                                                                                                                                                                                                                                                     |
+| --- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Record three short clips (stop at varying times)                         | Sidebar populates with three cards, newest first. Each shows a thumbnail, `DD.MM.YYYY HH:mm` bottom-left, and `Ns` duration bottom-right.                                                                                                                           |
+| 2   | Hover a card                                                             | Trash button fades in at the top-right within ~120 ms. Tabbing onto the card also reveals the trash button (`:focus-within`).                                                                                                                                       |
+| 3   | Click a thumbnail                                                        | Playback dialog opens centered, autoplaying. Scrubber reflects `currentTime / duration`. Play/pause button toggles icon + `<video>` state.                                                                                                                          |
+| 4   | Press Escape in the playback dialog                                      | Dialog closes; focus returns to the originating card (CDK `restoreFocus`). `<video>` blob URL is revoked — check DevTools → Memory → Heap Snapshot → search `blob:` before and after; the URL should be gone.                                                       |
+| 5   | Click the trash icon on a card                                           | Delete dialog opens with `role="alertdialog"`. Cancel is focused first. Esc or Cancel dismisses without removing anything.                                                                                                                                          |
+| 6   | Click Delete in the dialog                                               | Dialog closes; card disappears from sidebar; focus lands on the next card (not `<body>`). DevTools → Application → IndexedDB → `video-task-speak-now` → `videos` shows the row gone.                                                                                |
+| 7   | Delete the last remaining card                                           | Sidebar reverts to the empty state (camera icon + caption). Focus falls to `<body>`; keyboard users need to Tab back into the page — acceptable edge case.                                                                                                          |
+| 8   | Refresh the tab                                                          | `Videos.Hydrated` repopulates the list. Thumbnails re-extract (placeholder flashes briefly, then image).                                                                                                                                                            |
+| 9   | Open in Safari, record, observe the thumbnail                            | Thumbnail paints within ~300 ms. The `<video>` in `extractFirstFrame` is attached off-screen (`position: fixed; inset: -9999px`) — Safari refuses to decode a detached `<video>` inside a `DocumentFragment`. If this regresses, the fallback `video` icon renders. |
+| 10  | DevTools → Application → Storage → Quota override → 1 MB; attempt delete | Quota is a write-path constraint; deletes are reads+tombstones and should still succeed. If `Videos.DeleteFailed` does dispatch (simulate with `window.indexedDB` offline), a red banner shows _"Couldn't delete the video."_ and the card stays.                   |
+| 11  | Open two tabs, delete the same video in each                             | First tab removes the row cleanly. Second tab's `Videos.DeleteRequested` resolves (Dexie is idempotent on missing rows) and patches state anyway. No banner in either tab. See the code comment on `VideosState.onDeleteRequested`.                                 |
+
+### A11y smoke
+
+- Keyboard-only flow: Tab reaches each card (role `button`, tabindex `0`). Enter or Space opens playback (Space's default scroll is prevented). Shift+Tab reaches the trash button when the card has focus-within.
+- Playback dialog has `role="dialog"`, `aria-modal="true"`, `aria-labelledby` pointing at the date heading. CDK traps focus; Tab cycles Close → Play/Pause → Scrubber.
+- Delete dialog has `role="alertdialog"` (interrupts the user for a destructive action), `aria-labelledby` + `aria-describedby` for the heading and body copy. Cancel is DOM-first so CDK's autofocus lands on the safe option.
+- Screen readers announce the trash button as e.g. _"Delete recording from 23.04.2026 11:42, button"_; each card as _"Play recording from …, button"_.

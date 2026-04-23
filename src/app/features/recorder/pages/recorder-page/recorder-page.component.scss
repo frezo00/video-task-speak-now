@@ -3,7 +3,7 @@
 :host {
   display: flex;
   gap: tokens.$space-10;
-  min-block-size: 100dvh;
+  block-size: 100dvh;
   padding: tokens.$space-10;
 }
 
@@ -42,7 +42,7 @@
 
     color: tokens.$color-text-primary;
 
-    background-color: tokens.$color-bg-translucent;
+    background-color: tokens.$color-bg-scrim;
     backdrop-filter: blur(12px);
   }
 
@@ -58,31 +58,23 @@
   display: flex;
   flex: 1 1 0;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
 
   min-inline-size: 300px;
   max-inline-size: 300px;
-  padding: tokens.$space-4;
+
+  // Inline padding only. Block padding lives on the scrollable list child so
+  // first/last cards have breathing room without a dead band above/below the
+  // scroll viewport (which would otherwise visually clip cards mid-scroll).
+  padding-inline: tokens.$space-4;
   border-radius: tokens.$radius-md;
 
   background-color: tokens.$color-bg-translucent;
 
-  &__empty {
-    display: flex;
-    flex-direction: column;
-    gap: tokens.$space-1;
-    align-items: center;
-
-    text-align: center;
-
-    &-icon {
-      opacity: 0.8;
-    }
-
-    &-caption {
-      margin: 0;
-      opacity: 0.6;
-    }
+  &__list {
+    // `min-block-size: 0` overrides flex's default `auto` min-size so the list
+    // can shrink below its content height and its own `overflow-y: auto` kicks
+    // in. Without this, the list would push the sidebar past viewport height.
+    flex: 1 1 auto;
+    min-block-size: 0;
   }
 }

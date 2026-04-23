@@ -1,6 +1,7 @@
 export const ICONS = [
   'check',
   'close',
+  'exclamation',
   'pause',
   'play',
   'settings',
