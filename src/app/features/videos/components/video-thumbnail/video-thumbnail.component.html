@@ -1,0 +1,8 @@
+@if ($state() === 'ready' && $dataUrl(); as src) {
+  <!-- eslint-disable-next-line @angular-eslint/template/prefer-ngsrc -->
+  <img [src]="src" [alt]="$alt()" class="video-thumbnail__img" />
+} @else if ($state() === 'loading') {
+  <div class="video-thumbnail__placeholder" aria-hidden="true"></div>
+} @else {
+  <i appIcon="video" appIconSize="large" class="video-thumbnail__fallback" aria-hidden="true"></i>
+}
