@@ -12,6 +12,7 @@ import {
   RecordingErrorKind,
   type RecordingResult,
 } from '@core/recorder';
+import { VideoStorageService, type SavedVideo } from '@core/storage';
 import { VideosState } from '@features/videos';
 import { QualityState } from './quality.state';
 import { RecorderState } from './recorder.state';
@@ -45,11 +46,19 @@ function setup(options: {
   const camera: CameraServiceStub = {
     $stream: signal<MediaStream | null>(options.stream ?? null),
   };
+  const storage = {
+    save: vi.fn<(record: SavedVideo) => Promise<SavedVideo>>((record) => Promise.resolve(record)),
+    listAll: vi
+      .fn<() => Promise<{ items: readonly SavedVideo[]; skippedCount: number }>>()
+      .mockResolvedValue({ items: [], skippedCount: 0 }),
+    deleteById: vi.fn<(id: string) => Promise<void>>().mockResolvedValue(undefined),
+  };
   TestBed.configureTestingModule({
     providers: [
       provideStore([RecorderState, VideosState, QualityState]),
       { provide: RecorderService, useValue: recorder },
       { provide: CameraService, useValue: camera },
+      { provide: VideoStorageService, useValue: storage },
     ],
   });
   return {
