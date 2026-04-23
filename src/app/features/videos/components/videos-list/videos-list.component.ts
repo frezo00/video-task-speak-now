@@ -12,14 +12,14 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Store } from '@ngxs/store';
 import type { SavedVideo } from '@core/storage';
+import {
+  ConfirmDialogComponent,
+  type ConfirmDialogData,
+  type DialogResult,
+} from '@shared/confirm-dialog';
 import { IconDirective } from '@shared/icons';
 import { Videos } from '../../state/videos.actions';
 import { VideosState } from '../../state/videos.state';
-import {
-  DeleteConfirmDialogComponent,
-  type DeleteConfirmDialogData,
-  type DeleteConfirmResult,
-} from '../delete-confirm-dialog/delete-confirm-dialog.component';
 import {
   VideoPlaybackDialogComponent,
   type VideoPlaybackDialogData,
@@ -66,15 +66,19 @@ export class VideosListComponent {
   }
 
   onDelete(video: SavedVideo): void {
-    const ref = this.#dialog.open<DeleteConfirmResult, DeleteConfirmDialogData>(
-      DeleteConfirmDialogComponent,
-      {
-        data: { video },
-        autoFocus: 'first-tabbable',
-        restoreFocus: true,
-        ariaModal: true,
+    const ref = this.#dialog.open<DialogResult, ConfirmDialogData>(ConfirmDialogComponent, {
+      data: {
+        type: 'danger',
+        icon: 'exclamation',
+        title: 'Delete this video?',
+        body: 'Are you sure you want to delete this video? This action cannot be undone.',
+        confirmLabel: 'Delete',
+        dismissLabel: 'Cancel',
       },
-    );
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
+      ariaModal: true,
+    });
     ref.closed.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((result) => {
       if (result === 'confirm') {
         const indexBefore = this.$videos().findIndex((v) => v.id === video.id);

@@ -1,7 +1,11 @@
+@if (data.icon; as icon) {
+  <i [appIcon]="icon" appIconSize="xlarge" class="dialog-panel__icon" aria-hidden="true"></i>
+}
+
 <h2 [id]="titleId" class="dialog-panel__title">{{ data.title }}</h2>
 
-@for (line of data.body; track $index) {
-  <p class="dialog-panel__body">{{ line }}</p>
+@if (data.body) {
+  <p [id]="bodyId" class="dialog-panel__body">{{ data.body }}</p>
 }
 
 <div class="dialog-panel__actions">
@@ -14,7 +18,9 @@
   </button>
   <button
     type="button"
-    class="dialog-panel__button dialog-panel__button--primary"
+    class="dialog-panel__button"
+    [class.dialog-panel__button--primary]="!isDanger"
+    [class.dialog-panel__button--danger]="isDanger"
     (click)="confirm()"
   >
     {{ data.confirmLabel }}

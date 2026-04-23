@@ -1,4 +1,5 @@
 @use './tokens' as tokens;
+@use './mixins' as mx;
 
 .dialog-panel {
   display: block;
@@ -13,6 +14,11 @@
   background-color: tokens.$color-bg-surface;
   box-shadow: tokens.$shadow-dialog;
 
+  &__icon {
+    display: block;
+    margin-block-end: tokens.$space-3;
+  }
+
   &__title {
     margin: 0 0 tokens.$space-3;
     font-size: tokens.$font-size-lg;
@@ -23,6 +29,7 @@
     margin: 0 0 tokens.$space-3;
     font-size: tokens.$font-size-md;
     line-height: 1.5;
+    white-space: pre-line;
   }
 
   &__actions {
@@ -52,6 +59,25 @@
     &--ghost {
       color: tokens.$color-text-dark;
       background-color: transparent;
+    }
+  }
+
+  &--danger {
+    .dialog-panel__icon {
+      color: tokens.$color-accent-red;
+    }
+
+    .dialog-panel__button--danger {
+      color: tokens.$color-text-primary;
+      background-color: tokens.$color-accent-red;
+
+      &:focus-visible {
+        @include mx.focus-ring(tokens.$color-accent-red);
+      }
+    }
+
+    .dialog-panel__button--ghost:focus-visible {
+      @include mx.focus-ring;
     }
   }
 }

@@ -40,40 +40,37 @@ import { VideoPreviewComponent } from '../../components/video-preview/video-prev
 const CAMERA_ERROR_DIALOGS: Record<CameraErrorKind, ConfirmDialogData> = {
   [CameraErrorKind.PermissionDenied]: {
     title: 'Camera access denied',
-    body: [
-      'This app needs your camera to record videos, but access was blocked.',
+    body:
+      'This app needs your camera to record videos, but access was blocked.\n\n' +
       "Open your browser's site settings, allow camera access for this page, then retry.",
-    ],
     confirmLabel: 'Retry',
     dismissLabel: 'Dismiss',
   },
   [CameraErrorKind.DeviceNotFound]: {
     title: 'No camera detected',
-    body: ["We couldn't find a camera connected to this device.", 'Connect a webcam, then retry.'],
+    body: "We couldn't find a camera connected to this device.\n\nConnect a webcam, then retry.",
     confirmLabel: 'Retry',
     dismissLabel: 'Dismiss',
   },
   [CameraErrorKind.Overconstrained]: {
     title: 'Resolution not supported',
-    body: [
-      'Your camera does not support the requested resolution.',
+    body:
+      'Your camera does not support the requested resolution.\n\n' +
       'Retry to try a compatible configuration.',
-    ],
     confirmLabel: 'Retry',
     dismissLabel: 'Dismiss',
   },
   [CameraErrorKind.InUse]: {
     title: 'Camera in use',
-    body: ['The camera is being used by another application.', 'Close the other app, then retry.'],
+    body: 'The camera is being used by another application.\n\nClose the other app, then retry.',
     confirmLabel: 'Retry',
     dismissLabel: 'Dismiss',
   },
   [CameraErrorKind.Unknown]: {
     title: "Couldn't open the camera",
-    body: [
-      'Something went wrong while opening the camera.',
+    body:
+      'Something went wrong while opening the camera.\n\n' +
       'Retry — if the problem persists, reload the page.',
-    ],
     confirmLabel: 'Retry',
     dismissLabel: 'Dismiss',
   },
