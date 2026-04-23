@@ -1,0 +1,25 @@
+@use 'tokens' as tokens;
+@use 'mixins' as mx;
+
+.delete-confirm-dialog {
+  &__icon {
+    display: block;
+    margin-block-end: tokens.$space-3;
+    color: tokens.$color-accent-red;
+  }
+}
+
+:host.dialog-panel--danger {
+  .dialog-panel__button--danger {
+    color: tokens.$color-text-primary;
+    background-color: tokens.$color-accent-red;
+
+    &:focus-visible {
+      @include mx.focus-ring(tokens.$color-accent-red);
+    }
+  }
+
+  .dialog-panel__button--ghost:focus-visible {
+    @include mx.focus-ring;
+  }
+}

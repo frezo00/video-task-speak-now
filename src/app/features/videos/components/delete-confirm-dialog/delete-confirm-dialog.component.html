@@ -1,0 +1,43 @@
+<svg
+  class="delete-confirm-dialog__icon"
+  viewBox="0 0 24 24"
+  width="40"
+  height="40"
+  aria-hidden="true"
+  focusable="false"
+>
+  <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" />
+  <line
+    x1="12"
+    y1="7"
+    x2="12"
+    y2="13"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+  <circle cx="12" cy="16.5" r="1.25" fill="currentColor" />
+</svg>
+
+<h2 [id]="titleId" class="dialog-panel__title">Delete this video?</h2>
+
+<p [id]="bodyId" class="dialog-panel__body">
+  Are you sure you want to delete this video? This action cannot be undone.
+</p>
+
+<div class="dialog-panel__actions">
+  <button
+    type="button"
+    class="dialog-panel__button dialog-panel__button--ghost"
+    (click)="dismiss()"
+  >
+    Cancel
+  </button>
+  <button
+    type="button"
+    class="dialog-panel__button dialog-panel__button--danger"
+    (click)="confirm()"
+  >
+    Delete
+  </button>
+</div>
