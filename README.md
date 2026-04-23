@@ -62,6 +62,25 @@ From the [assignment brief](docs/assignment.md):
 
 ---
 
+## Skills demonstrated
+
+Concrete pointers for code review — each skill maps to the file or decision where it's exercised.
+
+| Skill                                      | Evidence in this repo                                                                                                                                                                     |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Angular 21** (zoneless, signals, OnPush) | `src/app/**` — standalone components, OnPush throughout, `$`-prefixed signals per [`docs/conventions.md`](docs/conventions.md)                                                            |
+| **TypeScript** (strict, no `any`)          | Strict `tsconfig`, `unknown` + narrowing, no non-null assertions, ECMAScript private fields (`#x`)                                                                                        |
+| **WebRTC — `getUserMedia`**                | [`src/app/core/camera/services/camera.service.ts`](src/app/core/camera/services/camera.service.ts) — single `MediaStream` lifecycle + classified errors                                   |
+| **WebRTC — `MediaRecorder`**               | [`src/app/core/recorder/services/recorder.service.ts`](src/app/core/recorder/services/recorder.service.ts) — per-browser mime negotiation, 10 s hard cap with RAF + `setTimeout` fallback |
+| **NGXS**                                   | [`src/app/core/bandwidth/state/`](src/app/core/bandwidth/state/), [`src/app/core/storage/`](src/app/core/storage/) — bandwidth + recordings as cross-cutting state                        |
+| **RxJS**                                   | [`src/app/core/bandwidth/services/bandwidth.service.ts`](src/app/core/bandwidth/services/bandwidth.service.ts) — timed-download fallback; `$` suffix convention on observables            |
+| **Responsive design**                      | `for-mobile` mixin in [`src/styles/_mixins.scss`](src/styles/_mixins.scss); mobile bottom drawer (screenshot 08)                                                                          |
+| **Cross-browser handling**                 | Safari thumbnail workaround + Chromium-only `navigator.connection` fallback — see _Challenges & notes_ below                                                                              |
+| **Performance**                            | Zoneless change detection, OnPush, `APP_INITIALIZER`-hydrated state, deferred first-frame extraction                                                                                      |
+| **Code quality / version control**         | Conventional Commits, one-concern-per-commit history, Husky + lint-staged, `commitlint`, `lint` / `typecheck` / `stylelint` gates                                                         |
+
+---
+
 ## Docs index
 
 - [`docs/assignment.md`](docs/assignment.md) — clean transcription of the brief
