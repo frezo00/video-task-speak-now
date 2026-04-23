@@ -1,0 +1,14 @@
+@if ($videos().length === 0) {
+  <div class="videos-list__empty">
+    <i appIcon="video" appIconSize="xlarge" class="videos-list__empty-icon" aria-hidden="true"></i>
+    <p class="videos-list__empty-caption">There are no recorded videos yet.</p>
+  </div>
+} @else {
+  @for (video of $videos(); track video.id) {
+    <app-videos-list-item
+      [video]="video"
+      (playRequested)="onPlay($event)"
+      (deleteRequested)="onDelete($event)"
+    />
+  }
+}

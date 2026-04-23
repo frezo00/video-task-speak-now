@@ -33,10 +33,5 @@
 </main>
 
 <aside class="sidebar" aria-label="Saved videos">
-  @if (!$showSpinner()) {
-    <div class="sidebar__empty">
-      <i appIcon="video" appIconSize="xlarge" class="sidebar__empty-icon" aria-hidden="true"></i>
-      <p class="sidebar__empty-caption">There are no recorded videos yet.</p>
-    </div>
-  }
+  <app-videos-list class="sidebar__list" />
 </aside>

@@ -1,0 +1,60 @@
+@use 'tokens' as tokens;
+
+:host {
+  scrollbar-color: rgb(255 255 255 / 20%) transparent;
+
+  // Thin, modern scrollbar; same shape on Firefox and on WebKit-based engines.
+  scrollbar-width: thin;
+
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-3;
+
+  inline-size: 100%;
+  padding-block: tokens.$space-4;
+  padding-inline: tokens.$space-1;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: rgb(255 255 255 / 20%);
+
+    &:hover {
+      background-color: rgb(255 255 255 / 40%);
+    }
+  }
+}
+
+:host[data-empty='true'] {
+  align-items: center;
+  justify-content: center;
+}
+
+.videos-list {
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-1;
+    align-items: center;
+
+    color: tokens.$color-text-primary;
+    text-align: center;
+  }
+
+  &__empty-icon {
+    opacity: 0.8;
+  }
+
+  &__empty-caption {
+    margin: 0;
+    opacity: 0.6;
+  }
+}

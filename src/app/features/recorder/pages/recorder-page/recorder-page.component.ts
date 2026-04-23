@@ -31,6 +31,7 @@ import {
 } from '@shared/confirm-dialog';
 import { IconDirective } from '@shared/icons';
 import { SpinnerComponent, SPINNER_DEBOUNCE_MS } from '@shared/spinner';
+import { VideosListComponent } from '@features/videos';
 import { QualityMenuComponent } from '../../components/quality-menu/quality-menu.component';
 import { RecorderControlsComponent } from '../../components/recorder-controls/recorder-controls.component';
 import { OverrideRollbackReason, Quality, QualityState, RecorderState } from '../../state';
@@ -88,7 +89,13 @@ const QUALITY_MENU_POSITION: ConnectedPosition = {
 
 @Component({
   selector: 'app-recorder-page',
-  imports: [IconDirective, RecorderControlsComponent, SpinnerComponent, VideoPreviewComponent],
+  imports: [
+    IconDirective,
+    RecorderControlsComponent,
+    SpinnerComponent,
+    VideoPreviewComponent,
+    VideosListComponent,
+  ],
   templateUrl: './recorder-page.component.html',
   styleUrl: './recorder-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
