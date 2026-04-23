@@ -18,7 +18,8 @@ export const VIDEOS_DB = new InjectionToken<VideosDB | null>('VIDEOS_DB', {
   factory: (): VideosDB | null => {
     try {
       return new VideosDB();
-    } catch {
+    } catch (err) {
+      console.warn('[storage] Dexie unavailable', err);
       return null;
     }
   },
