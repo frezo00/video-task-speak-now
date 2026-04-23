@@ -14,7 +14,7 @@
   "formats": [
     {
       "order": 0,
-      "mOpen": true,
+      "mOpen": false,
       "item": {
         "tag": "ItemFont",
         "args": [
@@ -32,421 +32,6 @@
     }
   ],
   "glyphs": [
-    {
-      "extras": { "name": "check", "codePoint": 61446 },
-      "node": {
-        "tag": "Element",
-        "args": [
-          {
-            "tagName": "svg",
-            "attributes": {
-              "fill": {
-                "tag": "Value",
-                "args": [{ "tag": "Paint", "args": [{ "tag": "NoPaint", "args": [] }] }]
-              },
-              "height": {
-                "tag": "Value",
-                "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [24] }] }]
-              },
-              "viewBox": {
-                "tag": "Value",
-                "args": [
-                  {
-                    "tag": "ViewBox",
-                    "args": [{ "minX": 0, "minY": 0, "width": 24, "height": 24 }]
-                  }
-                ]
-              },
-              "width": {
-                "tag": "Value",
-                "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [24] }] }]
-              },
-              "xmlns": { "tag": "StringValue", "args": ["http://www.w3.org/2000/svg"] }
-            },
-            "children": [
-              { "tag": "Text", "args": ["\n"] },
-              {
-                "tag": "Element",
-                "args": [
-                  {
-                    "tagName": "path",
-                    "attributes": {
-                      "d": {
-                        "tag": "Value",
-                        "args": [
-                          {
-                            "tag": "Paths",
-                            "args": [
-                              [
-                                {
-                                  "start": [9.09961, 18.166],
-                                  "endings": { "tag": "Connected", "args": [] },
-                                  "cmds": [
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [9.45117, 18.5176],
-                                              "c2": [10.0488, 18.5176],
-                                              "end": [10.4004, 18.166]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    { "tag": "LineTo", "args": [{ "point": [20.7363, 7.83008] }] },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [21.0879, 7.47852],
-                                              "c2": [21.0879, 6.88086],
-                                              "end": [20.7363, 6.5293]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    { "tag": "LineTo", "args": [{ "point": [19.4707, 5.26367] }] },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [19.1191, 4.91211],
-                                              "c2": [18.5566, 4.91211],
-                                              "end": [18.2051, 5.26367]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    { "tag": "LineTo", "args": [{ "point": [9.76758, 13.7012] }] },
-                                    { "tag": "LineTo", "args": [{ "point": [5.79492, 9.76367] }] },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [5.44336, 9.41211],
-                                              "c2": [4.88086, 9.41211],
-                                              "end": [4.5293, 9.76367]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    { "tag": "LineTo", "args": [{ "point": [3.26367, 11.0293] }] },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [2.91211, 11.3809],
-                                              "c2": [2.91211, 11.9785],
-                                              "end": [3.26367, 12.3301]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    { "tag": "LineTo", "args": [{ "point": [9.09961, 18.166] }] }
-                                  ]
-                                }
-                              ]
-                            ]
-                          }
-                        ]
-                      },
-                      "fill": {
-                        "tag": "Value",
-                        "args": [
-                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
-                        ]
-                      }
-                    },
-                    "children": []
-                  }
-                ]
-              },
-              { "tag": "Text", "args": ["\n"] }
-            ]
-          }
-        ]
-      },
-      "palettes": {
-        "index": 0,
-        "table": [
-          [
-            {
-              "background": { "tag": "AutomaticColor", "args": [] },
-              "foreground": { "tag": "AutomaticColor", "args": [] }
-            },
-            [{ "tag": "CurrentColor", "args": [] }]
-          ]
-        ]
-      }
-    },
-    {
-      "extras": { "name": "video", "codePoint": 61445 },
-      "node": {
-        "tag": "Element",
-        "args": [
-          {
-            "tagName": "svg",
-            "attributes": {
-              "fill": {
-                "tag": "Value",
-                "args": [{ "tag": "Paint", "args": [{ "tag": "NoPaint", "args": [] }] }]
-              },
-              "height": {
-                "tag": "Value",
-                "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [40] }] }]
-              },
-              "viewBox": {
-                "tag": "Value",
-                "args": [
-                  {
-                    "tag": "ViewBox",
-                    "args": [{ "minX": 0, "minY": 0, "width": 40, "height": 40 }]
-                  }
-                ]
-              },
-              "width": {
-                "tag": "Value",
-                "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [40] }] }]
-              },
-              "xmlns": { "tag": "StringValue", "args": ["http://www.w3.org/2000/svg"] }
-            },
-            "children": [
-              { "tag": "Text", "args": ["\n"] },
-              {
-                "tag": "Element",
-                "args": [
-                  {
-                    "tagName": "path",
-                    "attributes": {
-                      "d": {
-                        "tag": "Value",
-                        "args": [
-                          {
-                            "tag": "Paths",
-                            "args": [
-                              [
-                                {
-                                  "start": [8.33333, 9.16666],
-                                  "endings": { "tag": "Connected", "args": [] },
-                                  "cmds": [
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [7.11776, 9.16666],
-                                              "c2": [5.95197, 9.64954],
-                                              "end": [5.09243, 10.5091]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [4.23289, 11.3686],
-                                              "c2": [3.75, 12.5344],
-                                              "end": [3.75, 13.75]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    { "tag": "LineTo", "args": [{ "point": [3.75, 26.25] }] },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [3.75, 27.4656],
-                                              "c2": [4.23289, 28.6314],
-                                              "end": [5.09243, 29.4909]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [5.95197, 30.3504],
-                                              "c2": [7.11776, 30.8333],
-                                              "end": [8.33333, 30.8333]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    { "tag": "LineTo", "args": [{ "point": [22.5, 30.8333] }] },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [23.7156, 30.8333],
-                                              "c2": [24.8814, 30.3504],
-                                              "end": [25.7409, 29.4909]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [26.6004, 28.6314],
-                                              "c2": [27.0833, 27.4656],
-                                              "end": [27.0833, 26.25]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    { "tag": "LineTo", "args": [{ "point": [27.0833, 23.5933] }] },
-                                    { "tag": "LineTo", "args": [{ "point": [32.7817, 28.6683] }] },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [34.1233, 29.8633],
-                                              "c2": [36.25, 28.91],
-                                              "end": [36.25, 27.1117]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    { "tag": "LineTo", "args": [{ "point": [36.25, 12.275] }] },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [36.25, 10.475],
-                                              "c2": [34.1233, 9.52332],
-                                              "end": [32.7817, 10.7183]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    { "tag": "LineTo", "args": [{ "point": [27.0833, 15.7933] }] },
-                                    { "tag": "LineTo", "args": [{ "point": [27.0833, 13.75] }] },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [27.0833, 12.5344],
-                                              "c2": [26.6004, 11.3686],
-                                              "end": [25.7409, 10.5091]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "tag": "BezierCurveTo",
-                                      "args": [
-                                        {
-                                          "tag": "CParams",
-                                          "args": [
-                                            {
-                                              "c1": [24.8814, 9.64954],
-                                              "c2": [23.7156, 9.16666],
-                                              "end": [22.5, 9.16666]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    { "tag": "LineTo", "args": [{ "point": [8.33333, 9.16666] }] }
-                                  ]
-                                }
-                              ]
-                            ]
-                          }
-                        ]
-                      },
-                      "fill": {
-                        "tag": "Value",
-                        "args": [
-                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
-                        ]
-                      },
-                      "fill-opacity": {
-                        "tag": "Value",
-                        "args": [{ "tag": "Float", "args": [0.8] }]
-                      }
-                    },
-                    "children": []
-                  }
-                ]
-              },
-              { "tag": "Text", "args": ["\n"] }
-            ]
-          }
-        ]
-      },
-      "palettes": {
-        "index": 0,
-        "table": [
-          [
-            {
-              "background": { "tag": "AutomaticColor", "args": [] },
-              "foreground": { "tag": "AutomaticColor", "args": [] }
-            },
-            [{ "tag": "CurrentColor", "args": [] }]
-          ]
-        ]
-      }
-    },
     {
       "extras": { "name": "trash", "codePoint": 61440 },
       "node": {
@@ -2249,6 +1834,715 @@
                       "stroke-width": {
                         "tag": "Value",
                         "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [3] }] }]
+                      }
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              { "tag": "Text", "args": ["\n"] }
+            ]
+          }
+        ]
+      },
+      "palettes": {
+        "index": 0,
+        "table": [
+          [
+            {
+              "background": { "tag": "AutomaticColor", "args": [] },
+              "foreground": { "tag": "AutomaticColor", "args": [] }
+            },
+            [{ "tag": "CurrentColor", "args": [] }]
+          ]
+        ]
+      }
+    },
+    {
+      "extras": { "name": "video", "codePoint": 61445 },
+      "node": {
+        "tag": "Element",
+        "args": [
+          {
+            "tagName": "svg",
+            "attributes": {
+              "fill": {
+                "tag": "Value",
+                "args": [{ "tag": "Paint", "args": [{ "tag": "NoPaint", "args": [] }] }]
+              },
+              "height": {
+                "tag": "Value",
+                "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [40] }] }]
+              },
+              "viewBox": {
+                "tag": "Value",
+                "args": [
+                  {
+                    "tag": "ViewBox",
+                    "args": [{ "minX": 0, "minY": 0, "width": 40, "height": 40 }]
+                  }
+                ]
+              },
+              "width": {
+                "tag": "Value",
+                "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [40] }] }]
+              },
+              "xmlns": { "tag": "StringValue", "args": ["http://www.w3.org/2000/svg"] }
+            },
+            "children": [
+              { "tag": "Text", "args": ["\n"] },
+              {
+                "tag": "Element",
+                "args": [
+                  {
+                    "tagName": "path",
+                    "attributes": {
+                      "d": {
+                        "tag": "Value",
+                        "args": [
+                          {
+                            "tag": "Paths",
+                            "args": [
+                              [
+                                {
+                                  "start": [8.33333, 9.16666],
+                                  "endings": { "tag": "Connected", "args": [] },
+                                  "cmds": [
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [7.11776, 9.16666],
+                                              "c2": [5.95197, 9.64954],
+                                              "end": [5.09243, 10.5091]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [4.23289, 11.3686],
+                                              "c2": [3.75, 12.5344],
+                                              "end": [3.75, 13.75]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [3.75, 26.25] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [3.75, 27.4656],
+                                              "c2": [4.23289, 28.6314],
+                                              "end": [5.09243, 29.4909]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [5.95197, 30.3504],
+                                              "c2": [7.11776, 30.8333],
+                                              "end": [8.33333, 30.8333]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [22.5, 30.8333] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [23.7156, 30.8333],
+                                              "c2": [24.8814, 30.3504],
+                                              "end": [25.7409, 29.4909]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [26.6004, 28.6314],
+                                              "c2": [27.0833, 27.4656],
+                                              "end": [27.0833, 26.25]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [27.0833, 23.5933] }] },
+                                    { "tag": "LineTo", "args": [{ "point": [32.7817, 28.6683] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [34.1233, 29.8633],
+                                              "c2": [36.25, 28.91],
+                                              "end": [36.25, 27.1117]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [36.25, 12.275] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [36.25, 10.475],
+                                              "c2": [34.1233, 9.52332],
+                                              "end": [32.7817, 10.7183]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [27.0833, 15.7933] }] },
+                                    { "tag": "LineTo", "args": [{ "point": [27.0833, 13.75] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [27.0833, 12.5344],
+                                              "c2": [26.6004, 11.3686],
+                                              "end": [25.7409, 10.5091]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [24.8814, 9.64954],
+                                              "c2": [23.7156, 9.16666],
+                                              "end": [22.5, 9.16666]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [8.33333, 9.16666] }] }
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      },
+                      "fill": {
+                        "tag": "Value",
+                        "args": [
+                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
+                        ]
+                      },
+                      "fill-opacity": {
+                        "tag": "Value",
+                        "args": [{ "tag": "Float", "args": [0.8] }]
+                      }
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              { "tag": "Text", "args": ["\n"] }
+            ]
+          }
+        ]
+      },
+      "palettes": {
+        "index": 0,
+        "table": [
+          [
+            {
+              "background": { "tag": "AutomaticColor", "args": [] },
+              "foreground": { "tag": "AutomaticColor", "args": [] }
+            },
+            [{ "tag": "CurrentColor", "args": [] }]
+          ]
+        ]
+      }
+    },
+    {
+      "extras": { "name": "check", "codePoint": 61446 },
+      "node": {
+        "tag": "Element",
+        "args": [
+          {
+            "tagName": "svg",
+            "attributes": {
+              "fill": {
+                "tag": "Value",
+                "args": [{ "tag": "Paint", "args": [{ "tag": "NoPaint", "args": [] }] }]
+              },
+              "height": {
+                "tag": "Value",
+                "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [24] }] }]
+              },
+              "viewBox": {
+                "tag": "Value",
+                "args": [
+                  {
+                    "tag": "ViewBox",
+                    "args": [{ "minX": 0, "minY": 0, "width": 24, "height": 24 }]
+                  }
+                ]
+              },
+              "width": {
+                "tag": "Value",
+                "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [24] }] }]
+              },
+              "xmlns": { "tag": "StringValue", "args": ["http://www.w3.org/2000/svg"] }
+            },
+            "children": [
+              { "tag": "Text", "args": ["\n"] },
+              {
+                "tag": "Element",
+                "args": [
+                  {
+                    "tagName": "path",
+                    "attributes": {
+                      "d": {
+                        "tag": "Value",
+                        "args": [
+                          {
+                            "tag": "Paths",
+                            "args": [
+                              [
+                                {
+                                  "start": [9.09961, 18.166],
+                                  "endings": { "tag": "Connected", "args": [] },
+                                  "cmds": [
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [9.45117, 18.5176],
+                                              "c2": [10.0488, 18.5176],
+                                              "end": [10.4004, 18.166]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [20.7363, 7.83008] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [21.0879, 7.47852],
+                                              "c2": [21.0879, 6.88086],
+                                              "end": [20.7363, 6.5293]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [19.4707, 5.26367] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [19.1191, 4.91211],
+                                              "c2": [18.5566, 4.91211],
+                                              "end": [18.2051, 5.26367]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [9.76758, 13.7012] }] },
+                                    { "tag": "LineTo", "args": [{ "point": [5.79492, 9.76367] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [5.44336, 9.41211],
+                                              "c2": [4.88086, 9.41211],
+                                              "end": [4.5293, 9.76367]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [3.26367, 11.0293] }] },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [2.91211, 11.3809],
+                                              "c2": [2.91211, 11.9785],
+                                              "end": [3.26367, 12.3301]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    { "tag": "LineTo", "args": [{ "point": [9.09961, 18.166] }] }
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      },
+                      "fill": {
+                        "tag": "Value",
+                        "args": [
+                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
+                        ]
+                      }
+                    },
+                    "children": []
+                  }
+                ]
+              },
+              { "tag": "Text", "args": ["\n"] }
+            ]
+          }
+        ]
+      },
+      "palettes": {
+        "index": 0,
+        "table": [
+          [
+            {
+              "background": { "tag": "AutomaticColor", "args": [] },
+              "foreground": { "tag": "AutomaticColor", "args": [] }
+            },
+            [{ "tag": "CurrentColor", "args": [] }]
+          ]
+        ]
+      }
+    },
+    {
+      "extras": { "name": "exclamation", "codePoint": 61447 },
+      "node": {
+        "tag": "Element",
+        "args": [
+          {
+            "tagName": "svg",
+            "attributes": {
+              "fill": {
+                "tag": "Value",
+                "args": [{ "tag": "Paint", "args": [{ "tag": "NoPaint", "args": [] }] }]
+              },
+              "height": {
+                "tag": "Value",
+                "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [40] }] }]
+              },
+              "viewBox": {
+                "tag": "Value",
+                "args": [
+                  {
+                    "tag": "ViewBox",
+                    "args": [{ "minX": 0, "minY": 0, "width": 40, "height": 40 }]
+                  }
+                ]
+              },
+              "width": {
+                "tag": "Value",
+                "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [40] }] }]
+              },
+              "xmlns": { "tag": "StringValue", "args": ["http://www.w3.org/2000/svg"] }
+            },
+            "children": [
+              { "tag": "Text", "args": ["\n"] },
+              {
+                "tag": "Element",
+                "args": [
+                  {
+                    "tagName": "path",
+                    "attributes": {
+                      "d": {
+                        "tag": "Value",
+                        "args": [
+                          {
+                            "tag": "Paths",
+                            "args": [
+                              [
+                                {
+                                  "start": [20, 13.3333],
+                                  "endings": { "tag": "Disconnected", "args": [{}] },
+                                  "cmds": [{ "tag": "LineTo", "args": [{ "point": [20, 20] }] }]
+                                },
+                                {
+                                  "start": [20, 26.6667],
+                                  "endings": { "tag": "Disconnected", "args": [{}] },
+                                  "cmds": [
+                                    { "tag": "LineTo", "args": [{ "point": [20.0167, 26.6667] }] }
+                                  ]
+                                },
+                                {
+                                  "start": [35, 20],
+                                  "endings": { "tag": "Connected", "args": [] },
+                                  "cmds": [
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [35, 21.9698],
+                                              "c2": [34.612, 23.9204],
+                                              "end": [33.8582, 25.7403]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [33.1044, 27.5601],
+                                              "c2": [31.9995, 29.2137],
+                                              "end": [30.6066, 30.6066]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [29.2137, 31.9995],
+                                              "c2": [27.5601, 33.1044],
+                                              "end": [25.7403, 33.8582]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [23.9204, 34.612],
+                                              "c2": [21.9698, 35],
+                                              "end": [20, 35]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [18.0302, 35],
+                                              "c2": [16.0796, 34.612],
+                                              "end": [14.2597, 33.8582]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [12.4399, 33.1044],
+                                              "c2": [10.7863, 31.9995],
+                                              "end": [9.3934, 30.6066]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [8.00052, 29.2137],
+                                              "c2": [6.89563, 27.5601],
+                                              "end": [6.14181, 25.7403]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [5.38799, 23.9204],
+                                              "c2": [5, 21.9698],
+                                              "end": [5, 20]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [5, 16.0218],
+                                              "c2": [6.58035, 12.2064],
+                                              "end": [9.3934, 9.3934]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [12.2064, 6.58035],
+                                              "c2": [16.0218, 5],
+                                              "end": [20, 5]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [23.9782, 5],
+                                              "c2": [27.7936, 6.58035],
+                                              "end": [30.6066, 9.3934]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "BezierCurveTo",
+                                      "args": [
+                                        {
+                                          "tag": "CParams",
+                                          "args": [
+                                            {
+                                              "c1": [33.4196, 12.2064],
+                                              "c2": [35, 16.0218],
+                                              "end": [35, 20]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      },
+                      "stroke": {
+                        "tag": "Value",
+                        "args": [
+                          { "tag": "Paint", "args": [{ "tag": "CurrentColor", "args": [] }] }
+                        ]
+                      },
+                      "stroke-linecap": {
+                        "tag": "Value",
+                        "args": [
+                          { "tag": "StrokeLineCap", "args": [{ "tag": "RoundCap", "args": [] }] }
+                        ]
+                      },
+                      "stroke-linejoin": {
+                        "tag": "Value",
+                        "args": [
+                          { "tag": "StrokeLineJoin", "args": [{ "tag": "RoundJoin", "args": [] }] }
+                        ]
+                      },
+                      "stroke-width": {
+                        "tag": "Value",
+                        "args": [{ "tag": "Length", "args": [{ "tag": "Px", "args": [2] }] }]
                       }
                     },
                     "children": []
