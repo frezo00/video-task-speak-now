@@ -3,8 +3,12 @@
 
 :host.dialog-panel--playback {
   position: relative;
-  inline-size: min(40rem, 100%);
-  padding: tokens.$space-6;
+
+  overflow: hidden;
+  display: block;
+
+  inline-size: 100%;
+  padding: 0;
 }
 
 .video-playback-dialog {
@@ -12,6 +16,7 @@
     cursor: pointer;
 
     position: absolute;
+    z-index: 1;
     inset-block-start: tokens.$space-3;
     inset-inline-end: tokens.$space-3;
 
@@ -34,25 +39,28 @@
     }
   }
 
-  &__title {
-    margin-inline-end: tokens.$space-10;
-  }
-
   &__video {
     display: block;
-
     aspect-ratio: 16 / 9;
     inline-size: 100%;
-    margin-block-end: tokens.$space-4;
-    border-radius: tokens.$radius-sm;
-
     background-color: #000;
   }
 
   &__controls {
+    position: absolute;
+    inset-block-end: tokens.$space-4;
+    inset-inline: tokens.$space-4;
+
     display: flex;
     gap: tokens.$space-3;
     align-items: center;
+
+    padding: tokens.$space-2 tokens.$space-3;
+    border-radius: tokens.$radius-full;
+
+    color: tokens.$color-text-primary;
+
+    background-color: tokens.$color-bg-pill;
   }
 
   &__toggle {
@@ -63,8 +71,8 @@
     align-items: center;
     justify-content: center;
 
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
     padding: 0;
     border: none;
     border-radius: 50%;
@@ -78,8 +86,16 @@
     }
   }
 
+  &__time {
+    flex-shrink: 0;
+    font-size: tokens.$font-size-sm;
+    font-variant-numeric: tabular-nums;
+    color: tokens.$color-text-primary;
+  }
+
   &__scrubber {
     flex: 1 1 auto;
+    min-inline-size: 0;
     accent-color: tokens.$color-accent-indigo;
 
     &:focus-visible {

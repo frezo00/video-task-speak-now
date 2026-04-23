@@ -61,6 +61,11 @@ export class VideosListComponent {
       restoreFocus: true,
       ariaModal: true,
       panelClass: 'cdk-overlay-playback',
+      // Pin pane width so CDK's GlobalPositionStrategy can center it. Without
+      // an explicit width the pane is shrink-to-fit and the <video>'s intrinsic
+      // resolution can push it wider than the host's 100% cap — which breaks
+      // the wrapper's justify-content: center.
+      width: 'min(56rem, 100%)',
     });
     ref.closed.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
   }
