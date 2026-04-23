@@ -125,20 +125,39 @@ describe('VideoStorageService', () => {
   });
 
   describe('mapDexieError', () => {
+    class FakeDexieError extends Error {
+      constructor(name: string, message: string, options?: ErrorOptions) {
+        super(message, options);
+        this.name = name;
+      }
+    }
+
     it('passes through existing StorageError', () => {
       const original = new StorageError(StorageErrorKind.Unknown, 'x');
       expect(mapDexieError(original)).toBe(original);
     });
 
-    it('maps QuotaExceededError to QuotaExceeded', () => {
-      const mapped = mapDexieError(new DOMException('quota', 'QuotaExceededError'));
+    it('maps a Dexie QuotaExceededError to QuotaExceeded', () => {
+      const mapped = mapDexieError(new FakeDexieError('QuotaExceededError', 'full'));
       expect(mapped).toBeInstanceOf(StorageError);
       expect(mapped.kind).toBe(StorageErrorKind.QuotaExceeded);
     });
 
-    it('maps InvalidStateError to Unavailable', () => {
-      const mapped = mapDexieError(new DOMException('gone', 'InvalidStateError'));
+    it('maps a Dexie InvalidStateError to Unavailable', () => {
+      const mapped = mapDexieError(new FakeDexieError('InvalidStateError', 'gone'));
       expect(mapped.kind).toBe(StorageErrorKind.Unavailable);
+    });
+
+    it('finds QuotaExceededError via .inner (real Dexie 4 shape: outer AbortError wraps inner QuotaExceededError)', () => {
+      const inner = new FakeDexieError('QuotaExceededError', 'quota');
+      const outer = Object.assign(new FakeDexieError('AbortError', 'tx aborted'), { inner });
+      expect(mapDexieError(outer).kind).toBe(StorageErrorKind.QuotaExceeded);
+    });
+
+    it('finds QuotaExceededError via .cause (defensive for future Dexie / standard ErrorOptions)', () => {
+      const inner = new FakeDexieError('QuotaExceededError', 'quota');
+      const outer = new FakeDexieError('AbortError', 'tx aborted', { cause: inner });
+      expect(mapDexieError(outer).kind).toBe(StorageErrorKind.QuotaExceeded);
     });
 
     it('falls back to Unknown for everything else', () => {

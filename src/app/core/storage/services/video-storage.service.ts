@@ -44,21 +44,35 @@ function isValidRow(row: unknown): row is SavedVideo {
   );
 }
 
+function collectErrorNames(err: unknown): readonly string[] {
+  const names: string[] = [];
+  const seen = new Set<unknown>();
+  let current: unknown = err;
+  while (current && typeof current === 'object' && !seen.has(current)) {
+    seen.add(current);
+    const candidate = current as { name?: unknown; cause?: unknown; inner?: unknown };
+    if (typeof candidate.name === 'string') {
+      names.push(candidate.name);
+    }
+    current = candidate.cause ?? candidate.inner;
+  }
+  return names;
+}
+
 export function mapDexieError(err: unknown): StorageError {
   if (err instanceof StorageError) {
     return err;
   }
-  if (err instanceof DOMException) {
-    if (err.name === 'QuotaExceededError') {
-      return new StorageError(StorageErrorKind.QuotaExceeded, 'Browser storage quota exceeded', {
-        cause: err,
-      });
-    }
-    if (err.name === 'InvalidStateError') {
-      return new StorageError(StorageErrorKind.Unavailable, 'IndexedDB is unavailable', {
-        cause: err,
-      });
-    }
+  const names = collectErrorNames(err);
+  if (names.includes('QuotaExceededError')) {
+    return new StorageError(StorageErrorKind.QuotaExceeded, 'Browser storage quota exceeded', {
+      cause: err,
+    });
+  }
+  if (names.includes('InvalidStateError')) {
+    return new StorageError(StorageErrorKind.Unavailable, 'IndexedDB is unavailable', {
+      cause: err,
+    });
   }
   return new StorageError(StorageErrorKind.Unknown, 'Storage operation failed', { cause: err });
 }
