@@ -33,7 +33,8 @@ export class RecorderService {
    * @returns Promise resolving to the recorded `Blob`.
    * @throws {RecordingError} `already-recording` when invoked while a recording
    *   is in progress; `unsupported-mime-type` when no preferred codec is
-   *   supported; `media-error` when `MediaRecorder` fires `onerror`.
+   *   supported; `media-error` when `MediaRecorder` fires `onerror` or when
+   *   the constructor / `start()` throws synchronously.
    */
   start(stream: MediaStream): Promise<Blob> {
     if (this.#recorder) {
@@ -55,7 +56,17 @@ export class RecorderService {
       );
     }
 
-    const recorder = new MediaRecorder(stream, { mimeType });
+    let recorder: MediaRecorder;
+    try {
+      recorder = new MediaRecorder(stream, { mimeType });
+    } catch (cause) {
+      return Promise.reject(
+        new RecordingError(RecordingErrorKind.MediaError, 'Failed to construct MediaRecorder', {
+          cause,
+        }),
+      );
+    }
+
     this.#recorder = recorder;
     this.#chunks = [];
     this.#$status.set('recording');
@@ -83,7 +94,18 @@ export class RecorderService {
       );
     };
 
-    recorder.start();
+    try {
+      recorder.start();
+    } catch (cause) {
+      const pending = this.#pending;
+      this.#cleanup();
+      pending?.reject(
+        new RecordingError(RecordingErrorKind.MediaError, 'Failed to start MediaRecorder', {
+          cause,
+        }),
+      );
+      return promise;
+    }
     this.#hardCapTimer = setTimeout(() => this.stop(), RECORDING_HARD_CAP_MS);
     return promise;
   }
