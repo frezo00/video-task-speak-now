@@ -88,9 +88,10 @@ const QUALITY_MENU_POSITION: ConnectedPosition = {
   offsetX: 8,
 };
 
-// Max width below which the sidebar collapses into a bottom drawer. Mirrors
-// the `for-mobile` mixin in src/styles/_mixins.scss.
-const MOBILE_BREAKPOINT = '(max-width: 47.99rem)';
+// Max width below which the sidebar collapses into a bottom drawer. Uses the
+// same `(width < 48rem)` range query as the `for-mobile` mixin in
+// src/styles/_mixins.scss so CSS and JS flip in lockstep.
+const MOBILE_BREAKPOINT = '(width < 48rem)';
 
 @Component({
   selector: 'app-recorder-page',
