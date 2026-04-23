@@ -64,8 +64,9 @@ export class VideosListComponent {
       // Pin pane width so CDK's GlobalPositionStrategy can center it. Without
       // an explicit width the pane is shrink-to-fit and the <video>'s intrinsic
       // resolution can push it wider than the host's 100% cap — which breaks
-      // the wrapper's justify-content: center.
-      width: 'min(56rem, 100%)',
+      // the wrapper's justify-content: center. The `calc(100vw - 2rem)` arm
+      // reserves a 16 px inline margin on mobile per design-notes.md.
+      width: 'min(56rem, calc(100vw - 2rem))',
     });
     ref.closed.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
   }

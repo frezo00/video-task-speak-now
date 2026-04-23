@@ -26,12 +26,16 @@
     inset-block-end: tokens.$space-2;
 
     padding: tokens.$space-1 tokens.$space-2;
+    border-radius: tokens.$radius-sm;
 
     font-size: tokens.$font-size-xs;
     color: tokens.$color-text-primary;
 
-    // No background: the thumbnail's bottom-gradient scrim provides contrast
-    // at rest, and the hover overlay darkens the whole card uniformly.
+    // The thumbnail's bottom-gradient scrim tops out at ~70% near the edge but
+    // can be as thin as ~30% higher up. Adding an explicit semi-opaque chip
+    // keeps white text ≥ 4.5:1 against any frame, not just dark ones.
+    background-color: rgb(0 0 0 / 55%);
+
     &--date {
       inset-inline-start: tokens.$space-2;
     }
@@ -77,6 +81,13 @@
       transition:
         opacity 120ms ease,
         color 120ms ease;
+    }
+
+    // Touch devices have no hover; the :focus-within approach also fails
+    // because cards are not naturally focused on tap. Keep the trash visible
+    // so it's reachable without discovery.
+    @media (hover: none) {
+      opacity: 1;
     }
   }
 }

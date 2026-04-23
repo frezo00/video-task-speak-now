@@ -1,9 +1,12 @@
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { Dialog, type DialogRef } from '@angular/cdk/dialog';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { Overlay, type ConnectedPosition, type OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   effect,
   type ElementRef,
@@ -12,8 +15,9 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Store } from '@ngxs/store';
+import { map } from 'rxjs/operators';
 import {
   Bandwidth,
   BandwidthState,
@@ -31,7 +35,7 @@ import {
 } from '@shared/confirm-dialog';
 import { IconDirective } from '@shared/icons';
 import { SpinnerComponent, SPINNER_DEBOUNCE_MS } from '@shared/spinner';
-import { VideosListComponent } from '@features/videos';
+import { VideosListComponent, VideosState } from '@features/videos';
 import { QualityMenuComponent } from '../../components/quality-menu/quality-menu.component';
 import { RecorderControlsComponent } from '../../components/recorder-controls/recorder-controls.component';
 import { OverrideRollbackReason, Quality, QualityState, RecorderState } from '../../state';
@@ -84,9 +88,14 @@ const QUALITY_MENU_POSITION: ConnectedPosition = {
   offsetX: 8,
 };
 
+// Max width below which the sidebar collapses into a bottom drawer. Mirrors
+// the `for-mobile` mixin in src/styles/_mixins.scss.
+const MOBILE_BREAKPOINT = '(max-width: 47.99rem)';
+
 @Component({
   selector: 'app-recorder-page',
   imports: [
+    CdkTrapFocus,
     IconDirective,
     RecorderControlsComponent,
     SpinnerComponent,
@@ -107,6 +116,7 @@ export class RecorderPageComponent implements OnInit {
   readonly #store = inject(Store);
   readonly #overlay = inject(Overlay);
   readonly #banner = inject(ErrorBannerService);
+  readonly #breakpoints = inject(BreakpointObserver);
 
   readonly $stream = this.#camera.$stream;
   readonly $bandwidthStatus = this.#store.selectSignal(BandwidthState.status);
@@ -114,13 +124,26 @@ export class RecorderPageComponent implements OnInit {
   readonly $recorderStatus = this.#store.selectSignal(RecorderState.status);
   readonly $recorderStartedAt = this.#store.selectSignal(RecorderState.startedAt);
 
+  readonly #$videos = this.#store.selectSignal(VideosState.items);
+  readonly $videosCount = computed<number>(() => this.#$videos().length);
+
   readonly #$showSpinner = signal<boolean>(false);
   readonly $showSpinner = this.#$showSpinner.asReadonly();
 
   readonly #$qualityMenuOpen = signal<boolean>(false);
   readonly $qualityMenuOpen = this.#$qualityMenuOpen.asReadonly();
 
+  readonly $isMobile = toSignal(
+    this.#breakpoints.observe(MOBILE_BREAKPOINT).pipe(map((state) => state.matches)),
+    { initialValue: false as boolean },
+  );
+
+  readonly #$drawerOpen = signal<boolean>(false);
+  readonly $drawerOpen = this.#$drawerOpen.asReadonly();
+  readonly $drawerActive = computed<boolean>(() => this.$isMobile() && this.#$drawerOpen());
+
   readonly $gearEl = viewChild<ElementRef<HTMLButtonElement>>('gearBtn');
+  readonly $drawerChipEl = viewChild<ElementRef<HTMLButtonElement>>('drawerChip');
 
   #activeDialog: DialogRef<DialogResult> | null = null;
   #spinnerTimer: ReturnType<typeof setTimeout> | null = null;
@@ -141,6 +164,13 @@ export class RecorderPageComponent implements OnInit {
       }
       this.#lastBootedTier = tier;
       void this.#bootCamera(tier);
+    });
+    effect(() => {
+      // Close the drawer when viewport grows past mobile so focus isn't trapped
+      // inside a drawer that's now part of the two-column layout.
+      if (!this.$isMobile() && this.#$drawerOpen()) {
+        this.#$drawerOpen.set(false);
+      }
     });
   }
 
@@ -169,6 +199,19 @@ export class RecorderPageComponent implements OnInit {
 
   onStopRecording(): void {
     this.#store.dispatch(new Recording.StopRequested());
+  }
+
+  toggleDrawer(): void {
+    this.#$drawerOpen.update((open) => !open);
+  }
+
+  closeDrawer(): void {
+    if (!this.#$drawerOpen()) return;
+    this.#$drawerOpen.set(false);
+    // CDK's cdkTrapFocusAutoCapture would normally restore focus to the
+    // previously-focused element on deactivation, but the chip that opened
+    // the drawer is still visible and is the right anchor either way.
+    this.$drawerChipEl()?.nativeElement.focus();
   }
 
   #openQualityMenu(): void {
