@@ -1,0 +1,13 @@
+<app-video-thumbnail [blob]="$video().blob" alt="" class="videos-list-item__thumbnail" />
+<span class="videos-list-item__overlay videos-list-item__overlay--date">{{ $dateLabel() }}</span>
+<span class="videos-list-item__overlay videos-list-item__overlay--duration">{{
+  $durationLabel()
+}}</span>
+<button
+  type="button"
+  class="videos-list-item__delete"
+  [attr.aria-label]="$deleteAriaLabel()"
+  (click)="onDeleteClick($event)"
+>
+  <i appIcon="trash" appIconSize="small" aria-hidden="true"></i>
+</button>

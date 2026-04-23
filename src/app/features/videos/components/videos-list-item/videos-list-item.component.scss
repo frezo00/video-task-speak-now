@@ -1,0 +1,93 @@
+@use 'tokens' as tokens;
+@use 'mixins' as mx;
+
+:host {
+  cursor: pointer;
+
+  position: relative;
+
+  display: block;
+
+  inline-size: 100%;
+  border-radius: tokens.$radius-sm;
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+.videos-list-item {
+  &__thumbnail {
+    display: block;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset-block-end: tokens.$space-2;
+
+    padding: tokens.$space-1 tokens.$space-2;
+
+    font-size: tokens.$font-size-xs;
+    color: tokens.$color-text-primary;
+
+    // No background: the thumbnail's bottom-gradient scrim provides contrast
+    // at rest, and the hover overlay darkens the whole card uniformly.
+    &--date {
+      inset-inline-start: tokens.$space-2;
+    }
+
+    &--duration {
+      inset-inline-end: tokens.$space-2;
+    }
+  }
+
+  &__delete {
+    cursor: pointer;
+
+    position: absolute;
+    inset-block-start: tokens.$space-2;
+    inset-inline-end: tokens.$space-2;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    inline-size: 2rem;
+    block-size: 2rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+
+    color: tokens.$color-text-primary;
+
+    // Transparent — contrast comes from the thumbnail's hover scrim.
+    opacity: 0;
+    background-color: transparent;
+
+    &:hover,
+    &:focus-visible {
+      color: tokens.$color-accent-red;
+    }
+
+    &:focus-visible {
+      @include mx.focus-ring;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        opacity 120ms ease,
+        color 120ms ease;
+    }
+  }
+}
+
+:host:hover,
+:host:focus-within {
+  // Darken the thumbnail via the CSS var the child component reads, and show
+  // the trash button. Done here because hover/focus state lives on the card.
+  --thumbnail-overlay: rgb(0 0 0 / 70%);
+
+  .videos-list-item__delete {
+    opacity: 1;
+  }
+}
