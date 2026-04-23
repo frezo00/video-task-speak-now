@@ -144,6 +144,25 @@ describe('RecorderState', () => {
     expect(recorder.stop).not.toHaveBeenCalled();
   });
 
+  it('Recording.StopRequested while stopping is a no-op', async () => {
+    let resolveStart: (value: RecordingResult) => void = () => undefined;
+    const pending = new Promise<RecordingResult>((resolve) => {
+      resolveStart = resolve;
+    });
+    const { store, recorder } = setup({ stream, startImpl: () => pending });
+
+    const dispatched = firstValueFrom(store.dispatch(new Recording.Started()));
+    store.dispatch(new Recording.StopRequested());
+    expect(store.selectSnapshot(RecorderState.status)).toBe('stopping');
+
+    store.dispatch(new Recording.StopRequested());
+    expect(recorder.stop).toHaveBeenCalledOnce();
+
+    resolveStart(result);
+    await dispatched;
+    expect(store.selectSnapshot(RecorderState.status)).toBe('idle');
+  });
+
   it('Recording.Failed resets state, pushes error banner, logs the error', async () => {
     const err = new RecordingError(RecordingErrorKind.MediaError, 'boom');
     const { store, recorder, banner } = setup({
