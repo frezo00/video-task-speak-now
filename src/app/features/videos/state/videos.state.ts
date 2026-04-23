@@ -9,6 +9,8 @@ export interface VideosStateModel {
   readonly items: readonly SavedVideo[];
 }
 
+const HYDRATION_SKIPPED_MESSAGE = 'Some saved videos could not be loaded.';
+
 @State<VideosStateModel>({
   name: 'videos',
   defaults: { items: [] },
@@ -45,6 +47,14 @@ export class VideosState {
     }
     ctx.patchState({ items: [record, ...ctx.getState().items] });
     this.#store.dispatch(new Videos.Saved(record));
+  }
+
+  @Action(Videos.Hydrated)
+  onHydrated(ctx: StateContext<VideosStateModel>, action: Videos.Hydrated): void {
+    ctx.patchState({ items: action.items });
+    if (action.skippedCount > 0) {
+      this.#banner.push({ level: 'info', message: HYDRATION_SKIPPED_MESSAGE });
+    }
   }
 
   @Action(Videos.SaveFailed)

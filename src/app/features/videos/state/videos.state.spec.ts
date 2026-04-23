@@ -147,4 +147,43 @@ describe('VideosState', () => {
       expect(items[0]?.message).toBe(storageErrorMessage(err));
     });
   });
+
+  describe('on Videos.Hydrated', () => {
+    it('replaces items with the payload', async () => {
+      const { store } = setup();
+      const rec: SavedVideo = {
+        id: 'seed-1',
+        blob: makeBlob('seed'),
+        mimeType: 'video/webm',
+        duration: 2.0,
+        recordedAt: new Date('2026-03-01T00:00:00Z'),
+        resolution: '720p',
+      };
+
+      await firstValueFrom(store.dispatch(new Videos.Hydrated([rec], 0)));
+
+      const items = store.selectSnapshot(VideosState.items);
+      expect(items).toHaveLength(1);
+      expect(items[0]?.id).toBe('seed-1');
+    });
+
+    it('pushes an info banner when skippedCount > 0', async () => {
+      const { store, banner } = setup();
+
+      await firstValueFrom(store.dispatch(new Videos.Hydrated([], 2)));
+
+      const items = banner.$items();
+      expect(items).toHaveLength(1);
+      expect(items[0]?.level).toBe('info');
+      expect(items[0]?.message).toContain('Some saved videos could not be loaded');
+    });
+
+    it('does not push a banner when skippedCount is 0', async () => {
+      const { store, banner } = setup();
+
+      await firstValueFrom(store.dispatch(new Videos.Hydrated([], 0)));
+
+      expect(banner.$items()).toHaveLength(0);
+    });
+  });
 });
