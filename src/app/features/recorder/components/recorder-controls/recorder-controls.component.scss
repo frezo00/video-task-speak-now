@@ -60,7 +60,7 @@
     block-size: 0.25rem;
     border-radius: tokens.$radius-full;
 
-    background-color: rgb(255 255 255 / 20%);
+    background-color: tokens.$color-progress-track;
   }
 
   &__progress-fill {
