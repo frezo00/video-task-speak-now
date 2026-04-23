@@ -54,7 +54,10 @@
   }
 
   &__empty-caption {
+    // Use the secondary-text token rather than opacity so the rendered text
+    // hits WCAG AA against the translucent panel over #2b2b2b. An opacity
+    // multiplier was reducing effective contrast below 4.5:1.
     margin: 0;
-    opacity: 0.6;
+    color: tokens.$color-text-secondary;
   }
 }

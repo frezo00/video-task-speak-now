@@ -14,6 +14,13 @@
   background-color: tokens.$color-bg-surface;
   box-shadow: tokens.$shadow-dialog;
 
+  // Full-width with a 16 px inline margin on mobile, per design-notes.md.
+  @include mx.for-mobile {
+    inline-size: calc(100vw - (#{tokens.$space-4} * 2));
+    margin-inline: tokens.$space-4;
+    padding: tokens.$space-4;
+  }
+
   &__icon {
     display: block;
     margin-block-end: tokens.$space-3;
@@ -50,6 +57,10 @@
     font-family: inherit;
     font-size: tokens.$font-size-md;
     font-weight: tokens.$font-weight-bold;
+
+    &:focus-visible {
+      @include mx.focus-ring;
+    }
 
     &--primary {
       color: tokens.$color-text-primary;

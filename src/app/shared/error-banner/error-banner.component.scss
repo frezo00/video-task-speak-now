@@ -1,4 +1,5 @@
 @use 'tokens' as tokens;
+@use 'mixins' as mx;
 
 :host {
   pointer-events: none;
@@ -63,4 +64,8 @@
   color: tokens.$color-text-primary;
 
   background-color: transparent;
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
 }

@@ -159,7 +159,7 @@ Single `ErrorBannerService` collects user-facing errors and drives a persistent 
 - **Focus management:** CDK `cdkTrapFocus` on every dialog/overlay. Focus returns to the invoking element on close.
 - **Live regions:** `<span aria-live="polite">` wraps the recording timer so screen readers announce the countdown without being spammy.
 - **Keyboard operability:** every interactive control reachable via Tab; record/stop bound to Space when the recorder pill is focused.
-- **Color contrast:** verify buttons (red record, blue stop, indigo playback) meet WCAG AA against their backgrounds — captured in a final a11y pass in Phase 7.
+- **Color contrast:** every production text/background pairing meets WCAG AA (≥ 4.5:1 for body text, ≥ 3:1 for large text and UI components). Verified in Phase 7 against the tokens in `_tokens.scss`; the record/stop/playback buttons are UI elements without text so the 3:1 UI threshold applies.
 - **Reduced motion:** progress-bar animation respects `prefers-reduced-motion`.
 - **Permissions:** the CDK Dialog for permission denial explains _how_ to re-grant, not just that it's missing.
 
