@@ -157,3 +157,59 @@ Run `npm start`, allow camera access, wait for preview.
 - Playback dialog has `role="dialog"`, `aria-modal="true"`, `aria-labelledby` pointing at the date heading. CDK traps focus; Tab cycles Close → Play/Pause → Scrubber.
 - Delete dialog has `role="alertdialog"` (interrupts the user for a destructive action), `aria-labelledby` + `aria-describedby` for the heading and body copy. Cancel is DOM-first so CDK's autofocus lands on the safe option.
 - Screen readers announce the trash button as e.g. _"Delete recording from 23.04.2026 11:42, button"_; each card as _"Play recording from …, button"_.
+
+---
+
+## Phase 7 — Polish (responsive + a11y)
+
+Phase 7 adds no new user-visible features. The matrix below exercises the responsive layout (mobile bottom drawer, dialog margins) and the a11y certifications (keyboard traversal, focus rings, Axe-clean).
+
+### Responsive — breakpoint matrix
+
+Run `npm start`, open Chrome DevTools device toolbar. Test each viewport by picking the relevant preset and reloading.
+
+| #   | Viewport                            | Expected result                                                                                                                                                                                                       |
+| --- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | iPhone SE (375 × 667)               | Stage fills the viewport top; sidebar is hidden. A "Videos (N)" chip sits at the bottom-right of the stage. Tapping the chip slides the sidebar up from the bottom (with handle affordance). Backdrop dims the stage. |
+| 2   | iPhone 14 Pro (393 × 852)           | Same as #1. Drawer max-height is 80dvh; the list inside scrolls when there are more than ~4 cards.                                                                                                                    |
+| 3   | iPad Mini (768 × 1024)              | Two-column layout; sidebar is visible inline at 300 px; no chip, no drawer.                                                                                                                                           |
+| 4   | Desktop (1280+)                     | Two-column layout; sidebar inline; full `gap: tokens.$space-10` around the stage.                                                                                                                                     |
+| 5   | Resize 767 → 768 → 767 in live view | Layout toggles cleanly at the breakpoint, no intermediate flash. Drawer (if open) closes automatically when crossing into tablet-up.                                                                                  |
+| 6   | Dialog on mobile (open delete)      | Dialog panel reserves a 16 px inline margin on both sides; does not touch the viewport edge.                                                                                                                          |
+| 7   | Dialog on mobile (open playback)    | Playback pane is sized `min(56rem, calc(100vw − 2rem))`; centers with the 16 px margin; `<video>` still fills the pane.                                                                                               |
+| 8   | Emulated touch (hover: none)        | Trash button is visible on every card without hovering. Tapping a card opens playback; tapping trash opens the delete dialog.                                                                                         |
+| 9   | Drawer open, press Escape           | Drawer closes; focus returns to the "Videos (N)" chip.                                                                                                                                                                |
+| 10  | Drawer open, tap backdrop           | Drawer closes; focus returns to the "Videos (N)" chip.                                                                                                                                                                |
+
+### A11y — keyboard-only walkthrough
+
+Unplug the mouse (metaphorically). Run through each phase's existing test matrix without touching the mouse:
+
+- Tab from page load reaches: quality gear → recorder record/stop → (on mobile) "Videos (N)" chip → each card → trash button (when card has focus-within) → Close on playback dialog.
+- Every focused interactive control shows a visible `:focus-visible` ring (the shared `@include mx.focus-ring` indigo outline — or red on destructive buttons).
+- Space triggers the recorder when the record/stop button is focused. Enter triggers playback on a focused card. Escape closes any open overlay (quality menu, drawer, dialog).
+- Focus traps: the quality menu and every CDK Dialog trap Tab internally. The mobile drawer traps Tab when open (via `cdkTrapFocus`) and restores focus to the chip on close.
+
+### A11y — Axe sweep
+
+```sh
+npx @axe-core/cli http://localhost:4200 --exit
+```
+
+Expected: **zero critical, zero serious** violations. If any surface, capture the rule id and remediate. "Moderate" findings are acceptable if they relate to CDK-managed surfaces where our patch would conflict with the framework's handling.
+
+### A11y — contrast spot-check
+
+Open Chrome DevTools → Elements → pick any text element → Styles pane → background color swatch → **Contrast** section. Verify each pairing below clears AA thresholds (≥ 4.5:1 body text, ≥ 3:1 large text and UI components):
+
+| Pairing                                                                                    | Expected ratio |
+| ------------------------------------------------------------------------------------------ | -------------- |
+| `--color-text-primary (#fff)` on `--color-bg-translucent` over `--color-bg-main (#2b2b2b)` | ≥ 7:1          |
+| `--color-text-secondary (#b7b8ba)` on `--color-bg-translucent` over `--color-bg-main`      | ≥ 4.5:1        |
+| `--color-text-primary` on `--color-bg-pill (#3a3b3d)` (error banner, quality menu row)     | ≥ 9:1          |
+| `--color-text-primary` on thumbnail overlay chip (`rgb(0 0 0 / 55%)` over any frame)       | ≥ 4.5:1        |
+| `--color-accent-blue (#2563eb)` progress fill on `--color-progress-track`                  | ≥ 3:1 (UI)     |
+| `--color-accent-red (#e53935)` record-button dot on `--color-bg-surface (#fff)`            | ≥ 3:1 (UI)     |
+| `--color-text-dark (#1f1f20)` dialog body copy on `--color-bg-surface (#fff)`              | ≥ 15:1         |
+
+If any pairing fails, adjust the token in `src/styles/_tokens.scss` — never fix per-component with an ad-hoc hex.
