@@ -12,15 +12,15 @@ export namespace Recording {
   export class Completed {
     static readonly type = '[Recording] Completed';
     constructor(
-      public readonly blob: Blob,
-      public readonly duration: number,
-      public readonly mimeType: string,
-      public readonly resolution: VideoResolution,
+      readonly blob: Blob,
+      readonly duration: number,
+      readonly mimeType: string,
+      readonly resolution: VideoResolution,
     ) {}
   }
 
   export class Failed {
     static readonly type = '[Recording] Failed';
-    constructor(public readonly error: unknown) {}
+    constructor(readonly error: unknown) {}
   }
 }

@@ -1,11 +1,15 @@
-import { Injectable } from '@angular/core';
-import { Action, Selector, State, type StateContext } from '@ngxs/store';
+import { inject, Injectable } from '@angular/core';
+import { Action, Selector, State, type StateContext, Store } from '@ngxs/store';
+import { ErrorBannerService } from '@core/error';
 import { Recording } from '@core/recorder';
-import type { SavedVideo } from '@core/storage';
+import { storageErrorMessage, VideoStorageService, type SavedVideo } from '@core/storage';
+import { Videos } from './videos.actions';
 
 export interface VideosStateModel {
   readonly items: readonly SavedVideo[];
 }
+
+const HYDRATION_SKIPPED_MESSAGE = 'Some saved videos could not be loaded.';
 
 @State<VideosStateModel>({
   name: 'videos',
@@ -13,14 +17,21 @@ export interface VideosStateModel {
 })
 @Injectable()
 export class VideosState {
+  readonly #storage = inject(VideoStorageService);
+  readonly #banner = inject(ErrorBannerService);
+  readonly #store = inject(Store);
+
   @Selector()
   static items(state: VideosStateModel): readonly SavedVideo[] {
     return state.items;
   }
 
   @Action(Recording.Completed)
-  onRecordingCompleted(ctx: StateContext<VideosStateModel>, action: Recording.Completed): void {
-    const saved: SavedVideo = {
+  async onRecordingCompleted(
+    ctx: StateContext<VideosStateModel>,
+    action: Recording.Completed,
+  ): Promise<void> {
+    const record: SavedVideo = {
       id: crypto.randomUUID(),
       blob: action.blob,
       mimeType: action.mimeType,
@@ -28,6 +39,27 @@ export class VideosState {
       resolution: action.resolution,
       recordedAt: new Date(),
     };
-    ctx.patchState({ items: [saved, ...ctx.getState().items] });
+    try {
+      await this.#storage.save(record);
+    } catch (err) {
+      this.#store.dispatch(new Videos.SaveFailed(err));
+      return;
+    }
+    ctx.patchState({ items: [record, ...ctx.getState().items] });
+    this.#store.dispatch(new Videos.Saved(record));
+  }
+
+  @Action(Videos.Hydrated)
+  onHydrated(ctx: StateContext<VideosStateModel>, action: Videos.Hydrated): void {
+    ctx.patchState({ items: action.items });
+    if (action.skippedCount > 0) {
+      this.#banner.push({ level: 'info', message: HYDRATION_SKIPPED_MESSAGE });
+    }
+  }
+
+  @Action(Videos.SaveFailed)
+  onSaveFailed(_ctx: StateContext<VideosStateModel>, action: Videos.SaveFailed): void {
+    this.#banner.push({ level: 'error', message: storageErrorMessage(action.error) });
+    console.error('[videos] save failed', action.error);
   }
 }

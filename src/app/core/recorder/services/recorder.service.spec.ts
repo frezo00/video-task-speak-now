@@ -70,17 +70,18 @@ describe('RecorderService', () => {
     expect(service.$status()).toBe('idle');
   });
 
-  it('start() transitions to recording and resolves with a Blob on manual stop', async () => {
+  it('start() transitions to recording and resolves with {blob, mimeType} on manual stop', async () => {
     const service = new RecorderService();
 
     const promise = service.start(stream);
     expect(service.$status()).toBe('recording');
 
     service.stop();
-    const blob = await promise;
+    const { blob, mimeType } = await promise;
 
     expect(blob).toBeInstanceOf(Blob);
     expect(blob.type).toBe('video/webm;codecs=vp9');
+    expect(mimeType).toBe('video/webm;codecs=vp9');
     expect(service.$status()).toBe('idle');
   });
 
@@ -91,7 +92,7 @@ describe('RecorderService', () => {
     const promise = service.start(stream);
     await vi.advanceTimersByTimeAsync(RECORDING_HARD_CAP_MS);
     vi.useRealTimers();
-    const blob = await promise;
+    const { blob } = await promise;
 
     expect(blob).toBeInstanceOf(Blob);
     expect(FakeMediaRecorder.lastInstance?.state).toBe('inactive');
@@ -187,6 +188,45 @@ describe('RecorderService', () => {
   it('stop() is a no-op when idle', () => {
     const service = new RecorderService();
     expect(() => service.stop()).not.toThrow();
+    expect(service.$status()).toBe('idle');
+  });
+
+  it('does not wedge when MediaRecorder.start() throws synchronously', async () => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- restoring the prototype method verbatim
+    const originalStart = FakeMediaRecorder.prototype.start;
+    const service = new RecorderService();
+    try {
+      FakeMediaRecorder.prototype.start = function throwOnStart(this: void): void {
+        throw new DOMException('track ended', 'InvalidStateError');
+      };
+      await expect(service.start(stream)).rejects.toMatchObject({
+        kind: RecordingErrorKind.MediaError,
+      });
+      expect(service.$status()).toBe('idle');
+    } finally {
+      FakeMediaRecorder.prototype.start = originalStart;
+    }
+
+    const second = service.start(stream);
+    expect(service.$status()).toBe('recording');
+    service.stop();
+    await second;
+    expect(service.$status()).toBe('idle');
+  });
+
+  it('rejects with media-error when the MediaRecorder constructor throws', async () => {
+    class ThrowingMediaRecorder extends FakeMediaRecorder {
+      constructor(stream: MediaStream, options?: MediaRecorderOptions) {
+        super(stream, options);
+        throw new DOMException('stream not available', 'NotSupportedError');
+      }
+    }
+    globals.MediaRecorder = ThrowingMediaRecorder as unknown as typeof MediaRecorder;
+    const service = new RecorderService();
+
+    await expect(service.start(stream)).rejects.toMatchObject({
+      kind: RecordingErrorKind.MediaError,
+    });
     expect(service.$status()).toBe('idle');
   });
 });

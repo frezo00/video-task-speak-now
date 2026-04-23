@@ -1,12 +1,52 @@
 import { TestBed } from '@angular/core/testing';
-import { provideStore, Store } from '@ngxs/store';
-import { firstValueFrom } from 'rxjs';
+import { Actions, ofActionDispatched, provideStore, Store } from '@ngxs/store';
+import { firstValueFrom, take } from 'rxjs';
+import type { Mock } from 'vitest';
+import { ErrorBannerService } from '@core/error';
 import { Recording } from '@core/recorder';
+import {
+  StorageError,
+  StorageErrorKind,
+  storageErrorMessage,
+  VideoStorageService,
+  type SavedVideo,
+} from '@core/storage';
+import { Videos } from './videos.actions';
 import { VideosState } from './videos.state';
 
-function configure(): Store {
-  TestBed.configureTestingModule({ providers: [provideStore([VideosState])] });
-  return TestBed.inject(Store);
+interface VideoStorageServiceStub {
+  readonly save: Mock<(record: SavedVideo) => Promise<SavedVideo>>;
+  readonly listAll: Mock<() => Promise<{ items: readonly SavedVideo[]; skippedCount: number }>>;
+  readonly deleteById: Mock<(id: string) => Promise<void>>;
+}
+
+function setup(
+  options: {
+    readonly saveImpl?: (record: SavedVideo) => Promise<SavedVideo>;
+  } = {},
+): {
+  readonly store: Store;
+  readonly actions$: Actions;
+  readonly storage: VideoStorageServiceStub;
+  readonly banner: ErrorBannerService;
+} {
+  const storage: VideoStorageServiceStub = {
+    save: vi.fn<(record: SavedVideo) => Promise<SavedVideo>>(),
+    listAll: vi
+      .fn<() => Promise<{ items: readonly SavedVideo[]; skippedCount: number }>>()
+      .mockResolvedValue({ items: [], skippedCount: 0 }),
+    deleteById: vi.fn<(id: string) => Promise<void>>().mockResolvedValue(undefined),
+  };
+  storage.save.mockImplementation(options.saveImpl ?? ((record) => Promise.resolve(record)));
+  TestBed.configureTestingModule({
+    providers: [provideStore([VideosState]), { provide: VideoStorageService, useValue: storage }],
+  });
+  return {
+    store: TestBed.inject(Store),
+    actions$: TestBed.inject(Actions),
+    storage,
+    banner: TestBed.inject(ErrorBannerService),
+  };
 }
 
 function makeBlob(content = 'x'): Blob {
@@ -14,59 +54,136 @@ function makeBlob(content = 'x'): Blob {
 }
 
 describe('VideosState', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+  });
+
   it('starts with an empty items array', () => {
-    const store = configure();
+    const { store } = setup();
     expect(store.selectSnapshot(VideosState.items)).toEqual([]);
   });
 
-  it('prepends a SavedVideo when Recording.Completed fires', async () => {
-    const store = configure();
-    const blob = makeBlob();
+  describe('on Recording.Completed', () => {
+    it('writes to storage and prepends on success', async () => {
+      const { store, storage } = setup();
+      const blob = makeBlob();
 
-    await firstValueFrom(store.dispatch(new Recording.Completed(blob, 5.0, 'video/webm', '720p')));
+      await firstValueFrom(
+        store.dispatch(new Recording.Completed(blob, 5.0, 'video/webm', '720p')),
+      );
 
-    const items = store.selectSnapshot(VideosState.items);
-    expect(items).toHaveLength(1);
-    const [first] = items;
-    expect(first?.blob).toBe(blob);
-    expect(first?.duration).toBe(5.0);
-    expect(first?.mimeType).toBe('video/webm');
-    expect(first?.resolution).toBe('720p');
-    expect(typeof first?.id).toBe('string');
-    expect(first?.id.length).toBeGreaterThan(0);
-    expect(first?.recordedAt).toBeInstanceOf(Date);
+      expect(storage.save).toHaveBeenCalledTimes(1);
+      const saved = storage.save.mock.calls[0]?.[0];
+      expect(saved?.blob).toBe(blob);
+      expect(saved?.duration).toBe(5.0);
+      expect(saved?.mimeType).toBe('video/webm');
+      expect(saved?.resolution).toBe('720p');
+      expect(typeof saved?.id).toBe('string');
+      expect(saved?.recordedAt).toBeInstanceOf(Date);
+
+      const items = store.selectSnapshot(VideosState.items);
+      expect(items).toHaveLength(1);
+      expect(items[0]?.id).toBe(saved?.id);
+    });
+
+    it('orders newest first across multiple completions', async () => {
+      const { store } = setup();
+      const first = makeBlob('first');
+      const second = makeBlob('second');
+
+      await firstValueFrom(
+        store.dispatch(new Recording.Completed(first, 3.0, 'video/webm', '360p')),
+      );
+      await firstValueFrom(
+        store.dispatch(new Recording.Completed(second, 7.5, 'video/webm', '1080p')),
+      );
+
+      const items = store.selectSnapshot(VideosState.items);
+      expect(items).toHaveLength(2);
+      expect(items[0]?.blob).toBe(second);
+      expect(items[1]?.blob).toBe(first);
+    });
+
+    it('dispatches Videos.Saved after a successful write', async () => {
+      const { store, actions$ } = setup();
+      const saved$ = firstValueFrom(actions$.pipe(ofActionDispatched(Videos.Saved), take(1)));
+
+      await firstValueFrom(
+        store.dispatch(new Recording.Completed(makeBlob(), 1.0, 'video/webm', '720p')),
+      );
+
+      const action = await saved$;
+      expect(action.record.duration).toBe(1.0);
+    });
+
+    it('dispatches Videos.SaveFailed and omits from state when storage rejects', async () => {
+      const quotaErr = new StorageError(StorageErrorKind.QuotaExceeded, 'full');
+      const { store, actions$, banner } = setup({ saveImpl: () => Promise.reject(quotaErr) });
+      const failed$ = firstValueFrom(actions$.pipe(ofActionDispatched(Videos.SaveFailed), take(1)));
+
+      await firstValueFrom(
+        store.dispatch(new Recording.Completed(makeBlob(), 1.0, 'video/webm', '720p')),
+      );
+
+      const action = await failed$;
+      expect(action.error).toBe(quotaErr);
+      expect(store.selectSnapshot(VideosState.items)).toHaveLength(0);
+      const items = banner.$items();
+      expect(items).toHaveLength(1);
+      expect(items[0]?.level).toBe('error');
+      expect(items[0]?.message).toBe(storageErrorMessage(quotaErr));
+    });
+
+    it('uses the save-context fallback copy for unknown-kind failures', async () => {
+      const err = new StorageError(StorageErrorKind.Unknown, 'something broke');
+      const { store, banner } = setup({ saveImpl: () => Promise.reject(err) });
+
+      await firstValueFrom(
+        store.dispatch(new Recording.Completed(makeBlob(), 1.0, 'video/webm', '720p')),
+      );
+
+      const items = banner.$items();
+      expect(items).toHaveLength(1);
+      expect(items[0]?.message).toBe(storageErrorMessage(err));
+    });
   });
 
-  it('orders newest first (prepend)', async () => {
-    const store = configure();
-    const firstBlob = makeBlob('first');
-    const secondBlob = makeBlob('second');
+  describe('on Videos.Hydrated', () => {
+    it('replaces items with the payload', async () => {
+      const { store } = setup();
+      const rec: SavedVideo = {
+        id: 'seed-1',
+        blob: makeBlob('seed'),
+        mimeType: 'video/webm',
+        duration: 2.0,
+        recordedAt: new Date('2026-03-01T00:00:00Z'),
+        resolution: '720p',
+      };
 
-    await firstValueFrom(
-      store.dispatch(new Recording.Completed(firstBlob, 3.0, 'video/webm', '360p')),
-    );
-    await firstValueFrom(
-      store.dispatch(new Recording.Completed(secondBlob, 7.5, 'video/webm', '1080p')),
-    );
+      await firstValueFrom(store.dispatch(new Videos.Hydrated([rec], 0)));
 
-    const items = store.selectSnapshot(VideosState.items);
-    expect(items).toHaveLength(2);
-    expect(items[0]?.blob).toBe(secondBlob);
-    expect(items[0]?.duration).toBe(7.5);
-    expect(items[1]?.blob).toBe(firstBlob);
-  });
+      const items = store.selectSnapshot(VideosState.items);
+      expect(items).toHaveLength(1);
+      expect(items[0]?.id).toBe('seed-1');
+    });
 
-  it('assigns unique ids across completions', async () => {
-    const store = configure();
+    it('pushes an info banner when skippedCount > 0', async () => {
+      const { store, banner } = setup();
 
-    await firstValueFrom(
-      store.dispatch(new Recording.Completed(makeBlob('a'), 1.0, 'video/webm', '720p')),
-    );
-    await firstValueFrom(
-      store.dispatch(new Recording.Completed(makeBlob('b'), 2.0, 'video/webm', '720p')),
-    );
+      await firstValueFrom(store.dispatch(new Videos.Hydrated([], 2)));
 
-    const items = store.selectSnapshot(VideosState.items);
-    expect(items[0]?.id).not.toBe(items[1]?.id);
+      const items = banner.$items();
+      expect(items).toHaveLength(1);
+      expect(items[0]?.level).toBe('info');
+      expect(items[0]?.message).toContain('Some saved videos could not be loaded');
+    });
+
+    it('does not push a banner when skippedCount is 0', async () => {
+      const { store, banner } = setup();
+
+      await firstValueFrom(store.dispatch(new Videos.Hydrated([], 0)));
+
+      expect(banner.$items()).toHaveLength(0);
+    });
   });
 });

@@ -3,8 +3,13 @@ import { PREFERRED_MIME_TYPES, RECORDING_HARD_CAP_MS } from '../models/recorder.
 import type { RecorderStatus } from '../models/recorder-status';
 import { RecordingError, RecordingErrorKind } from '../models/recording-error';
 
+export interface RecordingResult {
+  readonly blob: Blob;
+  readonly mimeType: string;
+}
+
 interface PendingResolvers {
-  readonly resolve: (blob: Blob) => void;
+  readonly resolve: (result: RecordingResult) => void;
   readonly reject: (err: unknown) => void;
 }
 
@@ -25,17 +30,19 @@ export class RecorderService {
   #pending: PendingResolvers | null = null;
 
   /**
-   * Starts recording the given stream. Resolves with the captured Blob when the
-   * recording stops (either via {@link stop} or the {@link RECORDING_HARD_CAP_MS}
-   * hard cap). Rejects with a typed {@link RecordingError} on failure.
+   * Starts recording the given stream. Resolves with the captured Blob plus the
+   * mime type that was negotiated with `MediaRecorder` when the recording stops
+   * (either via {@link stop} or the {@link RECORDING_HARD_CAP_MS} hard cap).
+   * Rejects with a typed {@link RecordingError} on failure.
    *
    * @param stream - Live `MediaStream` from `getUserMedia`.
-   * @returns Promise resolving to the recorded `Blob`.
+   * @returns Promise resolving to `{ blob, mimeType }`.
    * @throws {RecordingError} `already-recording` when invoked while a recording
    *   is in progress; `unsupported-mime-type` when no preferred codec is
-   *   supported; `media-error` when `MediaRecorder` fires `onerror`.
+   *   supported; `media-error` when `MediaRecorder` fires `onerror` or when
+   *   the constructor / `start()` throws synchronously.
    */
-  start(stream: MediaStream): Promise<Blob> {
+  start(stream: MediaStream): Promise<RecordingResult> {
     if (this.#recorder) {
       return Promise.reject(
         new RecordingError(
@@ -55,12 +62,22 @@ export class RecorderService {
       );
     }
 
-    const recorder = new MediaRecorder(stream, { mimeType });
+    let recorder: MediaRecorder;
+    try {
+      recorder = new MediaRecorder(stream, { mimeType });
+    } catch (cause) {
+      return Promise.reject(
+        new RecordingError(RecordingErrorKind.MediaError, 'Failed to construct MediaRecorder', {
+          cause,
+        }),
+      );
+    }
+
     this.#recorder = recorder;
     this.#chunks = [];
     this.#$status.set('recording');
 
-    const promise = new Promise<Blob>((resolve, reject) => {
+    const promise = new Promise<RecordingResult>((resolve, reject) => {
       this.#pending = { resolve, reject };
     });
 
@@ -73,7 +90,7 @@ export class RecorderService {
       const blob = new Blob(this.#chunks, { type: recorder.mimeType });
       const pending = this.#pending;
       this.#cleanup();
-      pending?.resolve(blob);
+      pending?.resolve({ blob, mimeType: recorder.mimeType });
     };
     recorder.onerror = (event: Event): void => {
       const pending = this.#pending;
@@ -83,7 +100,18 @@ export class RecorderService {
       );
     };
 
-    recorder.start();
+    try {
+      recorder.start();
+    } catch (cause) {
+      const pending = this.#pending;
+      this.#cleanup();
+      pending?.reject(
+        new RecordingError(RecordingErrorKind.MediaError, 'Failed to start MediaRecorder', {
+          cause,
+        }),
+      );
+      return promise;
+    }
     this.#hardCapTimer = setTimeout(() => this.stop(), RECORDING_HARD_CAP_MS);
     return promise;
   }

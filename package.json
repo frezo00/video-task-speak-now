@@ -29,6 +29,7 @@
     "@angular/router": "^21.2.0",
     "@ngxs/devtools-plugin": "^21.0.0",
     "@ngxs/store": "^21.0.0",
+    "dexie": "^4.4.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -42,6 +43,7 @@
     "angular-eslint": "21.3.1",
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
+    "fake-indexeddb": "^6.2.5",
     "husky": "^9.1.7",
     "jsdom": "^28.0.0",
     "lint-staged": "^16.4.0",
