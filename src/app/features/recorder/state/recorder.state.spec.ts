@@ -5,13 +5,19 @@ import { firstValueFrom, take } from 'rxjs';
 import type { Mock } from 'vitest';
 import { CameraService } from '@core/camera';
 import { ErrorBannerService } from '@core/error';
-import { Recording, RecorderService, RecordingError, RecordingErrorKind } from '@core/recorder';
+import {
+  Recording,
+  RecorderService,
+  RecordingError,
+  RecordingErrorKind,
+  type RecordingResult,
+} from '@core/recorder';
 import { VideosState } from '@features/videos';
 import { QualityState } from './quality.state';
 import { RecorderState } from './recorder.state';
 
 interface RecorderServiceStub {
-  readonly start: Mock<(stream: MediaStream) => Promise<Blob>>;
+  readonly start: Mock<(stream: MediaStream) => Promise<RecordingResult>>;
   readonly stop: Mock<() => void>;
 }
 
@@ -21,7 +27,7 @@ interface CameraServiceStub {
 
 function setup(options: {
   readonly stream?: MediaStream | null;
-  readonly startImpl?: (stream: MediaStream) => Promise<Blob>;
+  readonly startImpl?: (stream: MediaStream) => Promise<RecordingResult>;
 }): {
   readonly store: Store;
   readonly actions$: Actions;
@@ -30,7 +36,7 @@ function setup(options: {
   readonly banner: ErrorBannerService;
 } {
   const recorder: RecorderServiceStub = {
-    start: vi.fn<(stream: MediaStream) => Promise<Blob>>(),
+    start: vi.fn<(stream: MediaStream) => Promise<RecordingResult>>(),
     stop: vi.fn<() => void>(),
   };
   if (options.startImpl) {
@@ -58,6 +64,7 @@ function setup(options: {
 describe('RecorderState', () => {
   const stream = {} as MediaStream;
   const blob = new Blob(['x'], { type: 'video/webm' });
+  const result: RecordingResult = { blob, mimeType: 'video/webm' };
 
   beforeEach(() => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
@@ -70,7 +77,7 @@ describe('RecorderState', () => {
   });
 
   it('Recording.Started with a stream transitions to recording, then idle on Completed', async () => {
-    const { store, recorder } = setup({ stream, startImpl: () => Promise.resolve(blob) });
+    const { store, recorder } = setup({ stream, startImpl: () => Promise.resolve(result) });
 
     await firstValueFrom(store.dispatch(new Recording.Started()));
 
@@ -80,8 +87,8 @@ describe('RecorderState', () => {
   });
 
   it('passes recording status through while the recorder is running', async () => {
-    let resolveStart: (blob: Blob) => void = () => undefined;
-    const pending = new Promise<Blob>((resolve) => {
+    let resolveStart: (value: RecordingResult) => void = () => undefined;
+    const pending = new Promise<RecordingResult>((resolve) => {
       resolveStart = resolve;
     });
     const { store } = setup({ stream, startImpl: () => pending });
@@ -90,7 +97,7 @@ describe('RecorderState', () => {
     expect(store.selectSnapshot(RecorderState.status)).toBe('recording');
     expect(store.selectSnapshot(RecorderState.startedAt)).not.toBeNull();
 
-    resolveStart(blob);
+    resolveStart(result);
     await dispatched;
     expect(store.selectSnapshot(RecorderState.status)).toBe('idle');
   });
@@ -110,8 +117,8 @@ describe('RecorderState', () => {
   });
 
   it('Recording.StopRequested while recording flips to stopping and calls RecorderService.stop', async () => {
-    let resolveStart: (blob: Blob) => void = () => undefined;
-    const pending = new Promise<Blob>((resolve) => {
+    let resolveStart: (value: RecordingResult) => void = () => undefined;
+    const pending = new Promise<RecordingResult>((resolve) => {
       resolveStart = resolve;
     });
     const { store, recorder } = setup({ stream, startImpl: () => pending });
@@ -123,7 +130,7 @@ describe('RecorderState', () => {
     expect(store.selectSnapshot(RecorderState.status)).toBe('stopping');
     expect(recorder.stop).toHaveBeenCalledOnce();
 
-    resolveStart(blob);
+    resolveStart(result);
     await dispatched;
     expect(store.selectSnapshot(RecorderState.status)).toBe('idle');
   });
@@ -155,12 +162,12 @@ describe('RecorderState', () => {
 
   it('double Recording.Started while recording no-ops the second', async () => {
     let calls = 0;
-    let resolveFirst: (blob: Blob) => void = () => undefined;
+    let resolveFirst: (value: RecordingResult) => void = () => undefined;
     const { store, recorder } = setup({
       stream,
       startImpl: () => {
         calls += 1;
-        return new Promise<Blob>((resolve) => {
+        return new Promise<RecordingResult>((resolve) => {
           resolveFirst = resolve;
         });
       },
@@ -173,13 +180,16 @@ describe('RecorderState', () => {
     expect(calls).toBe(1);
     expect(recorder.start).toHaveBeenCalledOnce();
 
-    resolveFirst(blob);
+    resolveFirst(result);
     await first;
   });
 
   it('Recording.Completed populates VideosState with the expected fields (integration)', async () => {
     const capturedBlob = new Blob(['recording-bytes'], { type: 'video/webm;codecs=vp9' });
-    const { store } = setup({ stream, startImpl: () => Promise.resolve(capturedBlob) });
+    const { store } = setup({
+      stream,
+      startImpl: () => Promise.resolve({ blob: capturedBlob, mimeType: 'video/webm;codecs=vp9' }),
+    });
 
     await firstValueFrom(store.dispatch(new Recording.Started()));
 

@@ -57,11 +57,11 @@ export class RecorderState {
     const startedAt = performance.now();
     ctx.patchState({ status: 'recording', startedAt });
     try {
-      const blob = await this.#recorder.start(stream);
+      const { blob, mimeType } = await this.#recorder.start(stream);
       const duration = Math.round((performance.now() - startedAt) / 100) / 10;
       const tier = this.#store.selectSnapshot(QualityState.tier);
       const resolution = TIER_TO_RESOLUTION[tier];
-      this.#store.dispatch(new Recording.Completed(blob, duration, blob.type, resolution));
+      this.#store.dispatch(new Recording.Completed(blob, duration, mimeType, resolution));
     } catch (err) {
       this.#store.dispatch(new Recording.Failed(err));
     }

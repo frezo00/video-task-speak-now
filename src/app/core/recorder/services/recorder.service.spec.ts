@@ -70,17 +70,18 @@ describe('RecorderService', () => {
     expect(service.$status()).toBe('idle');
   });
 
-  it('start() transitions to recording and resolves with a Blob on manual stop', async () => {
+  it('start() transitions to recording and resolves with {blob, mimeType} on manual stop', async () => {
     const service = new RecorderService();
 
     const promise = service.start(stream);
     expect(service.$status()).toBe('recording');
 
     service.stop();
-    const blob = await promise;
+    const { blob, mimeType } = await promise;
 
     expect(blob).toBeInstanceOf(Blob);
     expect(blob.type).toBe('video/webm;codecs=vp9');
+    expect(mimeType).toBe('video/webm;codecs=vp9');
     expect(service.$status()).toBe('idle');
   });
 
@@ -91,7 +92,7 @@ describe('RecorderService', () => {
     const promise = service.start(stream);
     await vi.advanceTimersByTimeAsync(RECORDING_HARD_CAP_MS);
     vi.useRealTimers();
-    const blob = await promise;
+    const { blob } = await promise;
 
     expect(blob).toBeInstanceOf(Blob);
     expect(FakeMediaRecorder.lastInstance?.state).toBe('inactive');

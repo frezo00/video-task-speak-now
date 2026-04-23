@@ -1,4 +1,5 @@
 export { RecorderService } from './services/recorder.service';
+export type { RecordingResult } from './services/recorder.service';
 export { RECORDER_STATUSES } from './models/recorder-status';
 export type { RecorderStatus } from './models/recorder-status';
 export { RecordingError, RecordingErrorKind } from './models/recording-error';
