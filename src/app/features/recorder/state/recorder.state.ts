@@ -7,6 +7,7 @@ import {
   RecorderService,
   RecordingError,
   RecordingErrorKind,
+  RECORDING_HARD_CAP_MS,
   TIER_TO_RESOLUTION,
   type RecorderStatus,
 } from '@core/recorder';
@@ -58,7 +59,8 @@ export class RecorderState {
     ctx.patchState({ status: 'recording', startedAt });
     try {
       const { blob, mimeType } = await this.#recorder.start(stream);
-      const duration = Math.round((performance.now() - startedAt) / 100) / 10;
+      const elapsed = Math.min(performance.now() - startedAt, RECORDING_HARD_CAP_MS);
+      const duration = Math.round(elapsed / 100) / 10;
       const tier = this.#store.selectSnapshot(QualityState.tier);
       const resolution = TIER_TO_RESOLUTION[tier];
       this.#store.dispatch(new Recording.Completed(blob, duration, mimeType, resolution));

@@ -184,6 +184,25 @@ describe('RecorderState', () => {
     await first;
   });
 
+  it('clamps recorded duration to RECORDING_HARD_CAP_MS (10.0 s max)', async () => {
+    let currentTime = 0;
+    const nowSpy = vi.spyOn(performance, 'now').mockImplementation(() => currentTime);
+    const capturedBlob = new Blob(['x'], { type: 'video/webm' });
+    const { store } = setup({
+      stream,
+      startImpl: () => {
+        currentTime = 15_000;
+        return Promise.resolve({ blob: capturedBlob, mimeType: 'video/webm' });
+      },
+    });
+
+    await firstValueFrom(store.dispatch(new Recording.Started()));
+
+    const items = store.selectSnapshot(VideosState.items);
+    expect(items[0]?.duration).toBe(10.0);
+    nowSpy.mockRestore();
+  });
+
   it('Recording.Completed populates VideosState with the expected fields (integration)', async () => {
     const capturedBlob = new Blob(['recording-bytes'], { type: 'video/webm;codecs=vp9' });
     const { store } = setup({
