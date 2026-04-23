@@ -9,13 +9,13 @@ export namespace Bandwidth {
   export class MeasurementCompleted {
     static readonly type = '[Bandwidth] Measurement Completed';
     constructor(
-      public readonly mbps: number,
-      public readonly quality: QualityTier,
+      readonly mbps: number,
+      readonly quality: QualityTier,
     ) {}
   }
 
   export class MeasurementFailed {
     static readonly type = '[Bandwidth] Measurement Failed';
-    constructor(public readonly error: BandwidthError) {}
+    constructor(readonly error: BandwidthError) {}
   }
 }

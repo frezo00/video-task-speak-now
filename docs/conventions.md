@@ -360,14 +360,14 @@ In SCSS, style via `:host`. See section 8.
   export namespace Recording {
     export class Started {
       static readonly type = '[Recording] Started';
-      constructor(public readonly at: Date) {}
+      constructor(readonly at: Date) {}
     }
     export class AutoStopped {
       static readonly type = '[Recording] Auto Stopped';
     }
     export class Saved {
       static readonly type = '[Recording] Saved';
-      constructor(public readonly id: string) {}
+      constructor(readonly id: string) {}
     }
   }
   ```
