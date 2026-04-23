@@ -39,6 +39,8 @@ export class RecorderControlsComponent {
 
   readonly $timerText = computed<string>(() => `${(this.#$elapsedMs() / 1000).toFixed(1)} s`);
 
+  readonly $announcedSeconds = computed<number>(() => Math.floor(this.#$elapsedMs() / 1000));
+
   constructor() {
     let rafId: number | null = null;
     const cancel = (): void => {

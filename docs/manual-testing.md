@@ -94,5 +94,5 @@ On Chromium the service picks `video/webm;codecs=vp9` (first in [`PREFERRED_MIME
 
 ### A11y smoke
 
-- The progress bar has `role="progressbar"` with `aria-valuemin/max/now`; the timer span is `aria-live="polite"`. Screen readers announce each timer tick — acceptable since it's a short-running event.
+- The progress bar has `role="progressbar"` with `aria-valuemin/max/now`. The visual timer (`.X s`) is `aria-hidden="true"`; a sibling `cdk-visually-hidden` span carries `aria-live="polite"` with an integer-second announcement (`0 seconds`, `1 seconds`, …) that fires once per second via a `Math.floor(elapsed / 1000)` computed signal.
 - Focus traversal reaches the record button; the morphed stop button retains focus when the pill changes so Space continues to work.

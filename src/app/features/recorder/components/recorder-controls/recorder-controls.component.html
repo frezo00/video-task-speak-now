@@ -25,5 +25,8 @@
   >
     <div class="controls__progress-fill" [style.inline-size.%]="$progressPct()"></div>
   </div>
-  <span class="controls__timer" aria-live="polite">{{ $timerText() }}</span>
+  <span class="controls__timer" aria-hidden="true">{{ $timerText() }}</span>
+  <span class="cdk-visually-hidden" aria-live="polite" aria-atomic="true">
+    {{ $announcedSeconds() }} seconds
+  </span>
 }
