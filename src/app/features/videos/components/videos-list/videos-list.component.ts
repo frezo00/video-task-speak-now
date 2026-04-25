@@ -33,7 +33,7 @@ import { VideosListItemComponent } from '../videos-list-item/videos-list-item.co
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconDirective, VideosListItemComponent],
   host: {
-    class: 'videos-list scrollbar-y scrollbar--hide',
+    class: 'videos-list scrollbar--hide',
     role: 'region',
     'aria-label': 'Saved videos',
     '[attr.data-empty]': '$videos().length === 0',

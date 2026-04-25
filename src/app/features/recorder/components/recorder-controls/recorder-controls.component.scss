@@ -7,50 +7,41 @@
 @use 'breakpoint.helper' as breakpoint;
 
 .controls {
-  &__btn {
-    @include base.flex($justify: center, $align: center, $gsb: 0 0 auto, $inline: true);
-    @include base.size(base.px-to-rem(32px));
+  // Base `.controls` and `.controls__btn` styles live in
+  // `src/styles/03_objects/_controls.object.scss`. Only the recorder-specific
+  // children (record dot, stop square) and the recorder-only progress + timer
+  // overlays live here.
+  &__btn-dot {
+    @include base.size(base.px-to-rem(14px));
+    @include base.transition(transform);
 
-    padding: 0;
+    display: block;
     border-radius: border.border-radius(circle);
-    background-color: background.background-color(surface);
+    background-color: accent.accent-color(red);
 
     @include breakpoint.media(tablet) {
-      @include base.size(base.px-to-rem(60px));
+      @include base.size(base.px-to-rem(28px));
     }
 
-    &-dot {
-      @include base.size(base.px-to-rem(14px));
-      @include base.transition(transform);
+    &:hover {
+      transform: scale(1.15);
+    }
+  }
 
-      display: block;
-      border-radius: border.border-radius(circle);
-      background-color: accent.accent-color(red);
+  &__btn-square {
+    @include base.size(base.px-to-rem(14px));
+    @include base.transition(transform);
 
-      @include breakpoint.media(tablet) {
-        @include base.size(base.px-to-rem(28px));
-      }
+    display: block;
+    border-radius: border.border-radius(sm);
+    background-color: accent.accent-color(blue);
 
-      &:hover {
-        transform: scale(1.15);
-      }
+    @include breakpoint.media(tablet) {
+      @include base.size(base.px-to-rem(22px));
     }
 
-    &-square {
-      @include base.size(base.px-to-rem(14px));
-      @include base.transition(transform);
-
-      display: block;
-      border-radius: border.border-radius(sm);
-      background-color: accent.accent-color(blue);
-
-      @include breakpoint.media(tablet) {
-        @include base.size(base.px-to-rem(22px));
-      }
-
-      &:hover {
-        transform: scale(1.25);
-      }
+    &:hover {
+      transform: scale(1.25);
     }
   }
 

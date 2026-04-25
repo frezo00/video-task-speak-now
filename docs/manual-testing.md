@@ -176,7 +176,7 @@ Run `npm start`, open Chrome DevTools device toolbar. Test each viewport by pick
 | 4   | Desktop (1280+)                     | Two-column layout; sidebar inline; full `gap: tokens.$space-10` around the stage.                                                                                                                                     |
 | 5   | Resize 767 → 768 → 767 in live view | Layout toggles cleanly at the breakpoint, no intermediate flash. Drawer (if open) closes automatically when crossing into tablet-up.                                                                                  |
 | 6   | Dialog on mobile (open delete)      | Dialog panel reserves a 16 px inline margin on both sides; does not touch the viewport edge.                                                                                                                          |
-| 7   | Dialog on mobile (open playback)    | Playback pane is sized `min(56rem, calc(100vw − 2rem))`; centers with the 16 px margin; `<video>` still fills the pane.                                                                                               |
+| 7   | Dialog on mobile (open playback)    | Playback pane is sized `min(80rem, calc(100vw - 2rem))`; centers with the 16 px margin; `<video>` still fills the pane.                                                                                               |
 | 8   | Emulated touch (hover: none)        | Trash button is visible on every card without hovering. Tapping a card opens playback; tapping trash opens the delete dialog.                                                                                         |
 | 9   | Drawer open, press Escape           | Drawer closes; focus returns to the "Videos (N)" chip.                                                                                                                                                                |
 | 10  | Drawer open, tap backdrop           | Drawer closes; focus returns to the "Videos (N)" chip.                                                                                                                                                                |
@@ -202,14 +202,15 @@ Expected: **zero critical, zero serious** violations. If any surface, capture th
 
 Open Chrome DevTools → Elements → pick any text element → Styles pane → background color swatch → **Contrast** section. Verify each pairing below clears AA thresholds (≥ 4.5:1 body text, ≥ 3:1 large text and UI components):
 
-| Pairing                                                                                    | Expected ratio |
-| ------------------------------------------------------------------------------------------ | -------------- |
-| `--color-text-primary (#fff)` on `--color-bg-translucent` over `--color-bg-main (#2b2b2b)` | ≥ 7:1          |
-| `--color-text-secondary (#b7b8ba)` on `--color-bg-translucent` over `--color-bg-main`      | ≥ 4.5:1        |
-| `--color-text-primary` on `--color-bg-pill (#3a3b3d)` (error banner, quality menu row)     | ≥ 9:1          |
-| `--color-text-primary` on thumbnail overlay chip (`rgb(0 0 0 / 55%)` over any frame)       | ≥ 4.5:1        |
-| `--color-accent-blue (#2563eb)` progress fill on `--color-progress-track`                  | ≥ 3:1 (UI)     |
-| `--color-accent-red (#e53935)` record-button dot on `--color-bg-surface (#fff)`            | ≥ 3:1 (UI)     |
-| `--color-text-dark (#1f1f20)` dialog body copy on `--color-bg-surface (#fff)`              | ≥ 15:1         |
+| Pairing                                                                                                | Expected ratio |
+| ------------------------------------------------------------------------------------------------------ | -------------- |
+| `--color-text-primary (#fff)` on `--color-bg-translucent` over `--color-bg-main (#2b2b2b)`             | ≥ 11:1         |
+| `--color-text-secondary (rgb(255 255 255 / 60%))` on `--color-bg-translucent` over `--color-bg-main`   | ≥ 4.5:1        |
+| `--color-text-primary` on `--color-bg-pill (#3a3b3d)` (error banner, quality menu row)                 | ≥ 11:1         |
+| `--color-text-primary` on thumbnail bottom-gradient (`rgb(0 0 0 / 70%)` over any frame, worst = white) | ≥ 4.5:1        |
+| `--color-accent-blue (#5061d0)` progress fill on `--color-progress-track (rgb(255 255 255 / 80%))`     | ≥ 3:1 (UI)     |
+| `--color-accent-red (#f00)` record-button dot on `--color-bg-surface (#fff)`                           | ≥ 3:1 (UI)     |
+| `--color-text-gray (#5b5c6a)` dialog body copy on `--color-bg-surface (#fff)`                          | ≥ 6:1          |
+| `--color-text-dark (#292830)` dialog title on `--color-bg-surface (#fff)`                              | ≥ 14:1         |
 
-If any pairing fails, adjust the token in `src/styles/_tokens.scss` — never fix per-component with an ad-hoc hex.
+If any pairing fails, adjust the token in `src/styles/00_settings/_root.setting.scss` — never fix per-component with an ad-hoc hex.

@@ -3,8 +3,8 @@
 @use 'typography.helper' as typography;
 @use 'breakpoint.helper' as breakpoint;
 
-$thickness-mobile: 4px;
-$thickness-desktop: 6px;
+$thickness-sm: 4px;
+$thickness-lg: 6px;
 
 :host {
   @include base.flex($justify: center, $align: center, $inline: true);
@@ -25,8 +25,8 @@ $thickness-desktop: 6px;
   );
   mask: radial-gradient(
     circle,
-    transparent calc(50% - #{$thickness-mobile}),
-    #000 calc(50% - #{$thickness-mobile} + 1px)
+    transparent calc(50% - #{$thickness-sm}),
+    #000 calc(50% - #{$thickness-sm} + 1px)
   );
 
   @include base.size(100%);
@@ -34,8 +34,8 @@ $thickness-desktop: 6px;
   @include breakpoint.media(mobile) {
     mask: radial-gradient(
       circle,
-      transparent calc(50% - #{$thickness-desktop}),
-      #000 calc(50% - #{$thickness-desktop} + 1px)
+      transparent calc(50% - #{$thickness-lg}),
+      #000 calc(50% - #{$thickness-lg} + 1px)
     );
   }
 

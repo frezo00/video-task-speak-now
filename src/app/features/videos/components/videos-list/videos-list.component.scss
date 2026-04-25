@@ -5,6 +5,7 @@
 :host {
   @include base.flex(column, $gap: spacing.spacing(3x));
 
+  overflow-y: auto;
   inline-size: 100%;
   padding-block: spacing.spacing(4x);
   padding-inline: spacing.spacing(1x);

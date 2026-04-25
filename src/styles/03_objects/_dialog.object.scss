@@ -26,7 +26,7 @@
 
   @include breakpoint.media(mobile) {
     inline-size: min(base.px-to-rem(400px), 100%);
-    margin-inline: 0;
+    margin-inline: auto;
     padding: spacing.spacing(6x);
   }
 

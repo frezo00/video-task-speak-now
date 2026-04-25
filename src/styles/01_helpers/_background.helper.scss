@@ -10,7 +10,6 @@ $background-colors: (
   translucent: var(--color-bg-translucent),
   scrim: var(--color-bg-scrim),
   pill: var(--color-bg-pill),
-  progress-track: var(--color-progress-track),
 );
 
 @function background-color($color) {

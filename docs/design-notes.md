@@ -10,9 +10,9 @@ Two-column layout:
 
 - **Main area (≈ 4/5 width):** rounded-rectangle dark container. Houses the live webcam preview, the recorder pill at the bottom, and modal overlays (playback, delete confirmation).
 - **Right sidebar (≈ 1/5 width):** dark-grey panel. Empty state shows a camera icon + "There are no recorded videos yet." When populated, stacks saved-video cards vertically with scroll.
-- **Outer frame:** subtle light-grey background surrounds the two columns with equal margin.
+- **Outer frame:** the two columns sit directly on the dark page background with equal margin — no separate light-grey outer surface (the original Figma `$bg-outer: #ededed` token was dropped during Phase 7 polish to keep the surface palette tight).
 
-On load the top-left shows a tiny breadcrumb-style label ("start video recorder", "start video recorder > settings", etc.) — this can be implemented as a simple `<header>` or skipped if it doesn't pull its weight.
+On load the top-left would optionally show a tiny breadcrumb-style label ("start video recorder", "start video recorder > settings", etc.). Shipped UI omits it — it didn't earn its space against the live preview.
 
 ---
 
@@ -113,7 +113,7 @@ The Figma file ships a UI-kit frame with the following atoms. Treat this as the 
 | **Quality list row**          | `360p (Low)`, `720p (Medium)`, `1080p (High)`; each: default / selected (checkmark) | All three shown; selected has a small green check on the right. |
 | **Recorder pill — idle**      | —                                                                                   | Dark rounded bar with red record button centered.               |
 | **Recorder pill — recording** | —                                                                                   | Stop button on left + progress bar + timer `3.1 s` on right.    |
-| **Play / Pause buttons**      | play, pause                                                                         | blue filled circles with white icon.                            |
+| **Play / Pause buttons**      | play, pause                                                                         | Blue filled circles with white icon.                            |
 
 ---
 
@@ -125,23 +125,24 @@ Extracted from UI-kit observation (values approximate — calibrate in Phase 1 f
 
 ```scss
 // Backgrounds
-$bg-outer: #ededed; // light grey outside the main frame
 $bg-main: #2a2b2d; // dark main panel
 $bg-sidebar: #1f2022; // slightly deeper sidebar
 $bg-surface: #ffffff; // dialogs / playback modal
+$bg-translucent: rgb(255 255 255 / 6%); // sidebar / stage background
+$bg-scrim: rgb(0 0 0 / 60%); // overlays
 $bg-pill: #3a3b3d; // recorder pill background
 
 // Accents
-$accent-red: #e53935; // record button
-$accent-blue: #2563eb; // stop button (matches blue family)
-$accent-blue: #4f46e5; // play/pause circles
-$accent-green: #22c55e; // selected-quality checkmark
+$accent-red: #ff0000; // record button
+$accent-blue: #5061d0; // stop button (matches blue family)
+$accent-green: #33ab30; // selected-quality checkmark
 
 // Text
 $text-primary: #ffffff; // on dark surfaces
-$text-secondary: #b7b8ba; // muted text, date/duration overlays
-$text-dark: #1f1f20; // on light surfaces
-$text-danger: #e11d48; // delete dialog heading + button
+$text-secondary: rgb(255 255 255 / 60%); // muted text, date/duration overlays
+$text-dark: #292830; // on light surfaces
+$text-gray: #5b5c6a; // on light surfaces
+$text-danger: #e53f28; // delete dialog heading + button
 ```
 
 ### Typography

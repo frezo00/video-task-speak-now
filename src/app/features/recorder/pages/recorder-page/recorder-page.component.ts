@@ -51,7 +51,7 @@ const CAMERA_ERROR_DIALOGS: Record<CameraErrorKind, ConfirmDialogData> = {
   },
   [CameraErrorKind.DeviceNotFound]: {
     title: 'No camera detected',
-    body: "We couldn't find a camera connected to this device.\n\nConnect a webcam, then retry.",
+    body: "We couldn't find a camera connected to this device.\nConnect a webcam, then retry.",
     confirmLabel: 'Retry',
     dismissLabel: 'Dismiss',
   },
@@ -65,7 +65,7 @@ const CAMERA_ERROR_DIALOGS: Record<CameraErrorKind, ConfirmDialogData> = {
   },
   [CameraErrorKind.InUse]: {
     title: 'Camera in use',
-    body: 'The camera is being used by another application.\n\nClose the other app, then retry.',
+    body: 'The camera is being used by another application.\nClose the other app, then retry.',
     confirmLabel: 'Retry',
     dismissLabel: 'Dismiss',
   },

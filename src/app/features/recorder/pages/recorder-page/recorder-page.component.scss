@@ -98,7 +98,7 @@
     padding-inline: spacing.spacing(4x);
     border-radius: border.border-radius(lg) border.border-radius(lg) 0 0;
 
-    background-color: background.background-color(sidebar);
+    background-color: background.background-color(main);
     box-shadow: shadow.shadow(drawer);
 
     &::before {
