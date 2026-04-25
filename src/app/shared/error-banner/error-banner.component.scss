@@ -1,66 +1,57 @@
-@use 'tokens' as tokens;
+@use 'accent.helper' as accent;
+@use 'background.helper' as background;
+@use 'base.helper' as base;
+@use 'border.helper' as border;
+@use 'shadow.helper' as shadow;
+@use 'spacing.helper' as spacing;
+@use 'typography.helper' as typography;
 
 :host {
+  @include base.fixed($top: spacing.spacing(4x), $right: spacing.spacing(4x));
+  @include base.flex(column, $gap: spacing.spacing(2x));
+
   pointer-events: none;
-
-  position: fixed;
   z-index: 1000;
-  inset-block-start: tokens.$space-4;
-  inset-inline-end: tokens.$space-4;
-
-  display: flex;
-  flex-direction: column;
-  gap: tokens.$space-2;
-
-  max-inline-size: 24rem;
+  max-inline-size: base.px-to-rem(400px);
 }
 
-.error-banner__item {
-  pointer-events: auto;
+.error-banner {
+  &__item {
+    @include base.flex($justify: space-between, $align: flex-start, $gap: spacing.spacing(3x));
 
-  display: flex;
-  gap: tokens.$space-3;
-  align-items: flex-start;
-  justify-content: space-between;
+    pointer-events: auto;
 
-  padding: tokens.$space-3 tokens.$space-4;
-  border-inline-start: 4px solid tokens.$color-accent-blue;
-  border-radius: tokens.$radius-sm;
+    padding: spacing.spacing(3x) spacing.spacing(4x);
+    border-inline-start: 4px solid accent.accent-color(blue);
+    border-radius: border.border-radius(md);
 
-  color: tokens.$color-text-primary;
+    color: typography.text-color(primary);
 
-  background-color: tokens.$color-bg-pill;
-  box-shadow: tokens.$shadow-dialog;
+    background-color: background.background-color(pill);
+    box-shadow: shadow.shadow(dialog);
 
-  &--warning {
-    border-inline-start-color: tokens.$color-accent-red;
+    &--warning {
+      border-inline-start-color: accent.accent-color(red);
+    }
+
+    &--error {
+      border-inline-start-color: typography.text-color(danger);
+    }
   }
 
-  &--error {
-    border-inline-start-color: tokens.$color-text-danger;
+  &__message {
+    @include typography.typography($size: sm, $line-height: regular);
+
+    margin: 0;
   }
-}
 
-.error-banner__message {
-  margin: 0;
-  font-size: tokens.$font-size-sm;
-  line-height: 1.4;
-}
+  &__close {
+    @include base.flex($justify: center, $align: center, $inline: true);
+    @include base.size(1.75rem);
 
-.error-banner__close {
-  cursor: pointer;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  inline-size: 1.75rem;
-  block-size: 1.75rem;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-
-  color: tokens.$color-text-primary;
-
-  background-color: transparent;
+    padding: 0;
+    border-radius: border.border-radius(circle);
+    color: typography.text-color(primary);
+    background-color: transparent;
+  }
 }

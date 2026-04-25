@@ -43,12 +43,13 @@
               }
             ],
             "styles": [
-              "src/styles.scss",
+              "node_modules/@angular/cdk/overlay-prebuilt.css",
               "src/app/shared/icons/icomoon.css",
-              "node_modules/@angular/cdk/overlay-prebuilt.css"
+              "src/styles/global.scss",
+              "src/styles.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["src/styles"]
+              "includePaths": ["src/styles/01_helpers"]
             }
           },
           "configurations": {

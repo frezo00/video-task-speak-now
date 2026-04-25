@@ -1,0 +1,17 @@
+@use 'base.helper';
+
+// --------------------
+//   BACKGROUND COLOR
+// --------------------
+$background-colors: (
+  main: var(--color-bg-main),
+  sidebar: var(--color-bg-sidebar),
+  surface: var(--color-bg-surface),
+  translucent: var(--color-bg-translucent),
+  scrim: var(--color-bg-scrim),
+  pill: var(--color-bg-pill),
+);
+
+@function background-color($color) {
+  @return base.map-contains($background-colors, $color);
+}

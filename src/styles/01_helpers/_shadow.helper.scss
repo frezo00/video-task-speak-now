@@ -1,0 +1,14 @@
+@use 'base.helper';
+
+// -----------------------------------------------
+//   SHADOW - named box-shadow values (elevation)
+// -----------------------------------------------
+$shadows: (
+  dialog: 0 8px 24px rgb(0 0 0 / 10%),
+  drawer: 0 -8px 24px rgb(0 0 0 / 25%),
+  backdrop-filter: blur(12px),
+);
+
+@function shadow($name) {
+  @return base.map-contains($shadows, $name);
+}

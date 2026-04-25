@@ -1,22 +1,43 @@
-@use 'tokens' as tokens;
+@use 'base.helper' as base;
+@use 'border.helper' as border;
+@use 'typography.helper' as typography;
+@use 'breakpoint.helper' as breakpoint;
+
+$thickness-sm: 4px;
+$thickness-lg: 6px;
 
 :host {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  @include base.flex($justify: center, $align: center, $inline: true);
+  @include base.size(base.px-to-rem(60px));
 
-  inline-size: tokens.$space-8;
-  block-size: tokens.$space-8;
+  @include breakpoint.media(mobile) {
+    @include base.size(base.px-to-rem(100px));
+  }
 }
 
 .spinner__circle {
   display: block;
+  border-radius: border.border-radius(circle);
+  background: conic-gradient(
+    from 0deg,
+    base.transparentizer(typography.text-color(primary), 0%) 0deg,
+    typography.text-color(primary) 360deg
+  );
+  mask: radial-gradient(
+    circle,
+    transparent calc(50% - #{$thickness-sm}),
+    #000 calc(50% - #{$thickness-sm} + 1px)
+  );
 
-  inline-size: 100%;
-  block-size: 100%;
-  border: 3px solid rgb(255 255 255 / 20%);
-  border-block-start-color: tokens.$color-text-primary;
-  border-radius: 50%;
+  @include base.size(100%);
+
+  @include breakpoint.media(mobile) {
+    mask: radial-gradient(
+      circle,
+      transparent calc(50% - #{$thickness-lg}),
+      #000 calc(50% - #{$thickness-lg} + 1px)
+    );
+  }
 
   @media (prefers-reduced-motion: no-preference) {
     animation: spinner-rotate 900ms linear infinite;

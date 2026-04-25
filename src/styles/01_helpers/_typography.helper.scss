@@ -1,0 +1,109 @@
+@use 'base.helper';
+
+// =======================================================================================================================
+//   TYPOGRAPHY - Variables and maps for 'color', 'font-family', 'font-size', 'font-weight' and 'line-height' properties
+// =======================================================================================================================
+
+// ---------------
+//   TEXT COLORS
+// ---------------
+$text-colors: (
+  primary: var(--color-text-primary),
+  secondary: var(--color-text-secondary),
+  dark: var(--color-text-dark),
+  gray: var(--color-text-gray),
+  danger: var(--color-text-danger),
+  inherit: inherit,
+);
+
+@function text-color($text-color) {
+  @return base.map-contains($text-colors, $text-color);
+}
+
+// -------------
+//   FONT SIZE
+// -------------
+$font-sizes: (
+  xs: base.px-to-rem(12px),
+  sm: base.px-to-rem(14px),
+  md: base.px-to-rem(16px),
+  lg: base.px-to-rem(20px),
+  xl: base.px-to-rem(24px),
+  xxl: base.px-to-rem(36px),
+);
+
+@function font-size($size) {
+  @return base.map-contains($font-sizes, $size);
+}
+
+// ----------------
+//   FONT WEIGHTS
+// ----------------
+$font-weights: (
+  normal: 400,
+  bold: 700,
+);
+
+@function font-weight($weight) {
+  @return base.map-contains($font-weights, $weight);
+}
+
+// ---------------
+//   LINE HEIGHT
+// ---------------
+$line-heights: (
+  small: 1.2,
+  regular: 1.5,
+  large: 1.75,
+  double: 2,
+  normal: normal,
+);
+
+@function line-height($height) {
+  @return base.map-contains($line-heights, $height);
+}
+
+// ---------------
+//   FONT FAMILY
+// ---------------
+$font-families: (
+  base: var(--font-family-base),
+);
+
+@function font-family($family) {
+  @return base.map-contains($font-families, $family);
+}
+
+// -------------------------------------------------------------------------------------------------------
+//   TYPOGRAPHY MIXIN - Mixin for setting 'color', 'font-size', 'font-weight', 'font-family' for the text
+// -------------------------------------------------------------------------------------------------------
+@mixin typography(
+  $color: inherit,
+  $size: false,
+  $weight: false,
+  $line-height: false,
+  $family: false,
+  $text-align: false
+) {
+  color: text-color($color);
+
+  @if $size {
+    font-size: font-size($size);
+  }
+
+  @if $weight {
+    font-weight: font-weight($weight);
+  }
+
+  @if $line-height {
+    line-height: line-height($line-height);
+  }
+
+  @if $family {
+    font-family: font-family($family);
+  }
+
+  @if $text-align {
+    text-align: $text-align;
+  }
+}

@@ -1,0 +1,20 @@
+@use '../01_helpers/base.helper' as base;
+@use '../01_helpers/typography.helper' as typography;
+@use '../01_helpers/background.helper' as background;
+
+// ----------------------------------------------
+//   BODY - default stylings for <body> element
+// ----------------------------------------------
+body {
+  @include base.flex(column);
+  @include typography.typography(primary, md, normal, normal, base);
+
+  block-size: 100%;
+  margin: 0;
+  padding: 0;
+
+  background: linear-gradient(180deg, #{background.background-color(main)} 0%, black 100%);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

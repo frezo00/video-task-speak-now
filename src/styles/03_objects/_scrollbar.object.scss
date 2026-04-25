@@ -1,0 +1,64 @@
+@use '../01_helpers/base.helper' as base;
+@use '../01_helpers/border.helper' as border;
+
+// --------------------------------------------
+//   SCROLLBAR: Stylings for .scrollbar class
+// --------------------------------------------
+%scrollbar {
+  scroll-behavior: smooth;
+  scrollbar-color: base.transparentizer(white, 80%) transparent;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar,
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background-color: base.transparentizer(white, 60%);
+  }
+
+  &::-webkit-scrollbar {
+    width: base.px-to-rem(5px);
+    height: base.px-to-rem(5px);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    cursor: pointer;
+    border-radius: border.border-radius(xs);
+    background-color: base.transparentizer(white, 80%);
+
+    &:hover {
+      background-color: base.transparentizer(white, 60%);
+    }
+  }
+}
+
+.scrollbar {
+  $self: &;
+
+  &-x {
+    @extend %scrollbar;
+
+    overflow: auto hidden;
+  }
+
+  &-y {
+    @extend %scrollbar;
+
+    overflow: hidden auto;
+  }
+
+  &:not(#{$self}-y):not(#{$self}-x) {
+    @extend %scrollbar;
+
+    overflow: auto;
+  }
+
+  &--hide {
+    scrollbar-width: none; /* Firefox */
+
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+    &::-webkit-scrollbar {
+      display: none; /* Safari and Chrome */
+    }
+  }
+}

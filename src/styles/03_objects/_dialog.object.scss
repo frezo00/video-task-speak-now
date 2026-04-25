@@ -1,0 +1,110 @@
+@use '../01_helpers/accent.helper' as accent;
+@use '../01_helpers/background.helper' as background;
+@use '../01_helpers/base.helper' as base;
+@use '../01_helpers/border.helper' as border;
+@use '../01_helpers/breakpoint.helper' as breakpoint;
+@use '../01_helpers/focus.helper' as focus;
+@use '../01_helpers/shadow.helper' as shadow;
+@use '../01_helpers/spacing.helper' as spacing;
+@use '../01_helpers/typography.helper' as typography;
+
+// ---------------------------------------------
+//   DIALOG-PANEL: Stylings for .dialog-panel
+// ---------------------------------------------
+.dialog-panel {
+  @include base.flex(column, center, center, $gap: spacing.spacing(3x));
+  @include typography.typography(dark, $text-align: center);
+
+  position: relative;
+
+  inline-size: calc(100vw - (#{spacing.spacing(4x)} * 2));
+  padding: spacing.spacing(6x) spacing.spacing(10x);
+  border-radius: border.border-radius(md);
+
+  background-color: background.background-color(surface);
+  box-shadow: shadow.shadow(dialog);
+
+  @include breakpoint.media(mobile) {
+    inline-size: min(base.px-to-rem(400px), 100%);
+    margin-inline: auto;
+    padding: spacing.spacing(6x);
+  }
+
+  &__close {
+    @include base.absolute($top: spacing.spacing(3x), $right: spacing.spacing(3x));
+    @include base.flex($justify: center, $align: center, $inline: true);
+    @include base.size(base.px-to-rem(32px));
+
+    background-color: transparent;
+  }
+
+  &__icon {
+    display: block;
+  }
+
+  &__title {
+    @include typography.typography($size: lg, $weight: bold);
+
+    margin: 0 0 spacing.spacing(3x);
+  }
+
+  &__body {
+    @include typography.typography(gray, md, $line-height: regular);
+
+    margin: 0 0 spacing.spacing(3x);
+    white-space: pre-line;
+  }
+
+  &__actions {
+    @include base.flex($justify: center, $gap: spacing.spacing(5x));
+
+    align-self: stretch;
+    margin-block-start: spacing.spacing(4x);
+  }
+
+  &__button {
+    @include typography.typography($size: md, $weight: bold);
+
+    flex: 1 1 auto;
+    padding-block: spacing.spacing(2x);
+    padding-inline: spacing.spacing(4x);
+    border-radius: border.border-radius(md);
+
+    &--primary {
+      color: typography.text-color(primary);
+      background-color: accent.accent-color(blue);
+    }
+
+    &--ghost {
+      color: typography.text-color(dark);
+      background-color: transparent;
+    }
+  }
+
+  // Danger variant swaps the icon color and paints the primary button red;
+  // focus ring color has to follow (the global ring stays blue, which
+  // would clash with the red background).
+  &--danger {
+    .dialog-panel__icon {
+      color: accent.accent-color(red);
+    }
+
+    .dialog-panel__button--danger {
+      color: typography.text-color(primary);
+      background-color: accent.accent-color(red);
+
+      &:focus-visible {
+        @include focus.focus-ring(accent.accent-color(red));
+      }
+    }
+  }
+
+  &__backdrop {
+    @include base.fixed(0, 0, 0, 0);
+    @include base.flex($justify: center, $align: center);
+
+    z-index: 999;
+    background-color: background.background-color(scrim);
+    backdrop-filter: blur(base.px-to-rem(12px));
+  }
+}

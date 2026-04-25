@@ -16,6 +16,7 @@
   >
     <span class="controls__btn-square" aria-hidden="true"></span>
   </button>
+
   <div
     class="controls__progress"
     role="progressbar"
@@ -24,8 +25,9 @@
     [attr.aria-valuenow]="$progressPct()"
   >
     <div class="controls__progress-fill" [style.inline-size.%]="$progressPct()"></div>
+    <span class="controls__timer" aria-hidden="true">{{ $timerText() }}</span>
   </div>
-  <span class="controls__timer" aria-hidden="true">{{ $timerText() }}</span>
+
   <span class="cdk-visually-hidden" aria-live="polite" aria-atomic="true">
     {{ $announcedSeconds() }} seconds
   </span>

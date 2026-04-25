@@ -1,60 +1,64 @@
-@use 'tokens' as tokens;
+@use 'background.helper' as background;
+@use 'base.helper' as base;
+@use 'border.helper' as border;
+@use 'typography.helper' as typography;
 
 :host {
+  @include base.size(100%);
+
   position: relative;
 
   overflow: hidden;
   display: block;
 
   aspect-ratio: 16 / 9;
-  inline-size: 100%;
-  border-radius: tokens.$radius-sm;
+  border-radius: border.border-radius(md);
 
-  background-color: tokens.$color-bg-pill;
-}
+  background-color: background.background-color(pill);
 
-// Overlay sits above the <img> but below sibling list-item overlays (date,
-// duration, trash). Default state is a bottom gradient so the date/duration
-// labels stay readable against any frame. The parent list item swaps it for a
-// solid scrim on hover/focus via `--thumbnail-overlay` — this keeps the swap
-// logic in the component that owns hover state.
-:host::after {
-  pointer-events: none;
-  content: '';
+  // Overlay sits above the <img> but below sibling list-item overlays (date,
+  // duration, trash). Default state is a bottom gradient so the date/duration
+  // labels stay readable against any frame. The parent list item swaps it for a
+  // solid scrim on hover/focus via `--thumbnail-overlay` — this keeps the swap
+  // logic in the component that owns hover state.
+  &::after {
+    @include base.absolute(0, 0, 0, 0);
+    @include base.transition(background);
 
-  position: absolute;
-  inset: 0;
+    pointer-events: none;
+    content: '';
+    background: var(
+      --thumbnail-overlay,
+      linear-gradient(
+        180deg,
+        base.transparentizer(black, 0%) 50%,
+        base.transparentizer(black, 70%) 100%
+      )
+    );
 
-  background: var(
-    --thumbnail-overlay,
-    linear-gradient(180deg, rgb(0 0 0 / 0%) 50%, rgb(0 0 0 / 70%) 100%)
-  );
-
-  @media (prefers-reduced-motion: no-preference) {
-    transition: background 120ms ease;
+    @media (prefers-reduced-motion: no-preference) {
+      @include base.transition(background);
+    }
   }
 }
 
 .video-thumbnail {
   &__img {
+    @include base.size(100%);
+
     display: block;
-    inline-size: 100%;
-    block-size: 100%;
     object-fit: cover;
   }
 
   &__placeholder {
-    inline-size: 100%;
-    block-size: 100%;
-    background-color: tokens.$color-bg-pill;
+    @include base.size(100%);
+
+    background-color: background.background-color(pill);
   }
 
   &__fallback {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 50%;
-    translate: -50% -50%;
+    @include base.absolute($top: 50%, $left: 50%, $transform: translate(-50%, -50%));
 
-    color: tokens.$color-text-secondary;
+    color: typography.text-color(secondary);
   }
 }

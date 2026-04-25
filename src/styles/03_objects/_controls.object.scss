@@ -1,0 +1,43 @@
+@use '../01_helpers/base.helper' as base;
+@use '../01_helpers/border.helper' as border;
+@use '../01_helpers/spacing.helper' as spacing;
+@use '../01_helpers/background.helper' as background;
+@use '../01_helpers/breakpoint.helper' as breakpoint;
+@use '../01_helpers/typography.helper' as typography;
+
+// ------------------------------------------
+//   CONTROLS: Stylings for .controls class
+// ------------------------------------------
+.controls {
+  @include base.absolute($bottom: spacing.spacing(4x), $left: 50%, $transform: translateX(-50%));
+  @include base.flex($justify: center, $align: center, $gap: spacing.spacing(3x), $inline: true);
+
+  min-inline-size: base.px-to-rem(200px);
+  block-size: base.px-to-rem(48px);
+  padding-inline: spacing.spacing(4x);
+  border-radius: border.border-radius(xl);
+
+  color: typography.text-color(primary);
+
+  background-color: background.background-color(scrim);
+  backdrop-filter: blur(12px);
+
+  @include breakpoint.media(tablet) {
+    min-inline-size: base.px-to-rem(320px);
+    block-size: base.px-to-rem(80px);
+    padding-inline: spacing.spacing(12x);
+  }
+
+  &__btn {
+    @include base.flex($justify: center, $align: center, $gsb: 0 0 auto, $inline: true);
+    @include base.size(base.px-to-rem(32px));
+
+    padding: 0;
+    border-radius: border.border-radius(circle);
+    background-color: background.background-color(surface);
+
+    @include breakpoint.media(tablet) {
+      @include base.size(base.px-to-rem(60px));
+    }
+  }
+}

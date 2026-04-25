@@ -1,5 +1,10 @@
-@use 'tokens' as tokens;
-@use 'mixins' as mx;
+@use 'accent.helper' as accent;
+@use 'background.helper' as background;
+@use 'base.helper' as base;
+@use 'border.helper' as border;
+@use 'spacing.helper' as spacing;
+@use 'typography.helper' as typography;
+@use 'breakpoint.helper' as breakpoint;
 
 :host.dialog-panel--playback {
   position: relative;
@@ -13,29 +18,21 @@
 
 .video-playback-dialog {
   &__close {
-    cursor: pointer;
+    @include base.absolute($top: spacing.spacing(3x), $right: spacing.spacing(3x));
+    @include base.flex($justify: center, $align: center, $inline: true);
+    @include base.size(base.px-to-rem(32px));
 
-    position: absolute;
     z-index: 1;
-    inset-block-start: tokens.$space-3;
-    inset-inline-end: tokens.$space-3;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    inline-size: 2.5rem;
-    block-size: 2.5rem;
     padding: 0;
-    border: none;
-    border-radius: 50%;
+    border-radius: border.border-radius(circle);
 
-    color: tokens.$color-text-primary;
+    color: typography.text-color(primary);
 
-    background-color: tokens.$color-bg-pill;
+    background-color: background.background-color(pill);
 
-    &:focus-visible {
-      @include mx.focus-ring;
+    @include breakpoint.media(mobile) {
+      @include base.size(base.px-to-rem(44px));
     }
   }
 
@@ -47,59 +44,32 @@
   }
 
   &__controls {
-    position: absolute;
-    inset-block-end: tokens.$space-4;
-    inset-inline: tokens.$space-4;
+    min-inline-size: base.px-to-rem(260px);
 
-    display: flex;
-    gap: tokens.$space-3;
-    align-items: center;
-
-    padding: tokens.$space-2 tokens.$space-3;
-    border-radius: tokens.$radius-full;
-
-    color: tokens.$color-text-primary;
-
-    background-color: tokens.$color-bg-pill;
-  }
-
-  &__toggle {
-    cursor: pointer;
-
-    display: inline-flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-
-    inline-size: 2.25rem;
-    block-size: 2.25rem;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-
-    color: tokens.$color-text-primary;
-
-    background-color: tokens.$color-accent-indigo;
-
-    &:focus-visible {
-      @include mx.focus-ring;
+    @include breakpoint.media(tablet) {
+      min-inline-size: base.px-to-rem(520px);
     }
   }
 
+  &__toggle {
+    background-color: accent.accent-color(blue);
+  }
+
   &__time {
+    @include typography.typography(primary, sm);
+
     flex-shrink: 0;
-    font-size: tokens.$font-size-sm;
     font-variant-numeric: tabular-nums;
-    color: tokens.$color-text-primary;
   }
 
   &__scrubber {
     flex: 1 1 auto;
     min-inline-size: 0;
-    accent-color: tokens.$color-accent-indigo;
+    accent-color: accent.accent-color(blue);
 
+    // The scrubber thumb pokes outside the track, so the default 2px ring
+    // offset from the global rule would clip it. Widen to 4px.
     &:focus-visible {
-      outline: 2px solid tokens.$color-accent-indigo;
       outline-offset: 4px;
     }
   }

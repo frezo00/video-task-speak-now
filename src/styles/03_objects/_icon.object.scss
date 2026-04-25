@@ -1,0 +1,23 @@
+@use '../01_helpers/base.helper' as base;
+@use '../01_helpers/icon.helper' as icon;
+
+// ----------------------------------
+//   ICON: Stylings for .icon class
+// ----------------------------------
+.icon {
+  @include base.flex(row, center, center);
+
+  color: inherit;
+
+  &--small {
+    font-size: icon.icon-size(sm);
+  }
+
+  &--medium {
+    font-size: icon.icon-size(md);
+  }
+
+  &--large {
+    font-size: icon.icon-size(lg);
+  }
+}

@@ -33,7 +33,7 @@ import { VideosListItemComponent } from '../videos-list-item/videos-list-item.co
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconDirective, VideosListItemComponent],
   host: {
-    class: 'videos-list',
+    class: 'videos-list scrollbar--hide',
     role: 'region',
     'aria-label': 'Saved videos',
     '[attr.data-empty]': '$videos().length === 0',
@@ -45,14 +45,12 @@ export class VideosListComponent {
   readonly #destroyRef = inject(DestroyRef);
   readonly #injector = inject(Injector);
 
-  readonly $videos = this.#store.selectSignal(VideosState.items);
-  // Angular's viewChildren reflection rejects ES-private fields (NG1053), so
-  // the binding is public. Not part of the component's external API — treat as
-  // internal.
   readonly $itemRefs = viewChildren<VideosListItemComponent, ElementRef<HTMLElement>>(
     VideosListItemComponent,
     { read: ElementRef },
   );
+
+  readonly $videos = this.#store.selectSignal(VideosState.items);
 
   onPlay(video: SavedVideo): void {
     const ref = this.#dialog.open<void, VideoPlaybackDialogData>(VideoPlaybackDialogComponent, {
@@ -60,12 +58,14 @@ export class VideosListComponent {
       autoFocus: 'first-tabbable',
       restoreFocus: true,
       ariaModal: true,
+      backdropClass: 'dialog-panel__backdrop',
       panelClass: 'cdk-overlay-playback',
       // Pin pane width so CDK's GlobalPositionStrategy can center it. Without
       // an explicit width the pane is shrink-to-fit and the <video>'s intrinsic
       // resolution can push it wider than the host's 100% cap — which breaks
-      // the wrapper's justify-content: center.
-      width: 'min(56rem, 100%)',
+      // the wrapper's justify-content: center. The `calc(100vw - 2rem)` arm
+      // reserves a 16 px inline margin on mobile per design-notes.md.
+      width: 'min(80rem, calc(100vw - 2rem))',
     });
     ref.closed.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
   }
@@ -81,6 +81,7 @@ export class VideosListComponent {
         dismissLabel: 'Cancel',
       },
       autoFocus: 'first-tabbable',
+      backdropClass: 'dialog-panel__backdrop',
       restoreFocus: true,
       ariaModal: true,
     });

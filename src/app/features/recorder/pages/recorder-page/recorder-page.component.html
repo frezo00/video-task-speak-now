@@ -5,19 +5,18 @@
     <app-video-preview [stream]="$stream()" />
 
     <button
-      #gearBtn
-      type="button"
+      appQualityMenuTrigger
+      #trigger="appQualityMenuTrigger"
       class="stage__settings"
-      [attr.aria-label]="$qualityMenuOpen() ? 'Close quality menu' : 'Quality settings'"
-      aria-haspopup="menu"
-      [attr.aria-expanded]="$qualityMenuOpen()"
+      [selected]="$qualityTier()"
       [disabled]="$recorderStatus() !== 'idle'"
-      (click)="toggleQualityMenu()"
+      [attr.aria-label]="trigger.$isOpen() ? 'Close quality menu' : 'Quality settings'"
+      [attr.aria-expanded]="trigger.$isOpen()"
+      (qualitySelected)="onQualitySelected($event)"
     >
       <i
-        [appIcon]="$qualityMenuOpen() ? 'close' : 'settings'"
-        appIconSize="xlarge"
-        class="stage__settings-icon"
+        [appIcon]="trigger.$isOpen() ? 'close' : 'settings'"
+        [appIconSize]="trigger.$isMobile() ? 'medium' : 'large'"
         aria-hidden="true"
       ></i>
     </button>
@@ -29,9 +28,40 @@
       (startRequested)="onStartRecording()"
       (stopRequested)="onStopRecording()"
     />
+
+    @if ($isMobile()) {
+      <button
+        #drawerChip
+        type="button"
+        class="stage__drawer-chip"
+        aria-controls="videos-drawer"
+        [attr.aria-expanded]="$drawerOpen()"
+        (click)="toggleDrawer()"
+      >
+        <i appIcon="video" aria-hidden="true"></i>
+        {{ $videosCount() }}
+      </button>
+    }
   }
 </main>
 
-<aside class="sidebar" aria-label="Saved videos">
+@if ($drawerActive()) {
+  <div class="sidebar-backdrop" aria-hidden="true" (click)="closeDrawer()"></div>
+}
+
+<aside
+  id="videos-drawer"
+  class="sidebar"
+  aria-label="Saved videos"
+  tabindex="-1"
+  [attr.role]="$isMobile() ? 'dialog' : null"
+  [attr.aria-modal]="$drawerActive() ? 'true' : null"
+  [class.sidebar--drawer]="$isMobile()"
+  [class.sidebar--drawer-open]="$drawerActive()"
+  [attr.inert]="$isMobile() && !$drawerOpen() ? '' : null"
+  [cdkTrapFocus]="$drawerActive()"
+  [cdkTrapFocusAutoCapture]="$drawerActive()"
+  (keydown.escape)="closeDrawer()"
+>
   <app-videos-list class="sidebar__list" />
 </aside>

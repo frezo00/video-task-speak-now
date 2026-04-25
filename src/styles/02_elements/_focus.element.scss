@@ -1,0 +1,8 @@
+@use '../01_helpers/focus.helper' as focus;
+
+// ------------------------
+//   FOCUS - focus styles
+// ------------------------
+:focus-visible {
+  @include focus.focus-ring;
+}

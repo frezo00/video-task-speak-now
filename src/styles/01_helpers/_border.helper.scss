@@ -1,0 +1,25 @@
+@use 'base.helper';
+
+// ==================================================================
+//   BORDER - Variables for 'border' and 'border-radius' properties
+// ==================================================================
+
+// -----------------
+//   BORDER-RADIUS
+// -----------------
+$border-radiuses: (
+  xs: base.px-to-rem(3px),
+  sm: base.px-to-rem(4px),
+  md: base.px-to-rem(8px),
+  lg: base.px-to-rem(12px),
+  xl: base.px-to-rem(100px),
+  circle: 50%,
+);
+
+@function border-radius($radius) {
+  @return base.map-contains($border-radiuses, $radius);
+}
+
+@function border($color, $width: 1px, $style: solid) {
+  @return $width $style $color;
+}

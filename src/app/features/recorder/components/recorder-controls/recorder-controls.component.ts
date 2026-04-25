@@ -23,14 +23,14 @@ import { RECORDING_HARD_CAP_MS, type RecorderStatus } from '@core/recorder';
   },
 })
 export class RecorderControlsComponent {
-  readonly #destroyRef = inject(DestroyRef);
-  readonly #$elapsedMs = signal<number>(0);
-
   readonly $status = input.required<RecorderStatus>({ alias: 'status' });
   readonly $startedAt = input<number | null>(null, { alias: 'startedAt' });
 
   readonly $startRequested = output<void>({ alias: 'startRequested' });
   readonly $stopRequested = output<void>({ alias: 'stopRequested' });
+
+  readonly #destroyRef = inject(DestroyRef);
+  readonly #$elapsedMs = signal<number>(0);
 
   readonly $progressPct = computed<number>(() => {
     const ratio = Math.min(this.#$elapsedMs() / RECORDING_HARD_CAP_MS, 1);

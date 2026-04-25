@@ -1,0 +1,20 @@
+// ---------------------------------
+//   BOX MODEL - defines box model
+// ---------------------------------
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* stylelint-disable declaration-no-important -- deliberate reduced-motion escape hatch */
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  /* stylelint-enable declaration-no-important */
+}

@@ -1,8 +1,0 @@
-@use 'tokens' as tokens;
-
-/// Consistent `:focus-visible` outline. Pass any token color; defaults to the
-/// app's indigo accent used on interactive controls.
-@mixin focus-ring($color: tokens.$color-accent-indigo) {
-  outline: 2px solid $color;
-  outline-offset: 2px;
-}

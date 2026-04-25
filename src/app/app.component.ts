@@ -7,8 +7,5 @@ import { ErrorBannerComponent } from '@shared/error-banner';
   imports: [RecorderPageComponent, ErrorBannerComponent],
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    class: 'app-shell',
-  },
 })
 export class AppComponent {}

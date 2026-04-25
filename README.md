@@ -2,7 +2,7 @@
 
 Angular responsive web app that measures the user's bandwidth, adapts webcam recording quality accordingly, records short clips (≤ 10 s), and persists them in the browser across refresh.
 
-> **Status:** Phase 1 tooling baseline in place — Angular 21 scaffold, Prettier + ESLint, Stylelint, Husky + lint-staged + commitlint, strict TypeScript, written conventions. Feature work starts with the shared icon module — see [`docs/task-breakdown.md`](docs/task-breakdown.md) for the roadmap.
+> **Status:** All seven phases complete. See [`docs/task-breakdown.md`](docs/task-breakdown.md) for the merge history and [`docs/manual-testing.md`](docs/manual-testing.md) for the QA matrices.
 
 ---
 
@@ -62,6 +62,25 @@ From the [assignment brief](docs/assignment.md):
 
 ---
 
+## Skills demonstrated
+
+Concrete pointers for code review — each skill maps to the file or decision where it's exercised.
+
+| Skill                                      | Evidence in this repo                                                                                                                                                                     |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Angular 21** (zoneless, signals, OnPush) | `src/app/**` — standalone components, OnPush throughout, `$`-prefixed signals per [`docs/conventions.md`](docs/conventions.md)                                                            |
+| **TypeScript** (strict, no `any`)          | Strict `tsconfig`, `unknown` + narrowing, no non-null assertions, ECMAScript private fields (`#x`)                                                                                        |
+| **WebRTC — `getUserMedia`**                | [`src/app/core/camera/services/camera.service.ts`](src/app/core/camera/services/camera.service.ts) — single `MediaStream` lifecycle + classified errors                                   |
+| **WebRTC — `MediaRecorder`**               | [`src/app/core/recorder/services/recorder.service.ts`](src/app/core/recorder/services/recorder.service.ts) — per-browser mime negotiation, 10 s hard cap with RAF + `setTimeout` fallback |
+| **NGXS**                                   | [`src/app/core/bandwidth/state/`](src/app/core/bandwidth/state/), [`src/app/core/storage/`](src/app/core/storage/) — bandwidth + recordings as cross-cutting state                        |
+| **RxJS**                                   | [`src/app/core/bandwidth/services/bandwidth.service.ts`](src/app/core/bandwidth/services/bandwidth.service.ts) — timed-download fallback; `$` suffix convention on observables            |
+| **Responsive design**                      | `for-mobile` mixin in [`src/styles/_mixins.scss`](src/styles/_mixins.scss); mobile bottom drawer (see [Screenshots → Mobile](#mobile))                                                    |
+| **Cross-browser handling**                 | Safari thumbnail workaround + Chromium-only `navigator.connection` fallback — see _Challenges & notes_ below                                                                              |
+| **Performance**                            | Zoneless change detection, OnPush, `APP_INITIALIZER`-hydrated state, deferred first-frame extraction                                                                                      |
+| **Code quality / version control**         | Conventional Commits, one-concern-per-commit history, Husky + lint-staged, `commitlint`, `lint` / `typecheck` / `stylelint` gates                                                         |
+
+---
+
 ## Docs index
 
 - [`docs/assignment.md`](docs/assignment.md) — clean transcription of the brief
@@ -82,15 +101,60 @@ Video blobs live in **IndexedDB** via Dexie. On app init, an `APP_INITIALIZER` h
 
 ## Assumptions & known gaps
 
-Running list — appended as each phase surfaces new decisions. Empty until Phase 1 begins.
-
-- _(none yet)_
+- **HTTPS or localhost required** for `getUserMedia`. Over plain HTTP (except `localhost`) the camera permission prompt is suppressed by the browser and the app cannot open a preview stream.
+- **Per-origin storage.** IndexedDB is scoped to the browser profile + origin. Clips are not synced across browsers, devices, or incognito sessions — matches the brief's "persist across refresh" requirement without overreach.
+- **Bandwidth fallback endpoint.** When `navigator.connection.downlink` is unavailable (Safari / iOS), the service falls back to a timed 500 KB download from `speed.cloudflare.com`. If that host ever changes URL, the constant in `src/app/core/bandwidth/services/bandwidth.service.ts` needs updating.
+- **MIME type persistence is verbatim.** Chromium typically negotiates `video/webm;codecs=vp9,opus`, Safari `video/mp4;codecs=avc1.42E01E,mp4a.40.2`. The recorder stores the exact mime returned by `MediaRecorder` so playback later can pass it to the `<source>` element unchanged.
+- **10 s hard cap is wall-clock RAF-driven.** If the tab is hidden mid-recording, the `requestAnimationFrame` loop throttles and the UI timer can lag real time; a `setTimeout` fallback enforces the 10 s cap regardless, so the clip length is bounded even when the tab is backgrounded.
+- **Thumbnails are not cached.** The first frame is extracted from the Blob on list render via an off-screen `<video>` + `<canvas>`. With the 10 s clip cap the measured cost is negligible in realistic session sizes; see [`docs/persistence.md`](docs/persistence.md) for the measurement that justifies deferring a schema-v2 cache.
+- **No E2E / component tests.** Per [`CLAUDE.md`](CLAUDE.md), v1 test scope is services + NGXS state reducers only. Component specs and E2E (which require `getUserMedia` mocking in a real browser) are deferred.
 
 ---
 
 ## Screenshots
 
-> Populated in Phase 7. Each key state captured: initial bandwidth check, idle recorder, recording in progress, quality override, saved list, playback modal, delete confirmation.
+Captured at **1920 × 1080** for desktop and **430 × 932** for mobile. Files live in [`screenshots/desktop/`](screenshots/desktop) and [`screenshots/mobile/`](screenshots/mobile); each app state has both a desktop and a mobile counterpart, and the mobile sidebar appears as the bottom drawer.
+
+### Desktop
+
+| State                                         | Image                                                                         |
+| --------------------------------------------- | ----------------------------------------------------------------------------- |
+| Bandwidth check (spinner)                     | ![Loading](./screenshots/desktop/loading-desktop.png)                         |
+| Idle recorder                                 | ![Idle recorder](./screenshots/desktop/recording_idle-desktop.png)            |
+| Recording in progress                         | ![Recording](./screenshots/desktop/recording_progress-desktop.png)            |
+| Quality menu — current tier + fallback banner | ![Quality default](./screenshots/desktop/quality_default-desktop.png)         |
+| Quality menu — Low selected                   | ![Quality low](./screenshots/desktop/quality_low-desktop.png)                 |
+| Populated videos list (hover trash)           | ![Video list](./screenshots/desktop/video_list-desktop.png)                   |
+| Playback dialog — paused on first frame       | ![Playback idle](./screenshots/desktop/playback_idle-desktop.png)             |
+| Playback dialog — playing                     | ![Playback progress](./screenshots/desktop/playback_progress-desktop.png)     |
+| Delete confirmation                           | ![Delete confirm](./screenshots/desktop/delete_confirmation-desktop.png)      |
+| Camera access denied                          | ![Camera access error](./screenshots/desktop/camera_access_error-desktop.png) |
+
+### Mobile
+
+| State                                         | Image                                                                       |
+| --------------------------------------------- | --------------------------------------------------------------------------- |
+| Bandwidth check (spinner)                     | ![Loading](./screenshots/mobile/loading-mobile.png)                         |
+| Idle recorder                                 | ![Idle recorder](./screenshots/mobile/recording_idle-mobile.png)            |
+| Recording in progress                         | ![Recording](./screenshots/mobile/recording_progress-mobile.png)            |
+| Quality menu — current tier + fallback banner | ![Quality default](./screenshots/mobile/quality_default-mobile.png)         |
+| Quality menu — Low selected                   | ![Quality low](./screenshots/mobile/quality_low-mobile.png)                 |
+| Quality menu — High selected                  | ![Quality high](./screenshots/mobile/quality_high-mobile.png)               |
+| Saved videos bottom drawer                    | ![Video list](./screenshots/mobile/video_list-mobile.png)                   |
+| Playback dialog — paused on first frame       | ![Playback idle](./screenshots/mobile/playback_idle-mobile.png)             |
+| Playback dialog — playing                     | ![Playback progress](./screenshots/mobile/playback_progress-mobile.png)     |
+| Delete confirmation                           | ![Delete confirm](./screenshots/mobile/delete_confirmation-mobile.png)      |
+| Camera access denied                          | ![Camera access error](./screenshots/mobile/camera_access_error-mobile.png) |
+
+---
+
+## Challenges & notes
+
+- **Zoneless + MediaRecorder event plumbing.** Angular 21's zoneless scheduler means MediaRecorder's `dataavailable` / `stop` events don't auto-trigger change detection. The recorder service bridges by writing signals inside event handlers, which the OnPush components then pick up reactively without needing a manual `cdr.markForCheck()` anywhere.
+- **Safari thumbnail extraction.** The off-screen `<video>` used by `extractFirstFrame` is detached from the DOM — Safari refuses to paint frames from a detached `<video>` to a canvas unless the element is inserted, sized ≥ 1 × 1, and `muted` before `play()`. The utility applies those exact conditions; the workaround is documented inline.
+- **Bandwidth API browser drift.** `navigator.connection` is Chromium-only and even there is reported-rounded (25 Mbps is the stated ceiling). The fallback path is the primary measurement on Safari; on Chromium it's treated as a confirmation check when the API reports suspiciously low or obviously-capped values.
+- **iOS Safari permission UX.** Even when camera access is granted, iOS Safari requires a direct user gesture to call `getUserMedia` — we gate the call on the bandwidth measurement completion (which is a user-initiated boot flow) to stay inside that gesture window.
+- **10 s hard cap under tab throttling.** RAF-driven progress gives smooth UI updates when the tab is visible, but throttles aggressively when hidden. A parallel `setTimeout(RECORDING_HARD_CAP_MS)` fires the stop regardless, so the cap holds even on a backgrounded tab; the UI catches up on the next visibility change.
 
 ---
 

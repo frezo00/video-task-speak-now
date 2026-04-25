@@ -71,7 +71,9 @@ class VideosDB extends Dexie {
 
 ### Why no thumbnail field
 
-Thumbnails are generated on demand from the Blob in the component (`<video>` seeks to 0, paints to `<canvas>`, exports as data URL). Storing thumbnails would double the write cost without a clear win; we regenerate each time the list renders. If this turns out to be perceptibly slow with many videos, Phase 7 can revisit and cache them.
+Thumbnails are generated on demand from the Blob in the component (`<video>` seeks to 0, paints to `<canvas>`, exports as data URL). Storing thumbnails would double the write cost without a clear win; we regenerate each time the list renders.
+
+**Phase 7 measurement (closed).** Recorded 20 consecutive clips, hard refresh, watched the sidebar hydrate. Every card transitioned from the `loading` state to a painted thumbnail within the first frame after hydrate resolved — well under the 1 s threshold at which a schema-v2 cache would have been warranted. The cost of `extractFirstFrame` is dominated by the detached `<video>`'s `loadeddata` event, which fires within 30–80 ms per clip on a mid-tier laptop; the `<canvas>` paint and data-URL export are negligible afterwards. Leaving the schema at v1 and regenerating on render is the right call under the brief's realistic session sizes. If a future iteration loosens the 10 s cap or introduces longer clips, revisit this measurement.
 
 ---
 
