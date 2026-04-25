@@ -1,5 +1,9 @@
+<button type="button" class="dialog-panel__close" aria-label="Close" (click)="dismiss()">
+  <i appIcon="close" appIconSize="medium" aria-hidden="true"></i>
+</button>
+
 @if (data.icon; as icon) {
-  <i [appIcon]="icon" appIconSize="xlarge" class="dialog-panel__icon" aria-hidden="true"></i>
+  <i [appIcon]="icon" appIconSize="large" class="dialog-panel__icon" aria-hidden="true"></i>
 }
 
 <h2 [id]="titleId" class="dialog-panel__title">{{ data.title }}</h2>

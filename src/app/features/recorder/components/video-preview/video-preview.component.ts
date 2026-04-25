@@ -9,7 +9,7 @@ import {
 
 @Component({
   selector: 'app-video-preview',
-  templateUrl: './video-preview.component.html',
+  template: `<video #videoEl autoplay muted playsinline></video>`,
   styleUrl: './video-preview.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

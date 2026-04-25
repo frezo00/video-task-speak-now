@@ -11,12 +11,6 @@ export const ICONS = [
 
 export type Icon = (typeof ICONS)[number];
 
-export const ICON_SIZES = [
-  'xsmall',
-  'small',
-  'medium',
-  'large',
-  'xlarge',
-] as const satisfies readonly string[];
+export const ICON_SIZES = ['small', 'medium', 'large'] as const satisfies readonly string[];
 
 export type IconSize = (typeof ICON_SIZES)[number];
