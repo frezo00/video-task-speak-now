@@ -5,19 +5,18 @@
     <app-video-preview [stream]="$stream()" />
 
     <button
-      #gearBtn
-      type="button"
+      appQualityMenuTrigger
+      #trigger="appQualityMenuTrigger"
       class="stage__settings"
-      [attr.aria-label]="$qualityMenuOpen() ? 'Close quality menu' : 'Quality settings'"
-      aria-haspopup="menu"
-      [attr.aria-expanded]="$qualityMenuOpen()"
+      [selected]="$qualityTier()"
       [disabled]="$recorderStatus() !== 'idle'"
-      (click)="toggleQualityMenu()"
+      [attr.aria-label]="trigger.$isOpen() ? 'Close quality menu' : 'Quality settings'"
+      [attr.aria-expanded]="trigger.$isOpen()"
+      (qualitySelected)="onQualitySelected($event)"
     >
       <i
-        [appIcon]="$qualityMenuOpen() ? 'close' : 'settings'"
-        appIconSize="xlarge"
-        class="stage__settings-icon"
+        [appIcon]="trigger.$isOpen() ? 'close' : 'settings'"
+        [appIconSize]="trigger.$isMobile() ? 'medium' : 'large'"
         aria-hidden="true"
       ></i>
     </button>
@@ -40,7 +39,7 @@
         (click)="toggleDrawer()"
       >
         <i appIcon="video" aria-hidden="true"></i>
-        Videos ({{ $videosCount() }})
+        {{ $videosCount() }}
       </button>
     }
   }

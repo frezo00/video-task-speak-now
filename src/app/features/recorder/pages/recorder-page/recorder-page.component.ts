@@ -1,8 +1,6 @@
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { Dialog, type DialogRef } from '@angular/cdk/dialog';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Overlay, type ConnectedPosition, type OverlayRef } from '@angular/cdk/overlay';
-import { ComponentPortal } from '@angular/cdk/portal';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -16,8 +14,6 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { Store } from '@ngxs/store';
-import { map } from 'rxjs/operators';
 import {
   Bandwidth,
   BandwidthState,
@@ -28,24 +24,27 @@ import {
 import { CameraError, CameraErrorKind, CameraService } from '@core/camera';
 import { ErrorBannerService } from '@core/error';
 import { Recording } from '@core/recorder';
+import { VideosListComponent, VideosState } from '@features/videos';
+import { Store } from '@ngxs/store';
+import { MOBILE_BREAKPOINT } from '@shared/breakpoints';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
   type DialogResult,
 } from '@shared/confirm-dialog';
 import { IconDirective } from '@shared/icons';
-import { SpinnerComponent, SPINNER_DEBOUNCE_MS } from '@shared/spinner';
-import { VideosListComponent, VideosState } from '@features/videos';
-import { QualityMenuComponent } from '../../components/quality-menu/quality-menu.component';
+import { SPINNER_DEBOUNCE_MS, SpinnerComponent } from '@shared/spinner';
+import { map } from 'rxjs';
+import { QualityMenuTriggerDirective } from '../../components/quality-menu/quality-menu-trigger.directive';
 import { RecorderControlsComponent } from '../../components/recorder-controls/recorder-controls.component';
-import { OverrideRollbackReason, Quality, QualityState, RecorderState } from '../../state';
 import { VideoPreviewComponent } from '../../components/video-preview/video-preview.component';
+import { OverrideRollbackReason, Quality, QualityState, RecorderState } from '../../state';
 
 const CAMERA_ERROR_DIALOGS: Record<CameraErrorKind, ConfirmDialogData> = {
   [CameraErrorKind.PermissionDenied]: {
     title: 'Camera access denied',
     body:
-      'This app needs your camera to record videos, but access was blocked.\n\n' +
+      'This app needs your camera to record videos, but access was blocked.\n' +
       "Open your browser's site settings, allow camera access for this page, then retry.",
     confirmLabel: 'Retry',
     dismissLabel: 'Dismiss',
@@ -59,7 +58,7 @@ const CAMERA_ERROR_DIALOGS: Record<CameraErrorKind, ConfirmDialogData> = {
   [CameraErrorKind.Overconstrained]: {
     title: 'Resolution not supported',
     body:
-      'Your camera does not support the requested resolution.\n\n' +
+      'Your camera does not support the requested resolution.\n' +
       'Retry to try a compatible configuration.',
     confirmLabel: 'Retry',
     dismissLabel: 'Dismiss',
@@ -73,31 +72,19 @@ const CAMERA_ERROR_DIALOGS: Record<CameraErrorKind, ConfirmDialogData> = {
   [CameraErrorKind.Unknown]: {
     title: "Couldn't open the camera",
     body:
-      'Something went wrong while opening the camera.\n\n' +
+      'Something went wrong while opening the camera.\n' +
       'Retry — if the problem persists, reload the page.',
     confirmLabel: 'Retry',
     dismissLabel: 'Dismiss',
   },
 };
 
-const QUALITY_MENU_POSITION: ConnectedPosition = {
-  originX: 'end',
-  originY: 'bottom',
-  overlayX: 'start',
-  overlayY: 'bottom',
-  offsetX: 8,
-};
-
-// Max width below which the sidebar collapses into a bottom drawer. Uses the
-// same `(width < 48rem)` range query as the `for-mobile` mixin in
-// src/styles/_mixins.scss so CSS and JS flip in lockstep.
-const MOBILE_BREAKPOINT = '(width < 48rem)';
-
 @Component({
   selector: 'app-recorder-page',
   imports: [
     CdkTrapFocus,
     IconDirective,
+    QualityMenuTriggerDirective,
     RecorderControlsComponent,
     SpinnerComponent,
     VideoPreviewComponent,
@@ -115,7 +102,6 @@ export class RecorderPageComponent implements OnInit {
   readonly #dialog = inject(Dialog);
   readonly #destroyRef = inject(DestroyRef);
   readonly #store = inject(Store);
-  readonly #overlay = inject(Overlay);
   readonly #banner = inject(ErrorBannerService);
   readonly #breakpoints = inject(BreakpointObserver);
 
@@ -131,9 +117,6 @@ export class RecorderPageComponent implements OnInit {
   readonly #$showSpinner = signal<boolean>(false);
   readonly $showSpinner = this.#$showSpinner.asReadonly();
 
-  readonly #$qualityMenuOpen = signal<boolean>(false);
-  readonly $qualityMenuOpen = this.#$qualityMenuOpen.asReadonly();
-
   readonly $isMobile = toSignal(
     this.#breakpoints.observe(MOBILE_BREAKPOINT).pipe(map((state) => state.matches)),
     { initialValue: false as boolean },
@@ -143,13 +126,11 @@ export class RecorderPageComponent implements OnInit {
   readonly $drawerOpen = this.#$drawerOpen.asReadonly();
   readonly $drawerActive = computed<boolean>(() => this.$isMobile() && this.#$drawerOpen());
 
-  readonly $gearEl = viewChild<ElementRef<HTMLButtonElement>>('gearBtn');
   readonly $drawerChipEl = viewChild<ElementRef<HTMLButtonElement>>('drawerChip');
 
   #activeDialog: DialogRef<DialogResult> | null = null;
   #spinnerTimer: ReturnType<typeof setTimeout> | null = null;
   #lastBootedTier: QualityTier | null = null;
-  #qualityMenuRef: OverlayRef | null = null;
   #previousTierBeforeOverride: QualityTier | null = null;
 
   constructor() {
@@ -180,18 +161,8 @@ export class RecorderPageComponent implements OnInit {
     this.#store.dispatch(new Bandwidth.MeasurementRequested());
     this.#destroyRef.onDestroy(() => {
       this.#stopSpinner();
-      this.#qualityMenuRef?.dispose();
-      this.#qualityMenuRef = null;
       this.#camera.closeStream();
     });
-  }
-
-  toggleQualityMenu(): void {
-    if (this.#qualityMenuRef) {
-      this.#closeQualityMenu();
-      return;
-    }
-    this.#openQualityMenu();
   }
 
   onStartRecording(): void {
@@ -215,58 +186,7 @@ export class RecorderPageComponent implements OnInit {
     this.$drawerChipEl()?.nativeElement.focus();
   }
 
-  #openQualityMenu(): void {
-    const gear = this.$gearEl();
-    if (!gear) {
-      return;
-    }
-    const positionStrategy = this.#overlay
-      .position()
-      .flexibleConnectedTo(gear.nativeElement)
-      .withPositions([QUALITY_MENU_POSITION])
-      .withPush(true);
-    const ref = this.#overlay.create({
-      positionStrategy,
-      scrollStrategy: this.#overlay.scrollStrategies.reposition(),
-      hasBackdrop: false,
-      panelClass: 'quality-menu-panel',
-    });
-    this.#qualityMenuRef = ref;
-    const portal = new ComponentPortal(QualityMenuComponent);
-    const componentRef = ref.attach(portal);
-    componentRef.setInput('selected', this.$qualityTier());
-    // OutputEmitterRef subscriptions are cleaned up when the attached component
-    // is destroyed (overlay dispose); no manual takeUntilDestroyed needed.
-    componentRef.instance.$qualitySelected.subscribe((tier) => {
-      void this.#applyOverride(tier);
-    });
-    componentRef.instance.$closed.subscribe(() => this.#closeQualityMenu());
-    ref
-      .outsidePointerEvents()
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe((event) => {
-        // Ignore pointerdowns on the gear: the button's own click toggles the
-        // menu. Without this, outsidePointerEvents would close it and the click
-        // handler would immediately reopen it.
-        const gearEl = this.$gearEl()?.nativeElement;
-        if (gearEl && event.target instanceof Node && gearEl.contains(event.target)) {
-          return;
-        }
-        this.#closeQualityMenu();
-      });
-    this.#$qualityMenuOpen.set(true);
-  }
-
-  async #bootCamera(tier: QualityTier): Promise<void> {
-    try {
-      await this.#camera.openStream(constraintsFor(tier));
-    } catch (err) {
-      this.#handleError(err);
-    }
-  }
-
-  async #applyOverride(tier: QualityTier): Promise<void> {
-    this.#closeQualityMenu();
+  async onQualitySelected(tier: QualityTier): Promise<void> {
     if (tier === this.$qualityTier()) {
       return;
     }
@@ -277,6 +197,14 @@ export class RecorderPageComponent implements OnInit {
       await this.#camera.openStream(constraintsFor(tier));
     } catch (err) {
       this.#handleOverrideError(err);
+    }
+  }
+
+  async #bootCamera(tier: QualityTier): Promise<void> {
+    try {
+      await this.#camera.openStream(constraintsFor(tier));
+    } catch (err) {
+      this.#handleError(err);
     }
   }
 
@@ -302,16 +230,6 @@ export class RecorderPageComponent implements OnInit {
     this.#handleError(err);
   }
 
-  #closeQualityMenu(): void {
-    if (!this.#qualityMenuRef) {
-      return;
-    }
-    this.#qualityMenuRef.dispose();
-    this.#qualityMenuRef = null;
-    this.#$qualityMenuOpen.set(false);
-    this.$gearEl()?.nativeElement.focus();
-  }
-
   #handleError(err: unknown): void {
     if (!(err instanceof CameraError)) {
       console.error('[camera] unexpected error', err);
@@ -326,7 +244,10 @@ export class RecorderPageComponent implements OnInit {
     }
     const ref: DialogRef<DialogResult> = this.#dialog.open<DialogResult, ConfirmDialogData>(
       ConfirmDialogComponent,
-      { data },
+      {
+        data,
+        backdropClass: 'dialog-panel__backdrop',
+      },
     );
     this.#activeDialog = ref;
     ref.closed.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((result) => {
