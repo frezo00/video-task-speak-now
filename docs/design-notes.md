@@ -51,7 +51,7 @@ On load the top-left shows a tiny breadcrumb-style label ("start video recorder"
 ## Screen 04 — Recording in progress
 
 - Same base as screen 02. The pill mutates:
-  - **Stop button** on the left: circular with a **blue square** (same indigo as the playback buttons).
+  - **Stop button** on the left: circular with a **blue square** (same blue as the playback buttons).
   - To the right of the button: a **linear progress bar** that fills over 10 s.
   - Timer text on the far right: `3.1 s` (one decimal). Resets on start, freezes on stop.
 - **Interaction:** pill click = stop. Auto-stops at 10.0 s. Stopping transitions directly to save → screen 05 with the new video appended to the top of the sidebar.
@@ -78,7 +78,7 @@ On load the top-left shows a tiny breadcrumb-style label ("start video recorder"
 - Base dimmed behind a CDK Dialog (focus-trapped).
 - Dialog: rounded light-grey card, centered. Contents:
   - Video player at the top (16:9-ish).
-  - Below: a **play/pause button** (indigo circle) on the left, a **scrubber** to the right.
+  - Below: a **play/pause button** (blue circle) on the left, a **scrubber** to the right.
   - Top-right: **X close button** (circular, dark).
 - **Interaction:** clicking a thumbnail in screen 05 opens this modal auto-playing. Scrubber seeks. Pause toggles icon. Escape closes. Focus returns to the originating thumbnail.
 
@@ -113,7 +113,7 @@ The Figma file ships a UI-kit frame with the following atoms. Treat this as the 
 | **Quality list row**          | `360p (Low)`, `720p (Medium)`, `1080p (High)`; each: default / selected (checkmark) | All three shown; selected has a small green check on the right. |
 | **Recorder pill — idle**      | —                                                                                   | Dark rounded bar with red record button centered.               |
 | **Recorder pill — recording** | —                                                                                   | Stop button on left + progress bar + timer `3.1 s` on right.    |
-| **Play / Pause buttons**      | play, pause                                                                         | Indigo filled circles with white icon.                          |
+| **Play / Pause buttons**      | play, pause                                                                         | blue filled circles with white icon.                            |
 
 ---
 
@@ -133,8 +133,8 @@ $bg-pill: #3a3b3d; // recorder pill background
 
 // Accents
 $accent-red: #e53935; // record button
-$accent-blue: #2563eb; // stop button (matches indigo family)
-$accent-indigo: #4f46e5; // play/pause circles
+$accent-blue: #2563eb; // stop button (matches blue family)
+$accent-blue: #4f46e5; // play/pause circles
 $accent-green: #22c55e; // selected-quality checkmark
 
 // Text

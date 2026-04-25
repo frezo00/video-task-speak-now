@@ -1,18 +1,32 @@
-@use 'tokens' as tokens;
-@use 'mixins' as mx;
+@use 'accent.helper' as accent;
+@use 'base.helper' as base;
+@use 'border.helper' as border;
+@use 'spacing.helper' as spacing;
+@use 'typography.helper' as typography;
 
 :host {
+  @include base.size(100%, base.px-to-rem(180px));
+
   cursor: pointer;
 
   position: relative;
 
   display: block;
 
-  inline-size: 100%;
-  border-radius: tokens.$radius-sm;
+  min-block-size: base.px-to-rem(180px);
+  border-radius: border.border-radius(md);
 
-  &:focus-visible {
-    @include mx.focus-ring;
+  &:hover,
+  &:focus-within {
+    // Darken the thumbnail via the CSS var the child component reads, and show
+    // the trash button. Done here because hover/focus state lives on the card.
+    $thumbnail-dark: base.transparentizer(black, 70%);
+
+    --thumbnail-overlay: #{$thumbnail-dark};
+
+    .videos-list-item__delete {
+      opacity: 1;
+    }
   }
 }
 
@@ -22,47 +36,30 @@
   }
 
   &__overlay {
-    position: absolute;
-    inset-block-end: tokens.$space-2;
+    @include base.absolute($bottom: spacing.spacing(2x));
+    @include typography.typography(primary, sm);
 
-    padding: tokens.$space-1 tokens.$space-2;
-    border-radius: tokens.$radius-sm;
-
-    font-size: tokens.$font-size-xs;
-    color: tokens.$color-text-primary;
-
-    // The thumbnail's bottom-gradient scrim tops out at ~70% near the edge but
-    // can be as thin as ~30% higher up. Adding an explicit semi-opaque chip
-    // keeps white text ≥ 4.5:1 against any frame, not just dark ones.
-    background-color: rgb(0 0 0 / 55%);
+    padding: spacing.spacing(1x) spacing.spacing(2x);
 
     &--date {
-      inset-inline-start: tokens.$space-2;
+      inset-inline-start: spacing.spacing(2x);
     }
 
     &--duration {
-      inset-inline-end: tokens.$space-2;
+      inset-inline-end: spacing.spacing(2x);
     }
   }
 
   &__delete {
-    cursor: pointer;
+    @include base.absolute($top: spacing.spacing(2x), $right: spacing.spacing(2x));
+    @include base.flex($justify: center, $align: center, $inline: true);
+    @include base.size(base.px-to-rem(32px));
+    @include base.transition(opacity, color);
 
-    position: absolute;
-    inset-block-start: tokens.$space-2;
-    inset-inline-end: tokens.$space-2;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    inline-size: 2rem;
-    block-size: 2rem;
     padding: 0;
-    border: none;
-    border-radius: 50%;
+    border-radius: border.border-radius(circle);
 
-    color: tokens.$color-text-primary;
+    color: typography.text-color(primary);
 
     // Transparent — contrast comes from the thumbnail's hover scrim.
     opacity: 0;
@@ -70,11 +67,7 @@
 
     &:hover,
     &:focus-visible {
-      color: tokens.$color-accent-red;
-    }
-
-    &:focus-visible {
-      @include mx.focus-ring;
+      color: accent.accent-color(red);
     }
 
     @media (prefers-reduced-motion: no-preference) {
@@ -89,16 +82,5 @@
     @media (hover: none) {
       opacity: 1;
     }
-  }
-}
-
-:host:hover,
-:host:focus-within {
-  // Darken the thumbnail via the CSS var the child component reads, and show
-  // the trash button. Done here because hover/focus state lives on the card.
-  --thumbnail-overlay: rgb(0 0 0 / 70%);
-
-  .videos-list-item__delete {
-    opacity: 1;
   }
 }

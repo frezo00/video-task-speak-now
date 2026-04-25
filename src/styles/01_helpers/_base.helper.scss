@@ -1,0 +1,174 @@
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:meta';
+@use 'sass:list';
+
+// ************************************
+//   BASE - Base functions and mixins
+// ************************************
+
+// ========================================
+//   FUNCTIONS - Various helper functions
+// ========================================
+
+@function map-contains($map, $key) {
+  @if map.has-key($map, $key) {
+    @return map.get($map, $key);
+  }
+
+  @warn "Unknown `#{$key}` in the `#{$map}` map.";
+
+  @return null;
+}
+
+@function px-to-rem($pixels) {
+  $font-size-base: 16px;
+
+  @return calc($pixels / $font-size-base * 1rem);
+}
+
+@function transparentizer($color, $percentage) {
+  @if math.unit($percentage) != '%' {
+    @error 'The second parameter must be a percentage';
+  }
+
+  @return color-mix(in srgb, $color #{$percentage}, transparent);
+}
+
+// ==================================
+//   MIXINS - Various helper mixins
+// ==================================
+
+// ----------------------------------------------------------------
+//   FLEX - Mixin for setting Flexbox properties.
+//   Pass `$inline: true` for `display: inline-flex` instead of `flex`.
+// ----------------------------------------------------------------
+@mixin flex(
+  $direction: false,
+  $justify: false,
+  $align: false,
+  $gsb: false,
+  $gap: false,
+  $wrap: false,
+  $inline: false
+) {
+  @if $inline {
+    display: inline-flex;
+  } @else {
+    display: flex;
+  }
+
+  @if $direction {
+    flex-direction: $direction;
+  }
+
+  @if $justify {
+    justify-content: $justify;
+  }
+
+  @if $align {
+    align-items: $align;
+  }
+
+  @if $gsb {
+    flex: $gsb;
+  }
+
+  @if $gap {
+    gap: $gap;
+  }
+
+  @if $wrap {
+    flex-wrap: $wrap;
+  }
+}
+
+// -----------------------------------------------------------------
+//   SIZE - Sets the element's logical `inline-size` / `block-size`.
+//   One argument produces a square; two, an asymmetric rectangle.
+//     @include size(1rem);             // 1rem × 1rem
+//     @include size(2.5rem, 0.25rem);  // 2.5rem × 0.25rem
+// -----------------------------------------------------------------
+@mixin size($inline, $block: $inline) {
+  inline-size: $inline;
+  block-size: $block;
+}
+
+// ----------------------------------------------------------------
+//   TRANSITION - Mixin for setting the 'transition' property
+//   How to use:
+//   selector {
+//     // Pass in just CSS property name(s) separated with comma:
+//     @include transition(color, background-color);
+//   }
+// ----------------------------------------------------------------
+
+@mixin transition($args...) {
+  $transition-property: all;
+  $transition-duration: 120ms;
+  $transition-timing: ease;
+  $transition-delay: 0s;
+  $props: ();
+
+  @each $prop in $args {
+    @if meta.type-of($prop) == string {
+      $props: list.append($props, $prop $transition-duration $transition-timing, 'comma');
+    } @else {
+      $props: list.append($props, $prop, 'comma');
+    }
+  }
+
+  @if $props == () {
+    $props: list.append($props, all $transition-duration $transition-timing, 'comma');
+  }
+
+  transition: $props;
+}
+
+// --------------------------------------------------------------
+//   POSITION - Mixin for setting 'position'-related attributes
+// --------------------------------------------------------------
+@mixin position(
+  $position,
+  $top: false,
+  $right: false,
+  $bottom: false,
+  $left: false,
+  $transform: false
+) {
+  position: $position;
+
+  @if $top {
+    inset-block-start: $top;
+  }
+
+  @if $right {
+    inset-inline-end: $right;
+  }
+
+  @if $bottom {
+    inset-block-end: $bottom;
+  }
+
+  @if $left {
+    inset-inline-start: $left;
+  }
+
+  @if $transform {
+    transform: $transform;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+//   ABSOLUTE - Mixin for setting 'position: absolute;' and relevant positions for the element
+// ---------------------------------------------------------------------------------------------
+@mixin absolute($top: false, $right: false, $bottom: false, $left: false, $transform: false) {
+  @include position(absolute, $top, $right, $bottom, $left, $transform);
+}
+
+// ---------------------------------------------------------------------------------------------
+//   FIXED - Mixin for setting 'position: fixed;' and relevant positions for the element
+// ---------------------------------------------------------------------------------------------
+@mixin fixed($top: false, $right: false, $bottom: false, $left: false, $transform: false) {
+  @include position(fixed, $top, $right, $bottom, $left, $transform);
+}

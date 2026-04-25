@@ -7,6 +7,14 @@
     "scss/load-partial-extension": null,
     "no-empty-source": null,
     "declaration-no-important": true,
-    "no-descending-specificity": null
+    "no-descending-specificity": null,
+    "at-rule-empty-line-before": [
+      "always",
+      {
+        "except": ["blockless-after-same-name-blockless", "first-nested"],
+        "ignore": ["after-comment"],
+        "ignoreAtRules": ["else"]
+      }
+    ]
   }
 }

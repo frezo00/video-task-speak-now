@@ -1,0 +1,38 @@
+@use 'base.helper';
+
+// ============================================================
+//   BREAKPOINTS - maps, functions and mixins for breakpoints
+// ============================================================
+$breakpoints: (
+  mobile: base.px-to-rem(768px),
+  tablet: base.px-to-rem(1024px),
+  desktop: base.px-to-rem(1440px),
+);
+
+/* ---------------------------------------------------------------------
+ *   MEDIA - Mixin that enables using styling for a specific breakpoint
+ *   How to use:
+ *
+ *     selector {
+ *       @include media(mobile, max) {
+ *         // put here stylings for the specified media breakpoint
+ *       }
+ *     }
+ * ---------------------------------------------------------------------
+ */
+@mixin media($breakpoint-name, $type: min) {
+  $breakpoint-pixels: base.map-contains($breakpoints, $breakpoint-name);
+
+  @if $breakpoint-pixels {
+    @if $type == max {
+      // Breakpoint values are stored as rem (via `base.px-to-rem`), so the
+      // 1-pixel offset for max-width queries has to be in rem too. 1/16 rem
+      // = 1px at the default root font size.
+      $breakpoint-pixels: $breakpoint-pixels - base.px-to-rem(1px);
+    }
+
+    @media only screen and (#{$type}-width: $breakpoint-pixels) {
+      @content;
+    }
+  }
+}

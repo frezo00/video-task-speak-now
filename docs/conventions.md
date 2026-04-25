@@ -442,79 +442,112 @@ Scope for v1 (per [CLAUDE.md](../CLAUDE.md)): services + NGXS reducers only. Com
 
 Most of these rules are enforced by Stylelint (`.stylelintrc.json`). Some — tokens vs literals, `:host` discipline — are code review.
 
-### 8.1 File organization
+### 8.1 File organization — ITCSS layers
 
-- **Global styles live in `src/styles/`:**
-  - `_tokens.scss` — design tokens. **Defines CSS custom properties** under `:root` (plus theme variants like `:root.dark`) **and** the SCSS variables that point at them. Token values are the source of truth from [`docs/design-notes.md`](design-notes.md).
-  - `_mixins.scss` — breakpoint mixins, focus-ring mixin, motion-guarded transition mixin.
-  - `_reset.scss` — minimal reset (box-sizing, `:focus-visible` baseline, `prefers-reduced-motion` override).
-- `src/styles.scss` imports each partial **once** via `@use`.
-- **Component styles stay colocated** with the component (`video-tile.component.scss` beside `video-tile.component.ts`).
+Global styles in `src/styles/` follow an **ITCSS** layout (Inverted Triangle CSS): four ordered folders composed by `global.scss`. The order matters — later layers override earlier ones, and specificity rises as you go down.
+
+```
+src/styles/
+├── 00_settings/   _root.setting.scss          CSS custom properties only (no output CSS)
+├── 01_helpers/    _base / _accent / _background / _border / _breakpoint /
+│                  _focus / _icon / _shadow / _spacing / _typography .helper.scss
+├── 02_elements/   _body / _box-model / _button / _focus .element.scss
+├── 03_objects/    _dialog / _icon / _scrollbar .object.scss
+├── global.scss    @forward-s every layer
+└── (root) styles.scss   CDK a11y utilities only
+```
+
+- **`00_settings/`** — design tokens as **CSS custom properties** on `:root` (`--color-*`, `--font-family-*`). No SCSS variables. No output CSS until later layers consume them.
+- **`01_helpers/`** — functions and mixins only, namespaced on import. Each helper owns a token map (spacings, breakpoints, radii, shadows, …) and exposes a lookup function so the SCSS vocabulary stays inside the helpers. No output CSS.
+- **`02_elements/`** — bare element defaults (`body`, `button`, `*`, `:focus-visible`). Low specificity.
+- **`03_objects/`** — reusable BEM blocks used across components (`.dialog-panel`, `.icon`, `.scrollbar-*`).
+- **Component styles stay colocated** with the component (`video-tile.component.scss` beside `video-tile.component.ts`) and use helper imports for all design values.
+
+`angular.json` declares `stylePreprocessorOptions.includePaths: ["src/styles/01_helpers"]`, so component files import helpers with short paths — no `../../../`:
+
+```scss
+@use 'spacing.helper' as spacing;
+@use 'typography.helper' as typography;
+```
 
 ### 8.2 `@use` only, never `@import`
 
 `@import` is deprecated in Sass. Use `@use` with a namespace so identifiers don't leak into the global scope.
 
 ```scss
-// good
-@use 'styles/tokens' as tokens;
-@use 'styles/mixins' as mx;
+// good — short path, one namespace per helper
+@use 'spacing.helper' as spacing;
+@use 'border.helper' as border;
+@use 'focus.helper' as focus;
 
 .video-tile {
-  padding: tokens.$space-3;
-  @include mx.focus-ring;
+  padding: spacing.spacing(3x);
+  border-radius: border.border-radius(md);
+
+  &:focus-visible {
+    @include focus.focus-ring;
+  }
 }
 ```
 
-### 8.3 Tokens — CSS custom property under `:root`, SCSS variable points at it
+### 8.3 Tokens — CSS custom properties + helper functions
 
-No hex, rem, px, or magic numbers in component styles. Every design value is **a CSS custom property declared once on `:root`** (with theme variants on `:root.light` / `:root.dark`), and **a SCSS variable that is literally `var(--name)`**. Components use the SCSS variable. This gives you:
+Every design value is declared **once** as a CSS custom property on `:root` in `00_settings/_root.setting.scss`, then surfaced through a **helper function** in `01_helpers/`. Components call the helper — they do not read the raw custom property or hard-code values.
 
-- **Runtime theming** — toggle a class on `<html>` and every component re-theres with no JS restyle and no SCSS recompile.
-- **Stable, namespaced SCSS identifiers** — `tokens.$color-text-primary` is the name every component uses. You can move the underlying value without rewriting callers.
+- **Runtime theming** — toggling a class on `<html>` re-themes every consumer without a SCSS recompile (add a `:root.dark { … }` block alongside the current `:root` when theming lands).
+- **Stable, namespaced API** — `typography.text-color(primary)` is the callable; the underlying variable can move without rewriting callers.
+- **Validated keys** — helpers delegate to `base.map-contains($map, $key)`, which emits a Sass warning if a name is misspelled.
 
 ```scss
-// src/styles/_tokens.scss
-
-// 1. Declare the CSS custom properties on :root (light is the default).
-:root,
-:root.light {
-  --color-text-primary: #2a2b2d;
-  --color-surface: #ffffff;
-  --color-accent: #1d70ff;
-
-  --radius-md: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
+// src/styles/00_settings/_root.setting.scss — source of truth
+:root {
+  --color-text-primary: #fff;
+  --color-bg-surface: #fff;
+  --color-accent-blue: #5061d0;
+  --color-bg-main: #2b2b2b;
 }
-
-:root.dark {
-  --color-text-primary: #f2f2f2;
-  --color-surface: #111113;
-  --color-accent: #4a8dff;
-}
-
-// 2. SCSS variables are pointers — one line each, deliberately boring.
-$color-text-primary: var(--color-text-primary);
-$color-surface: var(--color-surface);
-$color-accent: var(--color-accent);
-$radius-md: var(--radius-md);
-$space-3: var(--space-3);
-$space-4: var(--space-4);
 ```
 
 ```scss
-// any component uses the SCSS variable
-@use 'styles/tokens' as tokens;
+// src/styles/01_helpers/_typography.helper.scss — exposes the token via a function
+$text-colors: (
+  primary: var(--color-text-primary), // …
+);
 
-.video-tile {
-  padding: tokens.$space-3;
-  color: tokens.$color-text-primary;
-  border-radius: tokens.$radius-md;
+@function text-color($text-color) {
+  @return base.map-contains($text-colors, $text-color);
 }
 ```
 
-**Exception — tokens that feed compile-time math.** Breakpoint widths, grid column counts, and anything you do SCSS arithmetic on (`calc()` is fine in CSS but `tokens.$breakpoint-tablet * 1.5` isn't) must live as plain SCSS values, not `var(--x)`. Keep those in `_mixins.scss` or a separate `_breakpoints.scss` partial; they aren't themable at runtime anyway.
+```scss
+// any component uses the helper
+@use 'typography.helper' as typography;
+@use 'border.helper' as border;
+@use 'spacing.helper' as spacing;
+
+.video-tile {
+  padding: spacing.spacing(3x);
+  color: typography.text-color(primary);
+  border-radius: border.border-radius(md);
+}
+```
+
+**Typical helper APIs components reach for:**
+
+| Helper              | Function / mixin                                                                                                                                | Common values                                                                  |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `spacing.helper`    | `spacing(key)`                                                                                                                                  | `0 \| min \| 1x..32x \| auto`                                                  |
+| `border.helper`     | `border-radius(key)`, `border(color, width, style)`                                                                                             | `xs \| sm \| md \| rounded \| lg \| circle`                                    |
+| `typography.helper` | `text-color`, `font-size`, `font-weight`, `font-family`, `line-height`, `text-align`, `typography(...)` mixin, `truncate` mixin                 | `primary \| secondary \| dark \| danger`; `xs..xxl`; `normal \| bold`; `base`  |
+| `background.helper` | `background-color(key)`                                                                                                                         | `main \| sidebar \| surface \| translucent \| scrim \| pill \| progress-track` |
+| `accent.helper`     | `accent-color(key)`                                                                                                                             | `red \| green \| blue`                                                         |
+| `icon.helper`       | `icon-size(key)`                                                                                                                                | `sm \| md \| lg`                                                               |
+| `shadow.helper`     | `shadow(key)`                                                                                                                                   | `dialog \| drawer`                                                             |
+| `focus.helper`      | `focus-ring([color])` mixin                                                                                                                     | —                                                                              |
+| `breakpoint.helper` | `media(name, type)` mixin                                                                                                                       | name: `mobile \| tablet \| desktop`; type: `min \| max` (default `min`)        |
+| `base.helper`       | `flex(...)`, `absolute(...)`, `position(...)`, `square(size)`, `transition(...)`, `transparentizer(color, %)`, `px-to-rem(px)` mixins/functions | —                                                                              |
+
+**Exception — compile-time math.** Values that feed SCSS arithmetic (like the breakpoint map) live as plain SCSS values inside the helper, not `var(--x)`. They aren't themable at runtime anyway.
 
 ### 8.4 Selectors — BEM-lite, max 3 levels of nesting
 
@@ -557,55 +590,62 @@ Prefer logical properties over physical ones — they work with any writing mode
 - `inset-inline` / `inset-block`
 - `inline-size` / `block-size` over `width` / `height` (when the axis is semantic, not a pixel target)
 
-### 8.7 Responsive — breakpoint mixins, `clamp()` for fluid
+### 8.7 Responsive — `breakpoint.media()` mixin, mobile-first, `clamp()` for fluid
 
-Breakpoints from [`docs/design-notes.md`](design-notes.md) live as mixins in `_mixins.scss`:
+Breakpoints from [`docs/design-notes.md`](design-notes.md) live as a map in `01_helpers/_breakpoint.helper.scss`:
 
 ```scss
-// _mixins.scss
-@mixin for-tablet {
-  @media (min-width: 48rem) {
-    @content;
-  }
-}
-@mixin for-desktop {
-  @media (min-width: 72rem) {
-    @content;
+$breakpoints: (
+  mobile: base.px-to-rem(768px),
+  // ≥ 768px
+  tablet: base.px-to-rem(1024px),
+  // ≥ 1024px
+  desktop: base.px-to-rem(1440px), // ≥ 1440px
+);
+```
+
+Use `@include breakpoint.media(name, type)` — default `type` is `min`, so `media(mobile)` means "at least 768px". For mobile-only overrides use `max`:
+
+```scss
+@use 'breakpoint.helper' as breakpoint;
+
+.stage {
+  padding: 2.5rem;
+
+  @include breakpoint.media(mobile, max) {
+    // < 768px — mobile
+    padding: 1rem;
   }
 }
 
-// component.scss
 .hero {
   font-size: clamp(1.25rem, 2vw + 1rem, 2rem);
 
-  @include mx.for-desktop {
+  @include breakpoint.media(tablet) {
+    // ≥ 1024px — desktop
     grid-template-columns: 2fr 1fr;
   }
 }
 ```
 
+Prefer **mobile-first**: default rules apply on phone widths, `media(mobile)` (min-width 768px) lifts to tablet+. Use `(…, max)` only for true mobile-only overrides.
+
 ### 8.8 Motion respects `prefers-reduced-motion`
 
-Every transition / animation is wrapped in a motion-guard mixin so reduced-motion users aren't punished:
+Wrap every transition / animation in a `prefers-reduced-motion: no-preference` media query so reduced-motion users aren't punished. The global reset in `02_elements/_box-model.element.scss` also force-caps any remaining transition/animation durations to ~0 on `reduce`.
 
 ```scss
-// _mixins.scss
-@mixin motion($props) {
-  @media (prefers-reduced-motion: no-preference) {
-    transition: $props;
-  }
-}
-
-// component.scss
 .pill {
-  @include mx.motion(background-color 160ms ease);
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color 160ms ease;
+  }
 }
 ```
 
 ### 8.9 A11y — contrast + `:focus-visible`
 
-- Minimum WCAG AA (4.5:1 for text, 3:1 for large text / UI) — achieved by pairing tokens from `_tokens.scss`, never ad-hoc hexes.
-- Every interactive element ships a `:focus-visible` style. Use the `focus-ring` mixin so it's consistent.
+- Minimum WCAG AA (4.5:1 for text, 3:1 for large text / UI) — achieved by pairing tokens through the helper functions, never ad-hoc hexes.
+- Every interactive element ships a `:focus-visible` style. Use `@include focus.focus-ring` so it's consistent.
 - Never `outline: none` without a replacement focus style.
 
 ### 8.10 No `!important`

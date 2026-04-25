@@ -186,7 +186,7 @@ Run `npm start`, open Chrome DevTools device toolbar. Test each viewport by pick
 Unplug the mouse (metaphorically). Run through each phase's existing test matrix without touching the mouse:
 
 - Tab from page load reaches: quality gear → recorder record/stop → (on mobile) "Videos (N)" chip → each card → trash button (when card has focus-within) → Close on playback dialog.
-- Every focused interactive control shows a visible `:focus-visible` ring (the shared `@include mx.focus-ring` indigo outline — or red on destructive buttons).
+- Every focused interactive control shows a visible `:focus-visible` ring (the shared `@include mx.focus-ring` blue outline — or red on destructive buttons).
 - Space triggers the recorder when the record/stop button is focused. Enter triggers playback on a focused card. Escape closes any open overlay (quality menu, drawer, dialog).
 - Focus traps: the quality menu and every CDK Dialog trap Tab internally. The mobile drawer traps Tab when open (via `cdkTrapFocus`) and restores focus to the chip on close.
 

@@ -1,170 +1,133 @@
-@use 'tokens' as tokens;
-@use 'mixins' as mx;
+@use 'background.helper' as background;
+@use 'base.helper' as base;
+@use 'border.helper' as border;
+@use 'breakpoint.helper' as breakpoint;
+@use 'shadow.helper' as shadow;
+@use 'spacing.helper' as spacing;
+@use 'typography.helper' as typography;
 
 :host {
-  display: flex;
-  gap: tokens.$space-10;
-  block-size: 100dvh;
-  padding: tokens.$space-10;
+  @include base.flex(column, $gap: spacing.spacing(4x));
 
-  @include mx.for-mobile {
-    flex-direction: column;
-    gap: tokens.$space-4;
-    padding: tokens.$space-4;
+  block-size: 100dvh;
+  padding: spacing.spacing(4x);
+
+  @include breakpoint.media(mobile) {
+    @include base.flex(row, $gap: spacing.spacing(4x));
+
+    padding: spacing.spacing(10x);
   }
 }
 
 .stage {
+  @include base.flex($justify: center, $align: center, $gsb: 4 1 0);
+
   position: relative;
 
   overflow: hidden;
-  display: flex;
-  flex: 4 1 0;
-  align-items: center;
-  justify-content: center;
 
-  padding: tokens.$space-4;
-  border-radius: tokens.$radius-md;
+  padding: spacing.spacing(4x);
+  border-radius: border.border-radius(lg);
 
-  color: tokens.$color-text-primary;
+  color: typography.text-color(primary);
 
-  background-color: tokens.$color-bg-translucent;
+  background-color: background.background-color(translucent);
 
   &__settings {
-    cursor: pointer;
+    @include base.flex($justify: center, $align: center, $inline: true);
+    @include base.size(base.px-to-rem(48px));
+    @include base.absolute($bottom: spacing.spacing(4x), $left: spacing.spacing(4x));
 
-    position: absolute;
-    inset-block-end: tokens.$space-4;
-    inset-inline-start: tokens.$space-4;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    inline-size: 5rem;
-    block-size: 5rem;
     padding: 0;
-    border: none;
-    border-radius: 50%;
+    border-radius: border.border-radius(circle);
 
-    color: tokens.$color-text-primary;
+    color: typography.text-color(primary);
 
-    background-color: tokens.$color-bg-scrim;
+    background-color: background.background-color(scrim);
     backdrop-filter: blur(12px);
 
-    &:focus-visible {
-      @include mx.focus-ring;
+    @include breakpoint.media(tablet) {
+      @include base.size(base.px-to-rem(80px));
     }
   }
 
   &__controls {
-    position: absolute;
-    inset-block-end: tokens.$space-4;
-    inset-inline-start: 50%;
-    transform: translateX(-50%);
+    @include base.absolute($bottom: spacing.spacing(4x), $left: 50%, $transform: translateX(-50%));
   }
 
   &__drawer-chip {
-    cursor: pointer;
+    @include base.flex($align: center, $gap: spacing.spacing(2x), $inline: true);
+    @include base.size(auto, base.px-to-rem(48px));
+    @include base.absolute($bottom: spacing.spacing(4x), $right: spacing.spacing(4x));
+    @include typography.typography(primary, sm, bold);
 
-    position: absolute;
-    inset-block-end: tokens.$space-4;
-    inset-inline-end: tokens.$space-4;
+    padding-inline: spacing.spacing(4x);
+    border-radius: border.border-radius(xl);
+    background-color: background.background-color(scrim);
 
-    display: inline-flex;
-    gap: tokens.$space-2;
-    align-items: center;
-
-    padding-block: tokens.$space-2;
-    padding-inline: tokens.$space-3;
-    border: none;
-    border-radius: tokens.$radius-full;
-
-    font-family: inherit;
-    font-size: tokens.$font-size-sm;
-    font-weight: tokens.$font-weight-bold;
-    color: tokens.$color-text-primary;
-
-    background-color: tokens.$color-bg-pill;
-
-    &:focus-visible {
-      @include mx.focus-ring;
+    @include breakpoint.media(tablet) {
+      @include base.size(auto, base.px-to-rem(80px));
     }
   }
 }
 
 .sidebar {
-  display: flex;
-  flex: 1 1 0;
-  flex-direction: column;
+  @include base.flex(column, $gsb: 1 1 0);
 
-  min-inline-size: 300px;
-  max-inline-size: 300px;
+  min-inline-size: base.px-to-rem(300px);
+  max-inline-size: base.px-to-rem(300px);
+  padding-inline: spacing.spacing(4x);
+  border-radius: border.border-radius(lg);
 
-  // Inline padding only. Block padding lives on the scrollable list child so
-  // first/last cards have breathing room without a dead band above/below the
-  // scroll viewport (which would otherwise visually clip cards mid-scroll).
-  padding-inline: tokens.$space-4;
-  border-radius: tokens.$radius-md;
-
-  background-color: tokens.$color-bg-translucent;
+  background-color: background.background-color(translucent);
 
   &__list {
-    // `min-block-size: 0` overrides flex's default `auto` min-size so the list
-    // can shrink below its content height and its own `overflow-y: auto` kicks
-    // in. Without this, the list would push the sidebar past viewport height.
     flex: 1 1 auto;
     min-block-size: 0;
   }
 
-  // Mobile: become a bottom sheet. Pinned to the viewport, translated off
-  // screen until the user opens it via the "Videos (N)" chip.
   &--drawer {
-    position: fixed;
+    @include base.fixed($bottom: 0, $left: 0, $right: 0, $transform: translateY(100%));
+
     z-index: 10;
-    inset-block-end: 0;
-    inset-inline: 0;
-    transform: translateY(100%);
 
     min-inline-size: 0;
     max-inline-size: none;
     max-block-size: 80dvh;
-    padding-block-start: tokens.$space-3;
-    padding-inline: tokens.$space-4;
-    border-radius: tokens.$radius-md tokens.$radius-md 0 0;
+    padding-block-start: spacing.spacing(3x);
+    padding-inline: spacing.spacing(4x);
+    border-radius: border.border-radius(lg) border.border-radius(lg) 0 0;
 
-    background-color: tokens.$color-bg-sidebar;
-    box-shadow: 0 -8px 24px rgb(0 0 0 / 25%);
+    background-color: background.background-color(sidebar);
+    box-shadow: shadow.shadow(drawer);
 
     &::before {
+      @include base.size(base.px-to-rem(40px), base.px-to-rem(4px));
+
       content: '';
 
       align-self: center;
 
-      inline-size: 2.5rem;
-      block-size: 0.25rem;
-      margin-block-end: tokens.$space-2;
-      border-radius: tokens.$radius-full;
+      margin-block-end: spacing.spacing(2x);
+      border-radius: border.border-radius(lg);
 
-      background-color: rgb(255 255 255 / 40%);
+      background-color: base.transparentizer(white, 60%);
     }
 
     @media (prefers-reduced-motion: no-preference) {
-      transition: transform 200ms ease;
+      @include base.transition(transform);
     }
   }
 
   &--drawer-open {
     transform: translateY(0);
   }
-}
 
-.sidebar-backdrop {
-  cursor: pointer;
+  &-backdrop {
+    @include base.fixed(0, 0, 0, 0);
 
-  position: fixed;
-  z-index: 5;
-  inset: 0;
-
-  background-color: rgb(0 0 0 / 50%);
+    cursor: pointer;
+    z-index: 5;
+    background-color: base.transparentizer(black, 50%);
+  }
 }

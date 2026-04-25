@@ -1,0 +1,11 @@
+@use '../01_helpers/typography.helper' as typography;
+
+// -----------------------------------------
+//   BUTTON: Stylings for <button> element
+// -----------------------------------------
+button {
+  @include typography.typography(inherit, md, normal, normal, base);
+
+  cursor: pointer;
+  border: none;
+}

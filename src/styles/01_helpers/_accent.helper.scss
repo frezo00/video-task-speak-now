@@ -1,0 +1,14 @@
+@use 'base.helper';
+
+// -------------------
+//   ACCENT COLORS
+// -------------------
+$accent-colors: (
+  red: var(--color-accent-red),
+  green: var(--color-accent-green),
+  blue: var(--color-accent-blue),
+);
+
+@function accent-color($accent-color) {
+  @return base.map-contains($accent-colors, $accent-color);
+}

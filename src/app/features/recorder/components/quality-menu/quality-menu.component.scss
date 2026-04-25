@@ -1,60 +1,46 @@
-@use 'tokens' as tokens;
-@use 'mixins' as mx;
+@use 'accent.helper' as accent;
+@use 'background.helper' as background;
+@use 'base.helper' as base;
+@use 'border.helper' as border;
+@use 'shadow.helper' as shadow;
+@use 'spacing.helper' as spacing;
+@use 'typography.helper' as typography;
 
 :host {
+  @include base.flex(column, $gap: spacing.spacing(1x));
+
   position: relative;
 
-  display: flex;
-  flex-direction: column;
-  gap: tokens.$space-1;
+  min-inline-size: base.px-to-rem(280px);
+  padding: spacing.spacing(2x);
+  border-radius: border.border-radius(md);
 
-  min-inline-size: 16rem;
-  padding: tokens.$space-2;
-  border-radius: tokens.$radius-sm;
+  color: typography.text-color(primary);
 
-  color: tokens.$color-text-primary;
-
-  background-color: tokens.$color-bg-pill;
-  box-shadow: tokens.$shadow-dialog;
+  background-color: background.background-color(scrim);
+  box-shadow: shadow.shadow(dialog);
 }
 
 .quality-menu {
   &__row {
-    cursor: pointer;
-
-    display: flex;
-    gap: tokens.$space-3;
-    align-items: center;
-    justify-content: space-between;
+    @include base.flex($justify: space-between, $align: center, $gap: spacing.spacing(3x));
+    @include typography.typography(secondary, lg, $text-align: left);
 
     inline-size: 100%;
-    padding: tokens.$space-2 tokens.$space-3;
-    border: none;
-    border-radius: tokens.$radius-sm;
-
-    font-family: inherit;
-    font-size: tokens.$font-size-sm;
-    color: tokens.$color-text-secondary;
-    text-align: start;
-
+    padding: spacing.spacing(2x) spacing.spacing(3x);
+    border-radius: border.border-radius(md);
     background-color: transparent;
 
     &:hover {
-      background-color: rgb(255 255 255 / 6%);
-    }
-
-    &:focus-visible {
-      @include mx.focus-ring;
+      background-color: base.transparentizer(black, 6%);
     }
 
     &--selected {
-      color: tokens.$color-text-primary;
+      color: typography.text-color(primary);
     }
 
     @media (prefers-reduced-motion: no-preference) {
-      transition:
-        background-color 160ms ease,
-        color 160ms ease;
+      @include base.transition(color, background-color);
     }
   }
 
@@ -63,9 +49,9 @@
   }
 
   &__check {
+    @include base.size(1rem);
+
     flex: 0 0 auto;
-    inline-size: 1rem;
-    block-size: 1rem;
-    color: tokens.$color-accent-green;
+    color: accent.accent-color(green);
   }
 }

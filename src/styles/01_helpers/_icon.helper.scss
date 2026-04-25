@@ -1,0 +1,14 @@
+@use 'base.helper';
+
+// ------------------------------
+//   ICON - variables for icons
+// ------------------------------
+$icon-sizes: (
+  sm: base.px-to-rem(16px),
+  md: base.px-to-rem(24px),
+  lg: base.px-to-rem(40px),
+);
+
+@function icon-size($size) {
+  @return base.map-contains($icon-sizes, $size);
+}
