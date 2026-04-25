@@ -1,13 +1,13 @@
 <button type="button" class="video-playback-dialog__close" aria-label="Close" (click)="close()">
-  <i appIcon="close" appIconSize="medium" aria-hidden="true"></i>
+  <i appIcon="close" [appIconSize]="$isMobile() ? 'small' : 'medium'" aria-hidden="true"></i>
 </button>
 
 @if ($src(); as src) {
   <video
     #player
     class="video-playback-dialog__video"
-    autoplay
     playsinline
+    preload="metadata"
     [src]="src"
     [attr.data-mime]="data.video.mimeType"
     (loadedmetadata)="onLoadedMetadata()"
@@ -17,16 +17,22 @@
   ></video>
 }
 
-<div class="video-playback-dialog__controls">
+<div class="video-playback-dialog__controls controls">
   <button
     type="button"
-    class="video-playback-dialog__toggle"
+    class="video-playback-dialog__toggle controls__btn"
     [attr.aria-label]="$isPlaying() ? 'Pause' : 'Play'"
     (click)="togglePlayback()"
   >
-    <i [appIcon]="$isPlaying() ? 'pause' : 'play'" appIconSize="small" aria-hidden="true"></i>
+    <i
+      [appIcon]="$isPlaying() ? 'pause' : 'play'"
+      [appIconSize]="$isMobile() ? 'medium' : 'large'"
+      aria-hidden="true"
+    ></i>
   </button>
+
   <span class="video-playback-dialog__time" aria-hidden="true">{{ $currentLabel() }}</span>
+
   <input
     type="range"
     class="video-playback-dialog__scrubber"
@@ -37,5 +43,6 @@
     [value]="$progress()"
     (input)="onScrub($event)"
   />
+
   <span class="video-playback-dialog__time" aria-hidden="true">{{ $durationLabel() }}</span>
 </div>

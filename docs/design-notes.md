@@ -80,7 +80,7 @@ On load the top-left shows a tiny breadcrumb-style label ("start video recorder"
   - Video player at the top (16:9-ish).
   - Below: a **play/pause button** (blue circle) on the left, a **scrubber** to the right.
   - Top-right: **X close button** (circular, dark).
-- **Interaction:** clicking a thumbnail in screen 05 opens this modal auto-playing. Scrubber seeks. Pause toggles icon. Escape closes. Focus returns to the originating thumbnail.
+- **Interaction:** clicking a thumbnail in screen 05 opens this modal paused on the first frame; the user clicks the play button to start playback. Scrubber seeks. Pause toggles icon. Escape closes. Focus returns to the originating thumbnail.
 
 ---
 

@@ -1,4 +1,5 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,8 +10,11 @@ import {
   viewChild,
   type ElementRef,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import type { SavedVideo } from '@core/storage';
+import { MOBILE_BREAKPOINT } from '@shared/breakpoints';
 import { IconDirective } from '@shared/icons';
+import { map } from 'rxjs';
 import { formatRecordedAt } from '../../utils/format-recorded-at';
 import { formatTime } from '../../utils/format-time';
 
@@ -48,6 +52,7 @@ export class VideoPlaybackDialogComponent {
   readonly data: VideoPlaybackDialogData = inject<VideoPlaybackDialogData>(DIALOG_DATA);
   readonly #dialogRef = inject<DialogRef<void>>(DialogRef);
   readonly #destroyRef = inject(DestroyRef);
+  readonly #breakpoints = inject(BreakpointObserver);
 
   readonly $player = viewChild<ElementRef<HTMLVideoElement>>('player');
 
@@ -71,6 +76,11 @@ export class VideoPlaybackDialogComponent {
 
   readonly $currentLabel = computed<string>(() => formatTime(this.#$currentTime()));
   readonly $durationLabel = computed<string>(() => formatTime(this.#$duration()));
+
+  readonly $isMobile = toSignal(
+    this.#breakpoints.observe(MOBILE_BREAKPOINT).pipe(map((state) => state.matches)),
+    { initialValue: false as boolean },
+  );
 
   #rafId: number | null = null;
 
