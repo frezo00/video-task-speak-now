@@ -74,7 +74,7 @@ Concrete pointers for code review — each skill maps to the file or decision wh
 | **WebRTC — `MediaRecorder`**               | [`src/app/core/recorder/services/recorder.service.ts`](src/app/core/recorder/services/recorder.service.ts) — per-browser mime negotiation, 10 s hard cap with RAF + `setTimeout` fallback |
 | **NGXS**                                   | [`src/app/core/bandwidth/state/`](src/app/core/bandwidth/state/), [`src/app/core/storage/`](src/app/core/storage/) — bandwidth + recordings as cross-cutting state                        |
 | **RxJS**                                   | [`src/app/core/bandwidth/services/bandwidth.service.ts`](src/app/core/bandwidth/services/bandwidth.service.ts) — timed-download fallback; `$` suffix convention on observables            |
-| **Responsive design**                      | `for-mobile` mixin in [`src/styles/_mixins.scss`](src/styles/_mixins.scss); mobile bottom drawer (screenshot 08)                                                                          |
+| **Responsive design**                      | `for-mobile` mixin in [`src/styles/_mixins.scss`](src/styles/_mixins.scss); mobile bottom drawer (see [Screenshots → Mobile](#mobile))                                                    |
 | **Cross-browser handling**                 | Safari thumbnail workaround + Chromium-only `navigator.connection` fallback — see _Challenges & notes_ below                                                                              |
 | **Performance**                            | Zoneless change detection, OnPush, `APP_INITIALIZER`-hydrated state, deferred first-frame extraction                                                                                      |
 | **Code quality / version control**         | Conventional Commits, one-concern-per-commit history, Husky + lint-staged, `commitlint`, `lint` / `typecheck` / `stylelint` gates                                                         |
@@ -113,18 +113,38 @@ Video blobs live in **IndexedDB** via Dexie. On app init, an `APP_INITIALIZER` h
 
 ## Screenshots
 
-Captured at 1440 × 900 desktop viewport, and at 393 × 852 for the mobile drawer shot.
+Captured at **1920 × 1080** for desktop and **430 × 932** for mobile. Files live in [`screenshots/desktop/`](screenshots/desktop) and [`screenshots/mobile/`](screenshots/mobile); each app state has both a desktop and a mobile counterpart, and the mobile sidebar appears as the bottom drawer.
 
-| #   | State                     | Image                                                    |
-| --- | ------------------------- | -------------------------------------------------------- |
-| 01  | Bandwidth check (spinner) | ![Bandwidth check](./screenshots/01-bandwidth-check.png) |
-| 02  | Idle recorder             | ![Idle recorder](./screenshots/02-idle-recorder.png)     |
-| 03  | Quality menu open         | ![Quality menu](./screenshots/03-quality-menu.png)       |
-| 04  | Recording in progress     | ![Recording](./screenshots/04-recording.png)             |
-| 05  | Populated videos list     | ![Populated list](./screenshots/05-populated-list.png)   |
-| 06  | Playback dialog           | ![Playback dialog](./screenshots/06-playback-dialog.png) |
-| 07  | Delete confirmation       | ![Delete confirm](./screenshots/07-delete-confirm.png)   |
-| 08  | Mobile bottom drawer      | ![Mobile drawer](./screenshots/08-mobile-drawer.png)     |
+### Desktop
+
+| State                                         | Image                                                                         |
+| --------------------------------------------- | ----------------------------------------------------------------------------- |
+| Bandwidth check (spinner)                     | ![Loading](./screenshots/desktop/loading-desktop.png)                         |
+| Idle recorder                                 | ![Idle recorder](./screenshots/desktop/recording_idle-desktop.png)            |
+| Recording in progress                         | ![Recording](./screenshots/desktop/recording_progress-desktop.png)            |
+| Quality menu — current tier + fallback banner | ![Quality default](./screenshots/desktop/quality_default-desktop.png)         |
+| Quality menu — Low selected                   | ![Quality low](./screenshots/desktop/quality_low-desktop.png)                 |
+| Populated videos list (hover trash)           | ![Video list](./screenshots/desktop/video_list-desktop.png)                   |
+| Playback dialog — paused on first frame       | ![Playback idle](./screenshots/desktop/playback_idle-desktop.png)             |
+| Playback dialog — playing                     | ![Playback progress](./screenshots/desktop/playback_progress-desktop.png)     |
+| Delete confirmation                           | ![Delete confirm](./screenshots/desktop/delete_confirmation-desktop.png)      |
+| Camera access denied                          | ![Camera access error](./screenshots/desktop/camera_access_error-desktop.png) |
+
+### Mobile
+
+| State                                         | Image                                                                       |
+| --------------------------------------------- | --------------------------------------------------------------------------- |
+| Bandwidth check (spinner)                     | ![Loading](./screenshots/mobile/loading-mobile.png)                         |
+| Idle recorder                                 | ![Idle recorder](./screenshots/mobile/recording_idle-mobile.png)            |
+| Recording in progress                         | ![Recording](./screenshots/mobile/recording_progress-mobile.png)            |
+| Quality menu — current tier + fallback banner | ![Quality default](./screenshots/mobile/quality_default-mobile.png)         |
+| Quality menu — Low selected                   | ![Quality low](./screenshots/mobile/quality_low-mobile.png)                 |
+| Quality menu — High selected                  | ![Quality high](./screenshots/mobile/quality_high-mobile.png)               |
+| Saved videos bottom drawer                    | ![Video list](./screenshots/mobile/video_list-mobile.png)                   |
+| Playback dialog — paused on first frame       | ![Playback idle](./screenshots/mobile/playback_idle-mobile.png)             |
+| Playback dialog — playing                     | ![Playback progress](./screenshots/mobile/playback_progress-mobile.png)     |
+| Delete confirmation                           | ![Delete confirm](./screenshots/mobile/delete_confirmation-mobile.png)      |
+| Camera access denied                          | ![Camera access error](./screenshots/mobile/camera_access_error-mobile.png) |
 
 ---
 
